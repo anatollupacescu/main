@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import me.prettyprint.cassandra.model.IndexedSlicesQuery;
 import me.prettyprint.hector.api.mutation.Mutator;
 import core.datastore.IDatastore;
-import core.datastore.query.Query;
+import core.datastore.pull.Query;
 
 public class Datastore extends DatastoreBase implements IDatastore {
 

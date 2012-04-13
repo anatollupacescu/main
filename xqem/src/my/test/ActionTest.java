@@ -11,11 +11,11 @@ import org.apache.commons.io.IOUtils;
 
 import com.thoughtworks.xstream.XStream;
 
-import core.model.datapull.Condition;
-import core.model.datapull.Datarequest;
-import core.model.datapull.Entity;
+import core.datastore.pull.model.Condition;
+import core.datastore.pull.model.Datarequest;
+import core.datastore.pull.model.Entity;
 import core.model.message.XMLMessage;
-import core.node.ActionNode;
+import core.node.impl.ParseNode;
 
 public class ActionTest extends TestCase {
 
@@ -87,7 +87,7 @@ public class ActionTest extends TestCase {
 		String push = "return $document//user[@action='persist']";
 		String decision = "return count($document//user[@action='persist']) > 1";
 
-		ActionNode node = new ActionNode(pull, parse, push, decision);
+		ParseNode node = new ParseNode(pull, parse, push, decision);
 		
 		XMLMessage m = getMessage();
 		node.execute(m);

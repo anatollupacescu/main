@@ -1,4 +1,4 @@
-package core.datastore.query;
+package core.datastore.pull;
 
 import core.datastore.impl.Datastore;
 import me.prettyprint.cassandra.model.IndexedSlicesQuery;
@@ -25,7 +25,6 @@ public class Query {
 	
 	public void gte(String columnName, String columnValue) {
 		query.addGteExpression(columnName, columnValue);
-		
 	}
 	
 	public void lt(String columnName, String columnValue) {

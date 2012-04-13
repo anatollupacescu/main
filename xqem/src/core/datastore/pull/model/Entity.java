@@ -1,4 +1,4 @@
-package core.model.datapull;
+package core.datastore.pull.model;
 
 public class Entity {
 	public String name;

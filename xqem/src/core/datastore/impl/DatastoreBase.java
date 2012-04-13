@@ -31,7 +31,7 @@ import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.ColumnQuery;
 import me.prettyprint.hector.api.query.MultigetSliceQuery;
 import me.prettyprint.hector.api.query.QueryResult;
-import core.datastore.query.Query;
+import core.datastore.pull.Query;
 
 public class DatastoreBase {
 
