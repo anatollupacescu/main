@@ -72,7 +72,8 @@ public class Workflow {
 				final Class<?>[] classArgTypes = { String[].class };
 				final Object[] objectArgs = { args };
 
-				Constructor<?> c = Class.forName(stateAction).getConstructor(classArgTypes);
+				Class<?> clazz = Class.forName(stateAction);
+				Constructor<?> c = clazz.getConstructor(classArgTypes);
 				action = ((Action) c.newInstance(objectArgs));
 			} else {
 				
@@ -85,13 +86,12 @@ public class Workflow {
 
 			for (String key : keyArray) {
 
-				String endState = properties.getProperty(WORKFLOW_TRANSITION + key + "." + startState);
+				String endState = properties.getProperty(WORKFLOW_TRANSITION + startState + "." + key);
 
 				if (!stateList.contains(endState)) {
 
 					throw new Exception("Destination state " + endState
-							+ " for key " + WORKFLOW_TRANSITION + key + "."
-							+ startState
+							+ " for key " + WORKFLOW_TRANSITION + startState + "." + key
 							+ " was not specified in initial state list");
 				}
 

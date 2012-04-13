@@ -1,9 +1,9 @@
-package core.node.impl;
+package core.node;
 
 import net.trivial.wf.iface.Action;
 import net.trivial.wf.iface.Message;
 import core.model.message.XMLMessage;
-import core.node.Node;
+import core.node.parent.Node;
 
 public class DecisionNode extends Node implements Action {
 

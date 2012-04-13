@@ -29,7 +29,6 @@ public class Query {
 	
 	public void lt(String columnName, String columnValue) {
 		query.addLtExpression(columnName, columnValue);
-		
 	}
 	
 	public void lte(String columnName, String columnValue) {

@@ -1,4 +1,4 @@
-package core.node.impl;
+package core.node;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import net.trivial.wf.iface.Action;
 import net.trivial.wf.iface.Message;
 import core.datastore.impl.Datastore;
 import core.model.message.XMLMessage;
-import core.node.Node;
+import core.node.parent.Node;
 
 public class PushNode extends Node implements Action{
 

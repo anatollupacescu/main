@@ -1,0 +1,1 @@
+return count($document/*)>0

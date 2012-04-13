@@ -1,4 +1,4 @@
-package core.node.impl;
+package core.node;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ import core.datastore.pull.model.Condition;
 import core.datastore.pull.model.Datarequest;
 import core.datastore.pull.model.Entity;
 import core.model.message.XMLMessage;
-import core.node.Node;
+import core.node.parent.Node;
 
 public class PullNode extends Node implements Action{
 
@@ -37,16 +37,18 @@ public class PullNode extends Node implements Action{
 		String datarequest = null;
 		try {
 			datarequest = executeQuery(message);
+			String pulledData = pullData(datarequest);
+			xmlMessage.setText(message + pulledData);
+
+			return success;
 		} catch (XQException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		String pulledData = pullData(datarequest);
-		xmlMessage.setText(message + pulledData);
+		return error;
 
-		return success;
 	}
 
 	private String pullData(String text) {

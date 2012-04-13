@@ -1,4 +1,4 @@
-package core.node;
+package core.node.parent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -27,7 +27,7 @@ public class Node {
 		
 		String content = null;
 		
-		if(args != null && args.length > 1) {
+		if(args != null && args.length > 0) {
 			InputStream in = null;
 			try {
 				in = new FileInputStream(args[0]);

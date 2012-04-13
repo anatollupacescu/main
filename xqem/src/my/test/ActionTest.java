@@ -15,19 +15,28 @@ import core.datastore.pull.model.Condition;
 import core.datastore.pull.model.Datarequest;
 import core.datastore.pull.model.Entity;
 import core.model.message.XMLMessage;
-import core.node.impl.ParseNode;
+import core.node.ParseNode;
 
 public class ActionTest extends TestCase {
 
 	private final static Logger logger = Logger.getLogger(ActionTest.class.getName());
 	
-	private XMLMessage getMessage() {
+	public static void main(String[] args) throws Exception {
+		Workflow dwf = new Workflow("src\\config.properties");
+		
+		XMLMessage message = (XMLMessage)dwf.newModelInstance();
+		message.setText(getMessage().getText());
+		dwf.doProcess(message);
+		dwf.doProcess(message);
+	}
+	
+	private static XMLMessage getMessage() {
 
 		InputStream in = null;
 		String content = null;
 
 		try {
-			in = new FileInputStream("src\\test\\java\\request.xml");
+			in = new FileInputStream("src\\request.xml");
 			content = IOUtils.toString(in);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -35,7 +44,7 @@ public class ActionTest extends TestCase {
 			IOUtils.closeQuietly(in);
 		}
 
-		XMLMessage m = new XMLMessage("DISPATCH");
+		XMLMessage m = new XMLMessage("CHECK1");
 		m.setText(content);
 
 		return m;
@@ -95,7 +104,7 @@ public class ActionTest extends TestCase {
 	
 	public void testApp() throws Exception {
 		
-		Workflow dwf = new Workflow("src\\test\\java\\config.properties");
+		Workflow dwf = new Workflow("src\\config.properties");
 		
 		XMLMessage message = (XMLMessage)dwf.newModelInstance();
 		message.setText(getMessage().getText());
