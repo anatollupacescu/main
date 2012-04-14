@@ -2,13 +2,14 @@ package net.trivial.wf;
 
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.trivial.wf.iface.Action;
 import net.trivial.wf.iface.Message;
@@ -24,11 +25,13 @@ public class Workflow {
 	private final static String WORKFLOW_STATE_ACTION_ARGS=WORKFLOW_STATE_ACTION + "args.";
 	private static final String WORKFLOW_MODEL = "workflow.model";
 	
+	private final static Logger logger = Logger.getLogger(Workflow.class.getName());
+	
 	private final StateMachine<String, String> workflow = new StateMachine<String, String>();
 	private final Map<String, Action> actions = new HashMap<String, Action>();
 	
 	private final String className;
-	private final String initialState;
+	public final String initialState;
 	
 	public Workflow(String fileName) throws Exception {
 
@@ -37,7 +40,12 @@ public class Workflow {
 		properties.load(new FileInputStream(fileName));
 
 		className = properties.getProperty(WORKFLOW_MODEL);
-		Class.forName(className).getConstructor(String.class);
+		try {
+			Class.forName(className).getConstructor(String.class, String.class);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Could not create class for : " + className, e);
+			throw new RuntimeException(e);
+		}
 		
 		/* populate states */
 		String states = properties.getProperty(WORKFLOW_STATES);
@@ -71,14 +79,23 @@ public class Workflow {
 				
 				final Class<?>[] classArgTypes = { String[].class };
 				final Object[] objectArgs = { args };
-
-				Class<?> clazz = Class.forName(stateAction);
-				Constructor<?> c = clazz.getConstructor(classArgTypes);
-				action = ((Action) c.newInstance(objectArgs));
-			} else {
 				
-				Constructor<?> c = Class.forName(stateAction).getConstructor();
-				action = ((Action) c.newInstance());
+				try {
+					Class<?> clazz = Class.forName(stateAction);
+					Constructor<?> c = clazz.getConstructor(classArgTypes);
+					action = ((Action) c.newInstance(objectArgs));
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "Could not create class for : " + stateAction + " with args : " + actionArgs, e);
+					throw new RuntimeException(e);
+				}
+			} else {
+				try {
+					Constructor<?> c = Class.forName(stateAction).getConstructor();
+					action = ((Action) c.newInstance());
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "Could not create class for : " + stateAction, e);
+					throw new RuntimeException(e);
+				}
 			}
 
 			String keys = properties.getProperty(WORKFLOW_TRANSITION_KEYS + startState);
@@ -90,7 +107,7 @@ public class Workflow {
 
 				if (!stateList.contains(endState)) {
 
-					throw new Exception("Destination state " + endState
+					throw new RuntimeException("Destination state " + endState
 							+ " for key " + WORKFLOW_TRANSITION + startState + "." + key
 							+ " was not specified in initial state list");
 				}
@@ -99,15 +116,6 @@ public class Workflow {
 				actions.put(startState, action);
 			}
 		}
-	}
-	
-	public Object newModelInstance() 
-		throws NoSuchMethodException,
-			SecurityException, ClassNotFoundException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
-		Constructor<?> c = Class.forName(className).getConstructor(String.class);
-		return c.newInstance(initialState);
 	}
 	
 	public void doProcess(Message object, Object... args) throws Exception {
@@ -125,6 +133,5 @@ public class Workflow {
 		if (ns == null) return;
 
 		object.setState(ns);
-
 	}
 }

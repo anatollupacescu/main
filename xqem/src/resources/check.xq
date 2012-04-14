@@ -1,1 +1,2 @@
-return count($document/*)>0
+declare variable $document external;
+count($document/request/*)>0

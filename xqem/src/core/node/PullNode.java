@@ -1,19 +1,13 @@
 package core.node;
 
-import java.io.IOException;
-
-import javax.xml.xquery.XQException;
-
 import net.trivial.wf.iface.Action;
 import net.trivial.wf.iface.Message;
-
-import com.thoughtworks.xstream.XStream;
-
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+import nu.xom.Nodes;
 import core.datastore.impl.Datastore;
 import core.datastore.pull.Query;
-import core.datastore.pull.model.Condition;
-import core.datastore.pull.model.Datarequest;
-import core.datastore.pull.model.Entity;
 import core.model.message.XMLMessage;
 import core.node.parent.Node;
 
@@ -28,22 +22,17 @@ public class PullNode extends Node implements Action{
 	@Override
 	public String execute(Message obj, Object... arg1) {
 
-		XMLMessage xmlMessage = (XMLMessage) obj;
-		String message = xmlMessage.getText();
+		if(obj == null) return error;
+		
+		Document document = ((XMLMessage)obj).getDocument();
+		
+		if(document == null) return error;
 
-		if (message == null)
-			return error;
-
-		String datarequest = null;
 		try {
-			datarequest = executeQuery(message);
-			String pulledData = pullData(datarequest);
-			xmlMessage.setText(message + pulledData);
+			String pulledData = pullData(document);
 
 			return success;
-		} catch (XQException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -51,11 +40,9 @@ public class PullNode extends Node implements Action{
 
 	}
 
-	private String pullData(String text) {
+	private String pullData(Document document) {
 		
-		XStream xstream = getXStreamObject();
-		Datarequest datarequest = (Datarequest)xstream.fromXML(text);
-		Query[] queries = datarequestObjectToQueryArray(datarequest);
+		Query[] queries = getQueriesFromDocument(document);
 		
 		Datastore ds = Datastore.getInstance();
 		
@@ -70,56 +57,58 @@ public class PullNode extends Node implements Action{
 		return xml;
 	}
 
-	private Query[] datarequestObjectToQueryArray(Datarequest datarequest) {
+	private Query[] getQueriesFromDocument(Document document) {
+		
+		Nodes nodes = document.query("/request/*[@action='retrieve']");
+		
+		Query[] queries = new Query[nodes.size()];
+		int queryIndex = 0;
+		
+		for (int i = 0; i < nodes.size(); i++) {
 
-		Query[] queries = new Query[datarequest.entity.length];
-		
-		int i = 0;
-		
-		for(Entity entity : datarequest.entity) {
-			
-			Query query = new Query(entity.name);
-			
-			for(Condition column : entity.conditions) {
-				
-				op operation = op.valueOf(column.expression);
-				
+			Element node = (Element) nodes.get(i);
+			Elements elements = node.getChildElements();
+
+			Query query = new Query(node.getLocalName());
+
+			for (int j = 0; j < elements.size(); j++) {
+
+				Element element = elements.get(j);
+
+				op operation = op.valueOf(element
+						.getAttributeValue("condition"));
+
+				String column = element.getLocalName();
+				String value = element.getValue();
+
 				switch (operation) {
 				case EQ:
-					query.eq(column.column, column.value);
+					query.eq(column, value);
 					break;
 				case GT:
-					query.gt(column.column, column.value);
+					query.gt(column, value);
 					break;
 				case GTE:
-					query.gte(column.column, column.value);
+					query.gte(column, value);
 					break;
 				case LT:
-					query.lt(column.column, column.value);
+					query.lt(column, value);
 					break;
 				case LTE:
-					query.lte(column.column, column.value);
+					query.lte(column, value);
 					break;
 				}
 			}
-			
-			query.columns(entity.columns);
-			
-			queries[i++] = query;
+
+			String columsString = node.getAttributeValue("columns");
+			if (columsString != null) {
+				String[] columnArray = columsString.split(",");
+				query.columns(columnArray);
+			}
+
+			queries[queryIndex++] = query;
 		}
-		
 		return queries;
 	}
 
-	private XStream getXStreamObject() {
-		
-		XStream xstream = new XStream();
-		
-        xstream.alias("datarequest", Datarequest.class);
-        xstream.alias("entity", Entity.class);
-        xstream.alias("condition", Condition.class);
-        
-        return xstream;
-	}
-	
 }

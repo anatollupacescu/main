@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+<user action="retrieve" />
+<user action="retrieve" key="3"/>
+<user action="retrieve" columns="bred">
+	<name condition="EQ">Tolea</name>
+	<age condition="GT">25</age>
+</user>
+</request>

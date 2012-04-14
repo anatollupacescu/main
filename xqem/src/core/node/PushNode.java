@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamReader;
 import me.prettyprint.hector.api.mutation.Mutator;
 import net.trivial.wf.iface.Action;
 import net.trivial.wf.iface.Message;
+import nu.xom.Document;
 import core.datastore.impl.Datastore;
 import core.model.message.XMLMessage;
 import core.node.parent.Node;
@@ -25,12 +26,13 @@ public class PushNode extends Node implements Action{
 	@Override
 	public String execute(Message obj, Object... arg1) {
 		
-		XMLMessage xmlMessage = (XMLMessage)obj;
-		String message = xmlMessage.getText();
+		if(obj == null) return error;
 		
-		if(message == null) return error;
+		Document document = ((XMLMessage)obj).getDocument();
 		
-		if(pushData(message)) return success;
+		if(document == null) return error;
+		
+		if(pushData(document.toXML())) return success;
 		
 		return error;
 	}
