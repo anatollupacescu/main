@@ -2,7 +2,6 @@ package my.test;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -13,8 +12,6 @@ import core.wf.Workflow;
 
 public class ActionTest extends TestCase {
 
-	private final static Logger logger = Logger.getLogger(ActionTest.class.getName());
-	
 	public static void main(String[] args) throws Exception {
 		Workflow dwf = new Workflow("src\\config.properties");
 		

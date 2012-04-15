@@ -3,12 +3,13 @@
 		<name>pasha</name>
 		<age>27</age>
 		<adress>Str-la bujorului</adress>
-		<type>user</type>
 	</user>
 	<user key="iura_lingura" action="persist1">
 		<name>iura</name>
 		<surname>lingura</surname>
 		<salary>10343</salary>
-		<type>user</type>
+	</user>
+	<user action="retrieve" columns="age">
+		<car condition="EQ">VW</car>
 	</user>
 </response>

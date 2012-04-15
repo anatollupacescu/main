@@ -1,1 +1,1 @@
-return count($document/*)>0
+<count>count($document/*)>0</count>

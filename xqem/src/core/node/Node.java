@@ -14,14 +14,13 @@ import javax.xml.xquery.XQSequence;
 
 import org.apache.commons.io.IOUtils;
 
+import core.misc.Const;
 import core.model.Message;
 
 import ch.ethz.mxquery.xqj.MXQueryXQDataSource;
 
 public abstract class Node {
 
-	private static final String prefix = "declare variable $document external;\r\n";
-	
 	protected static final String error="error";
 	protected static final String success="success";
 	
@@ -37,7 +36,7 @@ public abstract class Node {
 			InputStream in = null;
 			try {
 				in = new FileInputStream(args[0]);
-				content = prefix + IOUtils.toString(in);
+				content = Const.XQUERY_PREFIX + IOUtils.toString(in);
 				conn = new MXQueryXQDataSource().getConnection();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -53,7 +52,7 @@ public abstract class Node {
 	protected String executeQuery(String text) throws XQException, IOException {
 
 		XQPreparedExpression exp = xqconnection.prepareExpression(query);
-		exp.bindDocument(new QName("document"), text ,null, null);
+		exp.bindDocument(new QName(Const.DOCUMENT), text ,null, null);
 		
 		XQSequence xqsequence = exp.executeQuery();
 

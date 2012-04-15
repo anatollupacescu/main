@@ -1,32 +1,15 @@
 package core.model;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-
-import nu.xom.Builder;
 import nu.xom.Document;
-import nu.xom.ParsingException;
+import core.misc.XMLBuilder;
 
 public class XMLMessage extends Message {
 
-	private final static Logger logger = Logger.getLogger(XMLMessage.class.getName());
-	private final static Builder parser = new Builder();
-	
 	private final Document document;
 	
 	public XMLMessage(String state, String xml) {
 		super(state);
-		Document doc = null;
-		try {
-			doc = parser.build(xml, null);
-		} catch (ParsingException ex) {
-			logger.log(Level.SEVERE, "Could not parse xml", ex);
-		} catch (IOException ex) {
-			logger.log(Level.SEVERE, "Could not read xml", ex);
-		}
-		document = doc;
+		document = XMLBuilder.build(xml);
 	}
 
 	public Document getDocument() {

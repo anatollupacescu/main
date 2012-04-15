@@ -8,7 +8,6 @@ import static me.prettyprint.hector.api.factory.HFactory.getOrCreateCluster;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.logging.Logger;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -28,30 +27,34 @@ import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.ColumnQuery;
 import me.prettyprint.hector.api.query.MultigetSliceQuery;
 import me.prettyprint.hector.api.query.QueryResult;
+import core.misc.Const;
 
 public class Cassandra {
 
 	private final static String HOST_PORT = "localhost:9160";
+	private final static String CLUSTER = "MyCluster";
 	private final static String KEYSPACE = "xqem";
-	private final static String TABLE="Entity";
-	private final static String INDEXED_COLUMN="type";
+	private final static String TABLE = "Entity";
+	private final static String INDEXED_COLUMN = Const.TYPE;
 	
 	private final static StringSerializer ss = StringSerializer.get();
 	
-	private final static Keyspace keyspace = createKeyspace(KEYSPACE,getOrCreateCluster("MyCluster", HOST_PORT));
+	private final static Keyspace keyspace = createKeyspace(KEYSPACE,getOrCreateCluster(CLUSTER, HOST_PORT));
 	
 	private static final class holder {
 		private final static Cassandra cassandra = new Cassandra();
 	}
 
-	private final static Logger logger = Logger.getLogger(Cassandra.class.getName());
-	
 	public static final Cassandra getInstance() {
 		return holder.cassandra;
 	}
 	
 	public Mutator<String> getMutator() {
 		return createMutator(keyspace, ss);
+	}
+
+	public void addInsertion(Mutator<String> m, String key, String column, String value) {
+		m.addInsertion(key, TABLE, createColumn(column, value, keyspace.createClock(), ss, ss));
 	}
 	
 	public void insert(final String table, final String column, final String key, final String value) {
@@ -132,9 +135,5 @@ public class Cassandra {
 		xtw.close();
 		
 		return stream.toString();
-	}
-	
-	public void addInsertion(Mutator<String> m, String key, String column, String value) {
-		m.addInsertion(key, TABLE, createColumn(column, value, keyspace.createClock(), ss, ss));
 	}
 }

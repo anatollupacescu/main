@@ -6,6 +6,8 @@ import nu.xom.Elements;
 import nu.xom.Nodes;
 import core.datastore.Cassandra;
 import core.datastore.Query;
+import core.misc.Const;
+import core.misc.XMLBuilder;
 import core.model.Message;
 import core.model.XMLMessage;
 
@@ -27,71 +29,59 @@ public class PullNode extends Node {
 		if(document == null) return error;
 
 		try {
-			String pulledData = pullData(document);
+			Query[] queries = getQueriesFromDocument(document);
 
+			Cassandra ds = Cassandra.getInstance();
+
+			String xml = ds.executeQuery(queries);
+			Document doc = XMLBuilder.build(xml);
+			document.appendChild(doc);
+			
 			return success;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		return error;
-
 	}
 
-	private String pullData(Document document) {
-		
-		Query[] queries = getQueriesFromDocument(document);
-		
-		Cassandra ds = Cassandra.getInstance();
-		
-		String xml = null;
-		
-		try {
-			xml = ds.executeQuery(queries);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return xml;
-	}
+	private static Query[] getQueriesFromDocument(Document document) {
 
-	private Query[] getQueriesFromDocument(Document document) {
-		
-		Nodes nodes = document.query("/request/*[@action='retrieve']");
-		
+		Nodes nodes = document.query(Const.RETRIEVE);
+
 		Query[] queries = new Query[nodes.size()];
 		int queryIndex = 0;
-		
+
 		for (int i = 0; i < nodes.size(); i++) {
-			
+
 			Element node = (Element) nodes.get(i);
-			
-			String key = node.getAttributeValue("key");
-			String columns = node.getAttributeValue("columns");
-			
+
+			String key = node.getAttributeValue(Const.KEY);
+			String columns = node.getAttributeValue(Const.COLUMNS);
+
 			String[] keyArr = null;
 			String[] colArr = null;
-			
-			if(key != null) {
-				keyArr = key.split(",");
+
+			if (key != null) {
+				keyArr = key.split(Const.SPLIT_SYMBOL);
 			}
-			if(columns != null) {
-				colArr = columns.split(",");
+			if (columns != null) {
+				colArr = columns.split(Const.SPLIT_SYMBOL);
 			}
-			
+
 			Elements elements = node.getChildElements();
-			
+
 			Query query = new Query(node.getLocalName(), keyArr, colArr);
-			
-			for(int j = 0; key==null && j < elements.size(); j++) {
-				
+
+			for (int j = 0; key == null && j < elements.size(); j++) {
+
 				Element element = elements.get(j);
-				
-				op operation = op.valueOf(element.getAttributeValue("condition"));
-				
+
+				op operation = op.valueOf(element.getAttributeValue(Const.CONDITION));
+
 				String column = element.getLocalName();
 				String value = element.getValue();
-				
+
 				switch (operation) {
 				case EQ:
 					query.eq(column, value);
@@ -110,7 +100,7 @@ public class PullNode extends Node {
 					break;
 				}
 			}
-			
+
 			queries[queryIndex++] = query;
 		}
 		return queries;

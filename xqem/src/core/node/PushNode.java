@@ -6,14 +6,12 @@ import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Nodes;
 import core.datastore.Cassandra;
+import core.misc.Const;
 import core.model.Message;
 import core.model.XMLMessage;
 
 public class PushNode extends Node {
 
-	private final String KEY = "key";
-	private final String TYPE="type";
-	
 	public PushNode(String ... args) {
 		super();
 	}
@@ -35,7 +33,7 @@ public class PushNode extends Node {
 	
 	private boolean pushData(Document document) {
 		
-		Nodes nodes = document.query("/request/*[@action='persist']");
+		Nodes nodes = document.query(Const.PERSIST);
 		Cassandra ds = Cassandra.getInstance();
 		Mutator<String> m = ds.getMutator();
 		
@@ -45,9 +43,9 @@ public class PushNode extends Node {
 			Elements elements = node.getChildElements();
 
 			String type = node.getLocalName();
-			String key = node.getAttributeValue(KEY);
+			String key = node.getAttributeValue(Const.KEY);
 			
-			ds.addInsertion(m, key, TYPE, type);
+			ds.addInsertion(m, key, Const.TYPE, type);
 			
 			for (int j = 0; j < elements.size(); j++) {
 
