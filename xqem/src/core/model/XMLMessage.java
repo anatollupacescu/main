@@ -1,10 +1,10 @@
-package core.model.message;
+package core.model;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.trivial.wf.iface.Message;
+
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.ParsingException;

@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
 
-import core.model.message.XMLMessage;
+import core.model.XMLMessage;
 import core.wf.Workflow;
 
 public class ActionTest extends TestCase {

@@ -1,4 +1,4 @@
-package core.node.parent;
+package core.node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -14,9 +14,11 @@ import javax.xml.xquery.XQSequence;
 
 import org.apache.commons.io.IOUtils;
 
+import core.model.Message;
+
 import ch.ethz.mxquery.xqj.MXQueryXQDataSource;
 
-public class Node {
+public abstract class Node {
 
 	private static final String prefix = "declare variable $document external;\r\n";
 	
@@ -60,4 +62,6 @@ public class Node {
 
 		return result.toString().trim();
 	}
+
+	public abstract String execute(Message object);
 }

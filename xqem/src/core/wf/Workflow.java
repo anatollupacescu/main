@@ -11,9 +11,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.trivial.wf.iface.Action;
-import net.trivial.wf.iface.Message;
-
+import core.model.Message;
+import core.node.Node;
 
 public class Workflow {
 
@@ -28,7 +27,7 @@ public class Workflow {
 	private final static Logger logger = Logger.getLogger(Workflow.class.getName());
 	
 	private final StateMachine<String, String> workflow = new StateMachine<String, String>();
-	private final Map<String, Action> actions = new HashMap<String, Action>();
+	private final Map<String, Node> actions = new HashMap<String, Node>();
 	
 	private final String className;
 	public final String initialState;
@@ -60,10 +59,10 @@ public class Workflow {
 		/* getting the transitions, except for the last, ending state */
 		for (int i = 0; i < stateList.size() - 1; i++) {
 
-			Action action = null;
+			Node action = null;
 			
 			String startState = stateList.get(i);
-			String stateAction = properties.getProperty(WORKFLOW_STATE_ACTION + startState);
+			String stateNode = properties.getProperty(WORKFLOW_STATE_ACTION + startState);
 
 			String actionArgs = properties.getProperty(WORKFLOW_STATE_ACTION_ARGS + startState);
 			
@@ -81,19 +80,19 @@ public class Workflow {
 				final Object[] objectArgs = { args };
 				
 				try {
-					Class<?> clazz = Class.forName(stateAction);
+					Class<?> clazz = Class.forName(stateNode);
 					Constructor<?> c = clazz.getConstructor(classArgTypes);
-					action = ((Action) c.newInstance(objectArgs));
+					action = ((Node) c.newInstance(objectArgs));
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Could not create class for : " + stateAction + " with args : " + actionArgs, e);
+					logger.log(Level.SEVERE, "Could not create class for : " + stateNode + " with args : " + actionArgs, e);
 					throw new RuntimeException(e);
 				}
 			} else {
 				try {
-					Constructor<?> c = Class.forName(stateAction).getConstructor();
-					action = ((Action) c.newInstance());
+					Constructor<?> c = Class.forName(stateNode).getConstructor();
+					action = ((Node) c.newInstance());
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Could not create class for : " + stateAction, e);
+					logger.log(Level.SEVERE, "Could not create class for : " + stateNode, e);
 					throw new RuntimeException(e);
 				}
 			}
@@ -118,15 +117,15 @@ public class Workflow {
 		}
 	}
 	
-	public void doProcess(Message object, Object... args) throws Exception {
+	public void doProcess(Message object) throws Exception {
 
 		String currentState = object.getState();
 
-		Action action = actions.get(currentState);
+		Node action = actions.get(currentState);
 
-		if(action == null) throw new Exception("Action not found for state " + currentState);
+		if(action == null) throw new Exception("Node not found for state " + currentState);
 		
-		String transitionCode = action.execute(object, args);
+		String transitionCode = action.execute(object);
 
 		String newState = workflow.get(currentState, transitionCode);
 

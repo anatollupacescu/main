@@ -1,19 +1,17 @@
 package core.node;
 
-import net.trivial.wf.iface.Action;
-import net.trivial.wf.iface.Message;
 import nu.xom.Document;
-import core.model.message.XMLMessage;
-import core.node.parent.Node;
+import core.model.Message;
+import core.model.XMLMessage;
 
-public class ParseNode extends Node implements Action{
+public class ParseNode extends Node {
 	
 	public ParseNode(String ... args) {
 		super(args);
 	}
 
 	@Override
-	public String execute(Message obj, Object... arg1) {
+	public String execute(Message obj) {
 
 		if(obj == null) return error;
 		

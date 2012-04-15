@@ -1,4 +1,4 @@
-package net.trivial.wf.iface;
+package core.model;
 
 public class Message {
 

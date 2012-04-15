@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <request>
 
-<user action="retrieve" key="5"/>
-
-<user action="retrieve" key="4" columns="accountNo" />
-
-<user action="retrieve" key="3" columns="name,age" />
-
-<user action="retrieve" key="3,2,1" columns="name,age" />
-
-<user action="retrieve" columns="bred">
-	<name condition="EQ">Tolea</name>
-	<age condition="GT">25</age>
+<user action="retrieve" columns="name,age">
+	<age condition="LT">5</age>
 </user>
 </request>

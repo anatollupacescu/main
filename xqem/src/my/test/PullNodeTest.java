@@ -9,7 +9,7 @@ import nu.xom.Elements;
 import nu.xom.Nodes;
 import core.datastore.Cassandra;
 import core.datastore.Query;
-import core.model.message.XMLMessage;
+import core.model.XMLMessage;
 
 public class PullNodeTest {
 
@@ -23,11 +23,6 @@ public class PullNodeTest {
 		Query[] queries = getQueriesFromDocument(document);
 		
 		Cassandra ds = Cassandra.getInstance();
-		
-		Mutator m = ds.getMutator();
-		ds.addInsertion(m, "4", "accountNo", "12345");
-		ds.addInsertion(m, "4", "name", "Alfred");
-		m.execute();
 		
 		String xml = ds.executeQuery(queries);
 		

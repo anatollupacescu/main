@@ -1,17 +1,15 @@
 package core.node;
 
-import net.trivial.wf.iface.Action;
-import net.trivial.wf.iface.Message;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Nodes;
 import core.datastore.Cassandra;
 import core.datastore.Query;
-import core.model.message.XMLMessage;
-import core.node.parent.Node;
+import core.model.Message;
+import core.model.XMLMessage;
 
-public class PullNode extends Node implements Action{
+public class PullNode extends Node {
 
 	private static enum op { EQ, LTE, LT, GTE, GT };
 	
@@ -20,7 +18,7 @@ public class PullNode extends Node implements Action{
 	}
 
 	@Override
-	public String execute(Message obj, Object... arg1) {
+	public String execute(Message obj) {
 
 		if(obj == null) return error;
 		
