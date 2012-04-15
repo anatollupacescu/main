@@ -1,5 +1,8 @@
 package core.node;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
@@ -15,6 +18,8 @@ public class PullNode extends Node {
 
 	private static enum op { EQ, LTE, LT, GTE, GT };
 	
+	private final static Logger logger = Logger.getLogger(PullNode.class.getName());
+	
 	public PullNode(String ... args) {
 		super(args);
 	}
@@ -22,15 +27,14 @@ public class PullNode extends Node {
 	@Override
 	public String execute(Message obj) {
 
-		if(obj == null) return error;
-		
 		Document document = ((XMLMessage)obj).getDocument();
 		
-		if(document == null) return error;
-
 		try {
+			
 			Query[] queries = getQueriesFromDocument(document);
 
+			logger.log(Level.INFO, "queries count " + queries.length);
+			
 			Cassandra ds = Cassandra.getInstance();
 
 			String xml = ds.executeQuery(queries);
@@ -39,7 +43,7 @@ public class PullNode extends Node {
 			
 			return success;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Error pulling data", e);
 		}
 		
 		return error;

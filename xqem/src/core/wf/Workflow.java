@@ -131,6 +131,9 @@ public class Workflow {
 
 		if (newState == null) return;
 
+		if (Node.error.equals(newState)) {
+			throw new Exception("Error returned by " + currentState);
+		}
 		object.setState(newState);
 	}
 }

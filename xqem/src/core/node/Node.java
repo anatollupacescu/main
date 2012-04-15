@@ -21,8 +21,8 @@ import ch.ethz.mxquery.xqj.MXQueryXQDataSource;
 
 public abstract class Node {
 
-	protected static final String error="error";
-	protected static final String success="success";
+	public static final String error="error";
+	public static final String success="success";
 	
 	private final XQConnection xqconnection;
 	
@@ -62,5 +62,5 @@ public abstract class Node {
 		return result.toString().trim();
 	}
 
-	public abstract String execute(Message object);
+	public abstract String execute(Message message);
 }

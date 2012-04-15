@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nu.xom.Document;
+import core.misc.XMLBuilder;
 import core.model.Message;
 import core.model.XMLMessage;
 
@@ -18,16 +19,13 @@ public class DecisionNode extends Node {
 	@Override
 	public String execute(Message obj) {
 		
-		if(obj == null) return error;
-		
 		Document document = ((XMLMessage)obj).getDocument();
-		
-		if(document == null) return error;
 		
 		try {
 			String returnCode = executeQuery(document.toXML());
-			logger.log(Level.INFO, "Returned code is " + returnCode);
-			return success;
+			Document doc = XMLBuilder.build(returnCode);
+			logger.log(Level.INFO, "Returned data is " + returnCode);
+			return doc.query("/response").get(0).getValue();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Could not compute return code", e);
 		}

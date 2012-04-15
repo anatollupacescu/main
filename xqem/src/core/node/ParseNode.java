@@ -1,10 +1,16 @@
 package core.node;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import nu.xom.Document;
+import core.misc.XMLBuilder;
 import core.model.Message;
 import core.model.XMLMessage;
 
 public class ParseNode extends Node {
+	
+	private final static Logger logger = Logger.getLogger(ParseNode.class.getName());
 	
 	public ParseNode(String ... args) {
 		super(args);
@@ -13,19 +19,17 @@ public class ParseNode extends Node {
 	@Override
 	public String execute(Message obj) {
 
-		if(obj == null) return error;
-		
 		Document document = ((XMLMessage)obj).getDocument();
 		
-		if(document == null) return error;
-
 		try {
 			String parsedMessage = executeQuery(document.toXML());
-//			((XMLMessage) obj).setText(parsedMessage);
+			Document doc = XMLBuilder.build(parsedMessage);
+			document.appendChild(doc);
 			return success;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return error;
+			logger.log(Level.SEVERE, "Could not parse document", e);
 		}
+		
+		return error;
 	}
 }
