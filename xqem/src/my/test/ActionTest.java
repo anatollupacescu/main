@@ -5,11 +5,11 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import junit.framework.TestCase;
-import net.trivial.wf.Workflow;
 
 import org.apache.commons.io.IOUtils;
 
 import core.model.message.XMLMessage;
+import core.wf.Workflow;
 
 public class ActionTest extends TestCase {
 

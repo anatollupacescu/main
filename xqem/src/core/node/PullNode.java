@@ -6,8 +6,8 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Nodes;
-import core.datastore.impl.Datastore;
-import core.datastore.pull.Query;
+import core.datastore.Cassandra;
+import core.datastore.Query;
 import core.model.message.XMLMessage;
 import core.node.parent.Node;
 
@@ -44,12 +44,12 @@ public class PullNode extends Node implements Action{
 		
 		Query[] queries = getQueriesFromDocument(document);
 		
-		Datastore ds = Datastore.getInstance();
+		Cassandra ds = Cassandra.getInstance();
 		
 		String xml = null;
 		
 		try {
-			xml = ds.queryXML(queries);
+			xml = ds.executeQuery(queries);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -65,22 +65,35 @@ public class PullNode extends Node implements Action{
 		int queryIndex = 0;
 		
 		for (int i = 0; i < nodes.size(); i++) {
-
+			
 			Element node = (Element) nodes.get(i);
+			
+			String key = node.getAttributeValue("key");
+			String columns = node.getAttributeValue("columns");
+			
+			String[] keyArr = null;
+			String[] colArr = null;
+			
+			if(key != null) {
+				keyArr = key.split(",");
+			}
+			if(columns != null) {
+				colArr = columns.split(",");
+			}
+			
 			Elements elements = node.getChildElements();
-
-			Query query = new Query(node.getLocalName());
-
-			for (int j = 0; j < elements.size(); j++) {
-
+			
+			Query query = new Query(node.getLocalName(), keyArr, colArr);
+			
+			for(int j = 0; key==null && j < elements.size(); j++) {
+				
 				Element element = elements.get(j);
-
-				op operation = op.valueOf(element
-						.getAttributeValue("condition"));
-
+				
+				op operation = op.valueOf(element.getAttributeValue("condition"));
+				
 				String column = element.getLocalName();
 				String value = element.getValue();
-
+				
 				switch (operation) {
 				case EQ:
 					query.eq(column, value);
@@ -99,16 +112,9 @@ public class PullNode extends Node implements Action{
 					break;
 				}
 			}
-
-			String columsString = node.getAttributeValue("columns");
-			if (columsString != null) {
-				String[] columnArray = columsString.split(",");
-				query.columns(columnArray);
-			}
-
+			
 			queries[queryIndex++] = query;
 		}
 		return queries;
 	}
-
 }

@@ -1,4 +1,4 @@
-package net.trivial.wf;
+package core.wf;
 
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
@@ -120,18 +120,18 @@ public class Workflow {
 	
 	public void doProcess(Message object, Object... args) throws Exception {
 
-		String s = object.getState();
+		String currentState = object.getState();
 
-		Action p = actions.get(s);
+		Action action = actions.get(currentState);
 
-		if(p == null) throw new Exception("Action not found for state " + s);
+		if(action == null) throw new Exception("Action not found for state " + currentState);
 		
-		String t = p.execute(object, args);
+		String transitionCode = action.execute(object, args);
 
-		String ns = workflow.get(s, t);
+		String newState = workflow.get(currentState, transitionCode);
 
-		if (ns == null) return;
+		if (newState == null) return;
 
-		object.setState(ns);
+		object.setState(newState);
 	}
 }
