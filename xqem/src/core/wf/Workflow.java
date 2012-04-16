@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import core.model.Message;
-import core.node.Node;
+import core.node.GenericNode;
 
 public class Workflow {
 
@@ -27,7 +27,7 @@ public class Workflow {
 	private final static Logger logger = Logger.getLogger(Workflow.class.getName());
 	
 	private final StateMachine<String, String> workflow = new StateMachine<String, String>();
-	private final Map<String, Node> actions = new HashMap<String, Node>();
+	private final Map<String, GenericNode> actions = new HashMap<String, GenericNode>();
 	
 	private final String className;
 	public final String initialState;
@@ -59,7 +59,7 @@ public class Workflow {
 		/* getting the transitions, except for the last, ending state */
 		for (int i = 0; i < stateList.size() - 1; i++) {
 
-			Node action = null;
+			GenericNode action = null;
 			
 			String startState = stateList.get(i);
 			String stateNode = properties.getProperty(WORKFLOW_STATE_ACTION + startState);
@@ -82,7 +82,7 @@ public class Workflow {
 				try {
 					Class<?> clazz = Class.forName(stateNode);
 					Constructor<?> c = clazz.getConstructor(classArgTypes);
-					action = ((Node) c.newInstance(objectArgs));
+					action = ((GenericNode) c.newInstance(objectArgs));
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Could not create class for : " + stateNode + " with args : " + actionArgs, e);
 					throw new RuntimeException(e);
@@ -90,7 +90,7 @@ public class Workflow {
 			} else {
 				try {
 					Constructor<?> c = Class.forName(stateNode).getConstructor();
-					action = ((Node) c.newInstance());
+					action = ((GenericNode) c.newInstance());
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Could not create class for : " + stateNode, e);
 					throw new RuntimeException(e);
@@ -121,19 +121,23 @@ public class Workflow {
 
 		String currentState = object.getState();
 
-		Node action = actions.get(currentState);
+		GenericNode action = actions.get(currentState);
 
-		if(action == null) throw new Exception("Node not found for state " + currentState);
+		if (action == null) {
+			throw new RuntimeException("Node not found for state " + currentState);
+		}
 		
 		String transitionCode = action.execute(object);
 
+		if (GenericNode.error.equals(transitionCode)) {
+			throw new RuntimeException("Error returned by " + currentState);
+		}
+
 		String newState = workflow.get(currentState, transitionCode);
 
-		if (newState == null) return;
+		if (newState == null)
+			return;
 
-		if (Node.error.equals(newState)) {
-			throw new Exception("Error returned by " + currentState);
-		}
 		object.setState(newState);
 	}
 }

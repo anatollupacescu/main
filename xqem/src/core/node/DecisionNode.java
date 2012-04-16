@@ -8,7 +8,7 @@ import core.misc.XMLBuilder;
 import core.model.Message;
 import core.model.XMLMessage;
 
-public class DecisionNode extends Node {
+public class DecisionNode extends GenericNode {
 
 	private final static Logger logger = Logger.getLogger(DecisionNode.class.getName());
 	

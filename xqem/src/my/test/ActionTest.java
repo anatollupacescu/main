@@ -16,8 +16,9 @@ public class ActionTest extends TestCase {
 		Workflow dwf = new Workflow("src\\config.properties");
 		
 		XMLMessage message = new XMLMessage(dwf.initialState, readFile("src\\resources\\request.xml"));
-		dwf.doProcess(message);
-		dwf.doProcess(message);
+		while(true) {
+			dwf.doProcess(message);
+		}
 	}
 	
 	static String readFile(String filename) {

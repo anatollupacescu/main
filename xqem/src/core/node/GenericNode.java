@@ -19,7 +19,7 @@ import core.model.Message;
 
 import ch.ethz.mxquery.xqj.MXQueryXQDataSource;
 
-public abstract class Node {
+public abstract class GenericNode {
 
 	public static final String error="error";
 	public static final String success="success";
@@ -28,7 +28,7 @@ public abstract class Node {
 	
 	protected final String query;
 	
-	public Node(String ... args) {
+	public GenericNode(String ... args) {
 		XQConnection conn = null;
 		String content = null;
 		

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.Node;
 import nu.xom.Nodes;
 import core.datastore.Cassandra;
 import core.datastore.Query;
@@ -14,14 +15,14 @@ import core.misc.XMLBuilder;
 import core.model.Message;
 import core.model.XMLMessage;
 
-public class PullNode extends Node {
+public class PullNode extends GenericNode {
 
 	private static enum op { EQ, LTE, LT, GTE, GT };
 	
 	private final static Logger logger = Logger.getLogger(PullNode.class.getName());
 	
-	public PullNode(String ... args) {
-		super(args);
+	public PullNode() {
+		super(new String[] {});
 	}
 
 	@Override
@@ -39,7 +40,12 @@ public class PullNode extends Node {
 
 			String xml = ds.executeQuery(queries);
 			Document doc = XMLBuilder.build(xml);
-			document.appendChild(doc);
+			
+			Node response = doc.getChild(0);
+			for(int i=0; i < response.getChildCount(); i++) {
+				Node node = response.getChild(i).copy();
+				document.getRootElement().appendChild(node);
+			}
 			
 			return success;
 		} catch (Exception e) {
@@ -104,7 +110,9 @@ public class PullNode extends Node {
 					break;
 				}
 			}
-
+			/*remove the retrieved child*/
+//			((Element)document.getChild(0)).removeChild(node);
+			node.detach();
 			queries[queryIndex++] = query;
 		}
 		return queries;

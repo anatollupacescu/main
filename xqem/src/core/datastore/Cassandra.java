@@ -97,7 +97,7 @@ public class Cassandra {
 
 		Writer stream = new StringWriter();
 		XMLStreamWriter xtw = xof.createXMLStreamWriter(stream);
-
+		xtw.writeStartElement("response");
 		for (Query q : qs) {
 
 			Rows<String, String, String> rows = null;
@@ -130,7 +130,7 @@ public class Cassandra {
 				xtw.writeEndElement();
 			}
 		}
-
+		xtw.writeEndElement();
 		xtw.flush();
 		xtw.close();
 		

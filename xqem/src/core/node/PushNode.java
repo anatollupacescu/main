@@ -13,12 +13,12 @@ import core.misc.Const;
 import core.model.Message;
 import core.model.XMLMessage;
 
-public class PushNode extends Node {
+public class PushNode extends GenericNode {
 
 	private final static Logger logger = Logger.getLogger(PushNode.class.getName());
 	
-	public PushNode(String ... args) {
-		super();
+	public PushNode() {
+		super(new String[] {});
 	}
 
 	@Override
@@ -30,7 +30,6 @@ public class PushNode extends Node {
 		
 		return error;
 	}
-
 	
 	private boolean pushData(Document document) {
 		
@@ -58,9 +57,14 @@ public class PushNode extends Node {
 				ds.addInsertion(m, key, column, value);
 				
 				logger.log(Level.INFO, "inserted key " + key + " column " + column +" value " + value);
+				
 			}
+			
+			document.removeChild(node);
 		}
 		
+		m.execute();
+
 		return false;
 		
 	}
