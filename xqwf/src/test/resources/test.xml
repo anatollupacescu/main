@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<users>
+		<user key="tolea27">
+			<name>Tolea</name>
+			<age>27</age>
+		</user>
+		<user key="pavel31">
+			<name>Pavel</name>
+			<age>31</age>
+		</user>
+	</users>
+	
+	<order key="order1">
+		<item key="item1">
+			<name>Orbit</name>
+			<qty>2</qty>
+		</item>
+		<item key="item1">
+			<name>Dirol</name>
+			<qty>5</qty>
+		</item>
+	</order>
+	
+	<list>
+		<item>item1</item>
+		<item>item2</item>
+	</list>
+	
+	<param xpath="//*">users</param>
+	
+</root>
