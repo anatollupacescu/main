@@ -2,4 +2,7 @@ projects commited:
         - discussion
         - warehouseApp
         - xqem
+	- xqwf (commited on May 10th)
+		requires manual installation of the mxquery.jar:
 
+		mvn install:install-file -Dfile=${location}/mxquery.jar -DgroupId=mxquery -DartifactId=mxquery -Dversion=0.3

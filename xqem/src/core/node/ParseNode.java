@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Node;
-import nu.xom.Nodes;
 import core.misc.XMLBuilder;
 import core.model.Message;
 import core.model.XMLMessage;
