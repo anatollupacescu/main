@@ -1,4 +1,4 @@
-package core.helper;
+package net.xqwf.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -11,8 +11,8 @@ import javax.xml.xquery.XQSequence;
 
 import ch.ethz.mxquery.xqj.MXQueryXQDataSource;
 
+import net.xqwf.Const;
 import nu.xom.Document;
-import core.Const;
 
 public class XQueryHelper {
 

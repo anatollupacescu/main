@@ -1,4 +1,4 @@
-package core;
+package net.xqwf;
 
 public interface Const {
 

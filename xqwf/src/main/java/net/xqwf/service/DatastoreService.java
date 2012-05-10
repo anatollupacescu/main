@@ -1,8 +1,13 @@
-package core.helper;
+package net.xqwf.service;
 
 import java.util.List;
 
 import me.prettyprint.hector.api.mutation.Mutator;
+import net.xqwf.Const;
+import net.xqwf.datastore.Cassandra;
+import net.xqwf.datastore.Query;
+import net.xqwf.helper.DocumentHelper;
+import net.xqwf.helper.XMLHelper;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
@@ -11,13 +16,10 @@ import nu.xom.Nodes;
 
 import org.apache.log4j.Logger;
 
-import core.Const;
-import core.datastore.Cassandra;
-import core.datastore.Query;
 
-public class Datastore {
+public class DatastoreService {
 
-	private final static Logger logger = Logger.getLogger(Datastore.class.getName());
+	private final static Logger logger = Logger.getLogger(DatastoreService.class.getName());
 	
 	public static Nodes pull(Nodes nodes) throws Exception { // retrieve
 

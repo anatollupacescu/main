@@ -1,7 +1,7 @@
 <request>
     
-    {$document/request/name)}
-    {$document/request/pass)}
+    {$document/request/name}
+    {$document/request/pass}
     
     <_next>
         <stringValue name="name">{data($document/request/name)}</stringValue>

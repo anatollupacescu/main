@@ -1,4 +1,4 @@
-package core.datastore;
+package net.xqwf.datastore;
 
 import me.prettyprint.cassandra.model.IndexedSlicesQuery;
 import me.prettyprint.hector.api.query.MultigetSliceQuery;

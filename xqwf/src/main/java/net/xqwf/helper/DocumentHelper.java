@@ -1,10 +1,12 @@
-package core.helper;
+package net.xqwf.helper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.xqwf.Const;
+import net.xqwf.datastore.Query;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -15,9 +17,6 @@ import nu.xom.ParsingException;
 
 import org.apache.log4j.Logger;
 
-import core.Const;
-import core.datastore.Query;
-
 public class DocumentHelper {
 
 	public enum Condition { EQ, LTE, LT, GTE, GT };
@@ -25,6 +24,11 @@ public class DocumentHelper {
 	private final static Logger logger = Logger.getLogger(DocumentHelper.class.getName());
 	
 	private final static Builder parser = new Builder();
+	
+	public static Document createEmptyDocument() {
+		Element element = new Element(Const.REQUEST);
+		return new nu.xom.Document(element);
+	}
 	
 	public static Document createDocumentFromString(String xml) {
 		try {
@@ -139,15 +143,5 @@ public class DocumentHelper {
 			queries.add(query);
 		}
 		return queries;
-	}
-
-	public static void copyNodes(Document document, Document processedDocument, String keepQuery) {
-		
-		Nodes nodesToKeep = document.query(keepQuery);
-		
-		if(nodesToKeep.size() > 0) {
-			DocumentHelper.appendNodes(nodesToKeep, processedDocument);
-			logger.debug(nodesToKeep.size() + " has been kept back for next node");
-		}
 	}
 }

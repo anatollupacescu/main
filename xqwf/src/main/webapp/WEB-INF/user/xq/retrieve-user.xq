@@ -7,4 +7,7 @@
 
 <login_attempt action="retrieve" columns="count" key="{data($document/request/name)}" />
 
+<_next>
+    <code>success</code>
+</_next>
 </request>

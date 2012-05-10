@@ -1,7 +1,6 @@
-package my;
+package net.xqwf.service;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,50 +8,35 @@ import java.util.Map;
 
 import javax.xml.xquery.XQException;
 
+import net.xqwf.Const;
+import net.xqwf.helper.DocumentHelper;
+import net.xqwf.helper.MiscHelper;
+import net.xqwf.helper.XMLHelper;
+import net.xqwf.helper.XQueryHelper;
+import net.xqwf.model.DocumentWrapper;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
 import nu.xom.ParsingException;
-import nu.xom.Serializer;
 import nu.xom.ValidityException;
 
 import org.apache.log4j.Logger;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
 import org.springframework.webflow.core.collection.LocalParameterMap;
 
-import core.Const;
-import core.helper.Datastore;
-import core.helper.DocumentHelper;
-import core.helper.MiscHelper;
-import core.helper.XMLHelper;
-import core.helper.XQueryHelper;
+public class DocumentService {
 
-public class XQWFDocument implements Serializable {
-
-	private final static Logger logger = Logger.getLogger(XQWFDocument.class.getName());
+	private final static Logger logger = Logger.getLogger(DocumentService.class.getName());
 	
-	private final static String path = "C:\\Users\\Anatol\\workspace\\xqwf\\src\\main\\webapp\\WEB-INF\\";
+	private final static String path = "c:\\Users\\Anatol\\git\\main\\xqwf\\src\\main\\webapp\\WEB-INF\\";
 	private final static String error = "error";
 	
-	private static final long serialVersionUID = 1L;
-	
-	private Document document = null;
-	
-	public XQWFDocument() throws ValidityException, ParsingException, IOException {
-		document = createEmptyDocument();
-	}
-	
-	private Document createEmptyDocument() {
-		Element element = new Element("request");
-		return new Document(element);
-	}
-	
-	public void parseSubmit(LocalParameterMap map, String list) throws ValidityException, ParsingException, IOException {
+	public static DocumentWrapper createDocumentFromSubmit(LocalParameterMap map, String list) throws ValidityException, ParsingException, IOException {
 		
-		if(list == null || map.isEmpty()) return;
+		if(list == null || map.isEmpty()) return null;
 		
-		document = createEmptyDocument();
+		Document document = DocumentHelper.createEmptyDocument();
 		
 		for (String attributeName : list.split(",")) {
 			String attributeValue = map.get(attributeName);
@@ -63,9 +47,18 @@ public class XQWFDocument implements Serializable {
 				logger.debug("[parseSubmit] added to document: " + attributeName + "=" + attributeValue);
 			}
 		}
+		
+		DocumentWrapper wrapper = new DocumentWrapper();
+		wrapper.setDocument(document);
+		
+		return wrapper;
 	}
-	
-	public void prepareView(LocalAttributeMap view) {
+
+	public void prepareView(LocalAttributeMap view, final DocumentWrapper documentWrapper) {
+		
+		if(documentWrapper == null) return;
+		
+		Document document = documentWrapper.getDocument();
 		
 		Nodes stringValues = document.query("//_next/stringValue");
 		
@@ -137,9 +130,11 @@ public class XQWFDocument implements Serializable {
 		}
 	}
 	
-	public String executeQuery(String queryFileName) {
+	public String executeQuery(String queryFileName, final DocumentWrapper documentWrapper) {
 		
-		if(queryFileName == null) return error;
+		if(queryFileName == null || documentWrapper == null) return error;
+		
+		Document document = documentWrapper.getDocument();
 		
 		logger.debug("[executeQuery] file name: " + queryFileName);
 		logger.debug("[executeQuery] initial document: " + XMLHelper.format(document));
@@ -150,7 +145,9 @@ public class XQWFDocument implements Serializable {
 		
 		if(queryContent == null) return error;
 		
-		Document processedDocument = null;
+		nu.xom.Document processedDocument = null;
+		
+		String code = error;
 		
 		try {
 			
@@ -166,18 +163,28 @@ public class XQWFDocument implements Serializable {
 				logger.debug("[executeQuery] done pulling data");
 			}
 			
+			code = getResultCode(processedDocument);
+			
+			documentWrapper.setDocument(processedDocument);
+			
 		} catch (XQException e) {
 			logger.error("[executeQuery] Error processing xquery", e);
 		} catch (Exception e) {
 			logger.error("[executeQuery] Error executing", e);
 		}
+
+		logger.debug("[] returning code " + code);
 		
-		if(processedDocument == null) return error;
+		return code;
+	}
+	
+	private String getResultCode(Document document) {
+
+		if(document == null) return error;
 		
-		Nodes nodes = processedDocument.query("//_next/code");
+		Nodes nodes = document.query("//_next/code");
 		
 		if(nodes.size() > 0) {
-			document = processedDocument;
 			Node node = nodes.get(0);
 			String code = node.getValue();
 			if(code != null) {
@@ -192,7 +199,9 @@ public class XQWFDocument implements Serializable {
 		return error;
 	}
 	
-	public boolean pushData(Document document) {
+	private boolean pushData(Document document) {
+		
+		if(document == null) return false;
 		
 		String persistQuery = Const.PERSIST_QUERY;
 		
@@ -202,7 +211,7 @@ public class XQWFDocument implements Serializable {
 		
 		if(nodes.size() > 0) {
 			
-			pushedCount = Datastore.push(nodes);
+			pushedCount = DatastoreService.push(nodes);
 			
 			if(pushedCount > 0) {
 				DocumentHelper.removeNodes(Const.PERSIST_QUERY, document);
@@ -215,15 +224,17 @@ public class XQWFDocument implements Serializable {
 		return pushedCount > 0;
 	}
 	
-	public boolean pullData(Document doc) throws Exception {
+	private boolean pullData(Document document) throws Exception {
 		
-		Nodes nodes = doc.query(Const.RETRIEVE_QUERY);
+		if(document == null) return false;
+		
+		Nodes nodes = document.query(Const.RETRIEVE_QUERY);
 		
 		int appendedCount = 0;
 		
 		if(nodes.size() > 0) {
 			
-			Nodes pulledNodes = Datastore.pull(nodes);
+			Nodes pulledNodes = DatastoreService.pull(nodes);
 			
 			if(pulledNodes.size() > 0) {
 				
@@ -239,15 +250,5 @@ public class XQWFDocument implements Serializable {
 			logger.debug("[pullData] Noting to retrieve");
 		
 		return appendedCount > 0;
-	}
-	
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		Serializer serializer = new Serializer(out);
-		serializer.write(document);
-		serializer.flush();
-	}
-
-	private void readObject(java.io.ObjectInputStream in) throws IOException {
-			document = DocumentHelper.createDocumentFromStream(in);
 	}
 }

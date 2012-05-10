@@ -1,13 +1,14 @@
-package core.helper;
+package net.xqwf.helper;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.xqwf.Const;
+
 import org.apache.commons.io.IOUtils;
 
-import core.Const;
 
 public class MiscHelper {
 

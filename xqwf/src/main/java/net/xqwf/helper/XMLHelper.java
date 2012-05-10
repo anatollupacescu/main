@@ -1,4 +1,4 @@
-package core.helper;
+package net.xqwf.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

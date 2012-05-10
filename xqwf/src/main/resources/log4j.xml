@@ -36,7 +36,7 @@
 		<level value="info" />
 	</logger>
 
-	<logger name="my">
+	<logger name="net.xqwf">
 		<level value="debug" />
 		<appender-ref ref="CONTROLLER" />
 	</logger>
