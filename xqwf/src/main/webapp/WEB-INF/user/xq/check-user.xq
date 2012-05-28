@@ -5,14 +5,14 @@
     <log action="persist" key="user_login_{data($document/request/name)}_{fn:current-dateTime()}" />
     
     {
-        let $attemptCount := fn:empty($document/request/login_attempt)
+        let $attemptCount := 0 = fn:string-length(data($document/request/login_attempt/attemptCount))
         return if($attemptCount eq true()) then
-            <login_attempt action="persist" key="{data($document/request/name)}" >
-                <count>1</count>
+            <login_attempt action="persist" key="{data($document/request/name)}_login_attempt" >
+                <attemptCount>1</attemptCount>
             </login_attempt>
         else 
-            <login_attempt action="persist" key="{data($document/request/name)}" >
-                <count>{data($document/request/login_attempt) + 1}</count>
+            <login_attempt action="persist" key="{data($document/request/name)}_login_attempt" >
+                <attemptCount>{data($document/request/login_attempt/attemptCount) + 1}</attemptCount>
             </login_attempt>
     }
  

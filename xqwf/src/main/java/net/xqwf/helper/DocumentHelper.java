@@ -2,11 +2,20 @@ package net.xqwf.helper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import net.xqwf.Const;
-import net.xqwf.datastore.Query;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -17,10 +26,13 @@ import nu.xom.ParsingException;
 
 import org.apache.log4j.Logger;
 
+import com.nosql.datastore.model.Entity;
+import com.nosql.datastore.model.Query;
+import com.nosql.datastore.model.QueryCondition;
+import com.nosql.datastore.model.QueryOperator;
+
 public class DocumentHelper {
 
-	public enum Condition { EQ, LTE, LT, GTE, GT };
-	
 	private final static Logger logger = Logger.getLogger(DocumentHelper.class.getName());
 	
 	private final static Builder parser = new Builder();
@@ -75,14 +87,81 @@ public class DocumentHelper {
 		return i;
 	}
 	
-	public static List<Query> getQueriesFromNodes(Nodes nodes) {
+	public static Query[] nodesToQueryArray(Nodes nodes) {
+		List<Query> queryList = getQueriesFromNodes(nodes);
+		Query[] queryArray = new Query[queryList.size()];
+		return queryList.toArray(queryArray);
+	}
+
+	public static Node[] entityArrayToNodeArray(Entity[] entities) throws XMLStreamException {
+
+		XMLOutputFactory xof = XMLOutputFactory.newInstance();
+
+		Writer stream = new StringWriter();
+		XMLStreamWriter xtw = xof.createXMLStreamWriter(stream);
+		xtw.writeStartElement(Const.RESPONSE);
+
+		for (Entity entity : entities) {
+			Iterator<Entry<String, String>> iterator = entity.getMap().entrySet().iterator();
+			xtw.writeStartElement(entity.getType());
+			xtw.writeAttribute("key", entity.key);
+			while (iterator.hasNext()) {
+				Entry<String, String> entry = iterator.next();
+				xtw.writeStartElement(entry.getKey());
+				xtw.writeCharacters(entry.getValue());
+				xtw.writeEndElement();
+			}
+			xtw.writeEndElement();
+		}
+		
+		xtw.writeEndElement();
+		xtw.flush();
+		xtw.close();
+		
+		String xml = stream.toString();
+		
+		Document document = DocumentHelper.createDocumentFromString(xml);
+		Element rootElement = document.getRootElement();
+		
+		int size = document.getRootElement().getChildCount();
+		Node[] nodes = new Node[size];
+
+		for(int i = 0; i < size; i++) {
+			nodes[i] = rootElement.getChild(i).copy();
+		}
+		
+		return nodes;
+	}
+
+	public static Entity[] nodesToEntityArray(Nodes nodes) {
+		int size = nodes.size();
+		Entity[] entities = new Entity[nodes.size()];
+		Map<String,String> map = null;
+		for(int i = 0; i < size; i++) {
+			Element node = (Element)nodes.get(i);
+			String key = node.getAttributeValue(Const.KEY);
+			int cc = node.getChildCount();
+			map = new HashMap<String, String>();
+			map.put(Const.TYPE, node.getLocalName());
+			for(int j = 0; j < cc; j++) {
+				Element element = (Element)node.getChild(j);
+				String name = element.getLocalName();
+				String value = element.getValue();
+				if(name != null && value != null) {
+					map.put(name, value);
+				}
+			}
+			entities[i] = new Entity(key, map); 
+		}
+		return entities;
+	}
+	
+	private static List<Query> getQueriesFromNodes(Nodes nodes) {
 
 		List<Query> queries = new ArrayList<Query>();
 
 		for (int i = 0; i < nodes.size(); i++) {
-
 			Element node = (Element) nodes.get(i);
-
 			String action = node.getAttributeValue(Const.ACTION);
 			
 			if(action == null || !Const.RETRIEVE.equals(action)) continue;
@@ -110,37 +189,31 @@ public class DocumentHelper {
 				continue;
 			}
 			
-			Query query = new Query(node.getLocalName(), keyArr, colArr);
-
-			for (int j = 0; key == null && j < elements.size(); j++) {
-
-				Element element = elements.get(j);
-
-				Condition operation = Condition.valueOf(element.getAttributeValue(Const.CONDITION));
-
-				String column = element.getLocalName();
-				String value = element.getValue();
-
-				switch (operation) {
-				case EQ:
-					query.eq(column, value);
-					break;
-				case GT:
-					query.gt(column, value);
-					break;
-				case GTE:
-					query.gte(column, value);
-					break;
-				case LT:
-					query.lt(column, value);
-					break;
-				case LTE:
-					query.lte(column, value);
-					break;
+			String type = node.getLocalName();
+			
+			Query query = null;
+			
+			if(keyArr != null) {
+				for(String k : keyArr) {
+					query = new Query(k, type, colArr);
+					queries.add(query);
 				}
+			} else {
+				
+				QueryCondition[] queryConditions = new QueryCondition[elements.size()];
+
+				for (int j = 0; key == null && j < elements.size(); j++) {
+					Element element = elements.get(j);
+					QueryOperator operation = QueryOperator.valueOf(element.getAttributeValue(Const.CONDITION));
+					String column = element.getLocalName();
+					String value = element.getValue();
+					QueryCondition qc = new QueryCondition(column, operation, value);
+					queryConditions[j] = qc;
+				}
+				query = new Query(type, colArr, queryConditions);
+				queries.add(query);
 			}
 			node.detach();
-			queries.add(query);
 		}
 		return queries;
 	}

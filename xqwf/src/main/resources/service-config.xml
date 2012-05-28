@@ -9,6 +9,20 @@
            http://www.springframework.org/schema/webflow-config
            http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd">	
  
- 	<bean id="service" class="net.xqwf.service.DocumentService" />
+ 	<bean id="daoFactory" class="com.nosql.datastore.CassandraDaoFactory">
+	 	<property name="cluster" value="Test cluster"/>
+	 	<property name="keyspace" value="xqwf"/>
+	 	<property name="host" value="127.0.0.1"/>
+	 	<property name="port" value="9160"/>
+ 	</bean>
+ 
+ 	<bean id="datastoreService" class="com.nosql.datastore.CassandraDatastoreService">
+ 		<property name="cassandraDaoFactory" ref="daoFactory"/>
+ 	</bean>
+ 
+ 	<bean id="service" class="net.xqwf.DocumentService">
+ 		<property name="datastoreService" ref="datastoreService"/>
+ 		<property name="path" value="/home/anatol/git/main/xqwf/src/main/webapp/WEB-INF/"/>
+ 	</bean>
 
  </beans>

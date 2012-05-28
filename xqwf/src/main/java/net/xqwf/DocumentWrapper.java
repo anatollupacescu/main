@@ -1,4 +1,4 @@
-package net.xqwf.model;
+package net.xqwf;
 
 import java.io.IOException;
 import java.io.Serializable;

@@ -6,7 +6,7 @@
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
 	start-state="show-form">
 
-	<var name="doc" class="net.xqwf.model.DocumentWrapper" />
+	<var name="doc" class="net.xqwf.DocumentWrapper" />
 
 	<view-state id="show-form" view="jsp/form.jsp">
 		<on-render>

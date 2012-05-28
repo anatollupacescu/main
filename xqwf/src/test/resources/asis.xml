@@ -15,6 +15,10 @@
 		<count condition="GT">3</count>
 	</order>
 
+	<order action="retrieve" columns="code,price">
+		<date condition="GT">2010-10-02</item>
+	</order>
+	
 	<_next>
 		<code>yes</code>
 		<stringValue name="numele">vasea</stringValue>
