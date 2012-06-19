@@ -18,10 +18,10 @@
  
  	<bean id="datastoreService" class="com.nosql.datastore.CassandraDatastoreService">
  		<property name="cassandraDaoFactory" ref="daoFactory"/>
+ 		<property name="cleanupAtStartup" value="true" />
  	</bean>
  
  	<bean id="service" class="net.xqwf.DocumentService">
- 		<property name="datastoreService" ref="datastoreService"/>
  		<property name="path" value="/home/anatol/git/main/xqwf/src/main/webapp/WEB-INF/"/>
  	</bean>
 

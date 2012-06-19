@@ -13,6 +13,7 @@
  
     <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF">
     	<webflow:flow-location id="signup.htm" path="user/user.xml" />
+    	<webflow:flow-location id="simple" path="simple/simple.xml" />
 	</webflow:flow-registry>
  
 	<bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
@@ -35,7 +36,7 @@
 		<property name="defaultEncoding" value="utf-8"/>
 		<property name="basenames">
 			<list>
-				<value>WEB-INF/user/messages</value>
+				<value>WEB-INF/messages</value>
 			</list>
 		</property>
 	</bean>

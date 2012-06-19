@@ -1,3 +1,3 @@
 <%
-response.sendRedirect("reset");
+response.sendRedirect("simple");
 %>

@@ -2,12 +2,15 @@ package net.xqwf;
 
 public interface Const {
 
-	public static final String _NEXT = "//_next";
+	public final static String ERROR = "error";
+	public final static String NAME = "name";
 	
-	public static final String STRING_VALUE = _NEXT + "/stringValue";
-	public static final String STRING_LIST = _NEXT + "/stringList";
-	public static final String OBJECT_LIST = _NEXT + "/objectList";
-	public static final String NEXT_CODE = _NEXT + "/code";
+	public static final String NEXT = "//_next";
+	
+	public static final String STRING_VALUE = NEXT + "/stringValue";
+	public static final String STRING_LIST = NEXT + "/stringList";
+	public static final String OBJECT_LIST = NEXT + "/objectList";
+	public static final String NEXT_CODE = NEXT + "/code";
 	
 	public static final String REQUEST = "request";
 	public static final String RESPONSE = "response";
@@ -33,4 +36,8 @@ public interface Const {
 	
 	public static final String DOCUMENT = "document";
 	public static final String XQUERY_PREFIX = "declare variable $"+DOCUMENT+" external;\r\n";
+
+	public static final String TRANSACTION_BEGIN = "//transaction[@" + ACTION + "='begin']";
+	public static final String TRANSACTION_COMMIT = "//transaction[@" + ACTION + "='commit']";
+	public static final String TRANSACTION_ROLLBACK = "//transaction[@" + ACTION + "='rollback']";;;
 }
