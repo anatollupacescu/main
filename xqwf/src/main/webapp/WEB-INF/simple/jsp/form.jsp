@@ -1,8 +1,14 @@
-<%@include file="../../taglibs.jsp" %>
+<%@page contentType="text/html;charset=UTF-8"%>
+<%@page pageEncoding="UTF-8"%>
+
+<%@page session="false" %>
+
+<%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <html>
 <head>
-	<META http-equiv="Content-Type"�content="text/html;charset=UTF-8"/>
+	<META http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 	<title>Simple</title>
 	<link rel="stylesheet" href="<c:url value="/resources/blueprint/screen.css" />" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="<c:url value="/resources/blueprint/print.css" />" type="text/css" media="print">
@@ -33,6 +39,24 @@
 			</fieldset>
 		</form>
 	</div>
+	<TABLE>
+	<c:forEach var="ri" items="${rItems}">
+    <TR>
+    	<TD>No</TD>
+        <c:forEach items="${ri}" var="entry">
+			<TH><c:out value="${entry.key}" /></TH>
+		</c:forEach>
+    </TR>
+	  </c:forEach>
+	<c:forEach var="ri" items="${rItems}" varStatus="loop">
+        <TR>
+        <TD><c:out value="${loop.count}" /></TD>
+	        <c:forEach items="${ri}" var="entry" >
+				<TD><c:out value="${entry.value}" /></TD>
+			</c:forEach>
+        </TR>
+      </c:forEach>
+      </TABLE>
 </div>
 </body>
 </html>

@@ -12,7 +12,7 @@
     <webflow:flow-executor id="flowExecutor" />
  
     <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF">
-    	<webflow:flow-location id="signup.htm" path="user/user.xml" />
+    	<webflow:flow-location id="user" path="user/user.xml" />
     	<webflow:flow-location id="simple" path="simple/simple.xml" />
 	</webflow:flow-registry>
  

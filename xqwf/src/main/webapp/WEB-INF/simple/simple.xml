@@ -4,17 +4,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
-	start-state="begin">
+	start-state="show-form">
 
 	<var name="doc" class="net.xqwf.DocumentWrapper" />
 
-	<action-state id="begin">
-		<evaluate expression="doc.setDatastoreService(datastoreService)" />
-		<transition to="show-form" />
-	</action-state>
-	
-	<view-state id="show-form" view="form.jsp">
+	<view-state id="show-form" view="jsp/form.jsp">
 		<on-render>
+			<evaluate expression="service.executeQuery('simple/retrieve-item-names.xq',doc)" />
+			<evaluate expression="service.executeQuery('simple/parse-item-names.xq',doc)" />
 			<evaluate expression="service.prepareView(viewScope,doc)"/>
 		</on-render>
 		<transition on="submit" to="validate-input" />

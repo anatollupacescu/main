@@ -24,8 +24,6 @@ import nu.xom.Node;
 import nu.xom.Nodes;
 import nu.xom.ParsingException;
 
-import org.apache.log4j.Logger;
-
 import com.nosql.datastore.model.Entity;
 import com.nosql.datastore.model.Query;
 import com.nosql.datastore.model.QueryCondition;
@@ -33,8 +31,6 @@ import com.nosql.datastore.model.QueryOperator;
 
 public class DocumentHelper {
 
-	private final static Logger logger = Logger.getLogger(DocumentHelper.class.getName());
-	
 	private final static Builder parser = new Builder();
 	
 	public static Document createEmptyDocument() {
@@ -181,14 +177,14 @@ public class DocumentHelper {
 			}
 
 			Elements elements = node.getChildElements();
-
+/*
 			int childCount = elements.size();
 			
 			if(keyArr == null && childCount == 0) {
 				logger.warn("Either key or query params should be provided for query with index " + i);
 				continue;
 			}
-			
+			*/
 			String type = node.getLocalName();
 			
 			Query query = null;
@@ -200,9 +196,11 @@ public class DocumentHelper {
 				}
 			} else {
 				
-				QueryCondition[] queryConditions = new QueryCondition[elements.size()];
+				int size = elements.size();
+				
+				QueryCondition[] queryConditions = new QueryCondition[size];
 
-				for (int j = 0; key == null && j < elements.size(); j++) {
+				for (int j = 0; j < size; j++) {
 					Element element = elements.get(j);
 					QueryOperator operation = QueryOperator.valueOf(element.getAttributeValue(Const.CONDITION));
 					String column = element.getLocalName();
