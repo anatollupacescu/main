@@ -1,0 +1,58 @@
+column families:
+
+	- entity
+		type
+	- transaction
+		all
+		commited
+	- write
+	- read
+	- delete
+
+Transaction CF:
+==============
+
+key			|column|		|column|
+-------------------------------------
+all			|13131313|		|13434343|
+commited	|13434343|
+
+Read CF:
+========
+
+key			|name|		|age|
+-------------------------------------
+tolea@g		|tolea|		|27|
+
+#
+
+key			|tolea@g|
+-------------------------------------
+13434343		-
+
+#
+
+key			|name|		|age|
+-------------------------------------
+13434343_tolea@g	name	age
+
+#################
+	
+actions
+
+	simple write - check if entity key is in read cf:
+		yes) throw exception(entity in transaction)
+		no)	 write to entity
+
+	simple read - check if entity key is in read cf
+		no) get entity(key,column)
+		yes) get transaction(commited,key) -> value
+			value = null get entity(key,column)
+			value != null get write(key,column)
+
+	transactional read - check if entity key is in read cf:
+		yes) throw exception(entity is in transaction)
+		no)	put read(key)
+			put transaction(transactionKey, key)
+			add column to transactionKey_key
+	
