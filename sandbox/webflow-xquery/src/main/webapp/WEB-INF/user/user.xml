@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
+	start-state="show-form">
+
+	<var name="doc" class="net.xqwf.DocumentWrapper" />
+
+	<view-state id="show-form" view="jsp/form.jsp">
+		<on-render>
+			<evaluate expression="service.prepareView(viewScope,doc)"/>
+		</on-render>
+		<transition on="submit" to="validate-input" />
+	</view-state>
+	
+	<action-state id="validate-input">
+		<on-entry>
+			<evaluate expression="service.createDocumentFromSubmit(requestParameters,'name,pass')" result="doc"/>
+		</on-entry>
+		<evaluate expression="service.executeQuery('user/xq/validate.xq',doc)"/>
+		<transition on="no" to="retrieve-user" />
+		<transition on="yes" to="show-form" />
+		<transition on="error" to="error" />
+	</action-state>
+	
+	<action-state id="retrieve-user">
+		<evaluate expression="service.executeQuery('user/xq/retrieve-user.xq',doc)" />
+		<transition on="success" to="check-user" />
+		<transition on="error" to="error" />
+	</action-state>
+	
+	<action-state id="check-user">
+		<evaluate expression="service.executeQuery('user/xq/check-user.xq',doc)" />
+		<transition on="yes" to="success" />
+		<transition on="no" to="show-form" />
+		<transition on="error" to="error" />
+	</action-state>
+	
+	<view-state id="success" view="jsp/success.jsp">
+		<on-render>
+			<evaluate expression="service.prepareView(viewScope,doc)"/>
+			<evaluate expression="service.executeQuery('user/xq/reset-counter.xq',doc)"/>
+		</on-render>
+	</view-state>
+	
+	<view-state id="error" view="jsp/error.jsp">
+		<on-render>
+			<set name="viewScope.error" value="'Could not process your request'"/>
+		</on-render>
+	</view-state>
+	
+</flow>
