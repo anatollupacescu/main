@@ -1,8 +1,7 @@
-projects commited:
-        - discussion
-        - warehouseApp
-        - xqem
-	- xqwf (commited on May 10th)
-		requires manual installation of the mxquery.jar:
-
-		mvn install:install-file -Dfile=${location}/mxquery.jar -DgroupId=mxquery -DartifactId=mxquery -Dversion=0.3
+Sandbox projects:
+	- antlr-resource-path: An attempt to create a parser for odata URI convensions
+	- cassandra-rest: Rest API over cassandra database
+	- discussion-site: A forum with a specific thread architecture
+	- random: Contains classes I currently experiment with
+	- warehouse-webapp: Simple spring MVC/JPA project
+	- webflow-xquery: Spring webflow project with xquery parsing service
