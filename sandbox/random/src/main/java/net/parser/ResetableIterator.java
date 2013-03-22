@@ -40,4 +40,9 @@ public class ResetableIterator implements Iterator<Character> {
 	public void remove() {
 		throw new UnsupportedOperationException();		
 	}
+	
+	@Override
+	public String toString() {
+		return (String)sequence.subSequence(index, sequence.length());
+	}
 }

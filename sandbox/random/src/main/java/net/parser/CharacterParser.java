@@ -18,6 +18,6 @@ public class CharacterParser implements Parser {
 
 	public boolean parse(Iterator<Character> iterator) {
 		Character inputChar = iterator.next();
-		return character != null ? character.equals(inputChar) : CharUtils.isAsciiAlpha(character.charValue());
+		return character != null ? character.equals(inputChar) : CharUtils.isAsciiAlpha(inputChar.charValue());
 	}
 }
