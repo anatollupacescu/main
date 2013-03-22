@@ -24,24 +24,8 @@ public class DynamicParser implements Parser {
 	}
 	
 	public boolean parse(Iterator<Character> iterator) {
-		return ensureStart(iterator) && ensureBody(iterator) && ensureEnd(iterator);
-	}
-	
-	private boolean ensureStart(Iterator<Character> iterator) {
-		return start.parse(iterator);
-	}
-
-	private boolean ensureBody(Iterator<Character> iterator) {
-		if (body == null) {
-			return body.parse(iterator);
-		}
-		return true;
-	}
-
-	private boolean ensureEnd(Iterator<Character> iterator) {
-		if (end == null) {
-			return end.parse(iterator);
-		}
-		return true;
+		return start.parse(iterator) && 
+				(body != null ? body.parse(iterator) : true) && 
+				(end != null ? end.parse(iterator) : true);
 	}
 }

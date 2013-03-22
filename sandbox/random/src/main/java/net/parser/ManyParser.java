@@ -11,7 +11,17 @@ public class ManyParser implements Parser {
 	}
 
 	public boolean parse(Iterator<Character> iterator) {
-		while(parser.parse(iterator));
+		if(parser.parse(iterator)) {
+			ResetableIterator resetable = (ResetableIterator)iterator;
+			while(true) {
+				int index = resetable.getIndex();
+				boolean result = parser.parse(iterator);
+				if (!result) {
+					resetable.reset(index);
+					return true;
+				}
+			}
+		}
 		return true;
 	}
 }

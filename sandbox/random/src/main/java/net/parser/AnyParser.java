@@ -8,7 +8,7 @@ public class AnyParser implements Parser {
 
 	final ImmutableList<Parser> parsers;
 	
-	public AnyParser(String[] string) {
+	public AnyParser(String... string) {
 		ImmutableList.Builder<Parser> builder = new ImmutableList.Builder<Parser>();
 		for(String s : string) {
 			builder.add(new StringParser(s));
@@ -16,7 +16,7 @@ public class AnyParser implements Parser {
 		parsers = builder.build();
 	}
 
-	public AnyParser(DynamicParser[] parser) {
+	public AnyParser(Parser... parser) {
 		ImmutableList.Builder<Parser> builder = new ImmutableList.Builder<Parser>();
 		for(Parser p : parser) {
 			builder.add(p);
@@ -25,7 +25,11 @@ public class AnyParser implements Parser {
 	}
 
 	public boolean parse(Iterator<Character> iterator) {
-		// TODO Auto-generated method stub
+		for(Parser parser : parsers) {
+			if(parser.parse(iterator)) {
+				return true;
+			}
+		}
 		return false;
 	}
 }

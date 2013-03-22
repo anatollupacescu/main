@@ -7,7 +7,7 @@ public class DynamicParserBuilder {
 	private Parser end;
 	
 	public DynamicParserBuilder start(Predefined pre) {
-		this.start = new PredefinedParser(pre);
+		this.start = pre.parser;
 		return this;
 	}
 	
@@ -21,12 +21,12 @@ public class DynamicParserBuilder {
 		return this;
 	}
 	
-	public DynamicParserBuilder start(DynamicParser parser) {
+	public DynamicParserBuilder start(Parser parser) {
 		this.start = parser;
 		return this;
 	}
 	
-	public DynamicParserBuilder start(DynamicParser ... parser) {
+	public DynamicParserBuilder start(Parser ... parser) {
 		this.start = new AnyParser(parser);
 		return this;
 	}
@@ -37,7 +37,7 @@ public class DynamicParserBuilder {
 		return this;
 	}
 
-	public DynamicParserBuilder body(DynamicParser parser) {
+	public DynamicParserBuilder body(Parser parser) {
 		this.body = parser;
 		return this;
 	}
@@ -47,7 +47,7 @@ public class DynamicParserBuilder {
 		return this;
 	}
 	
-	public DynamicParserBuilder any(DynamicParser ... parser) {
+	public DynamicParserBuilder any(Parser ... parser) {
 		this.body = new AnyParser(parser);
 		return this;
 	}
@@ -58,13 +58,13 @@ public class DynamicParserBuilder {
 	}
 	
 	public DynamicParserBuilder many(Predefined pre) {
-		this.body = new ManyParser(new PredefinedParser(pre));
+		this.body = new ManyParser(pre.parser);
 		return this;
 	}
 
-	public DynamicParserBuilder many(DynamicParser parser) {
+	public DynamicParserBuilder many(Parser parser) {
 		this.body = new ManyParser(parser);
-		return null;
+		return this;
 	}
 	
 	/*end*/
@@ -74,7 +74,7 @@ public class DynamicParserBuilder {
 	}
 
 	public DynamicParserBuilder end(Predefined pre) {
-		this.end = new PredefinedParser(pre);
+		this.end = pre.parser;
 		return this;
 	}
 	
@@ -83,26 +83,26 @@ public class DynamicParserBuilder {
 		return this;
 	}
 	
-	public DynamicParserBuilder end(DynamicParser parser) {
+	public DynamicParserBuilder end(Parser parser) {
 		this.end = parser;
 		return this;
 	}
 	
-	public DynamicParserBuilder end(DynamicParser ... parser) {
+	public DynamicParserBuilder end(Parser ... parser) {
 		this.end = new AnyParser(parser);
 		return this;
 	}
 
 	/*getters*/
-	public Parser getStart() {
+	Parser getStart() {
 		return start;
 	}
 	
-	public Parser getBody() {
+	Parser getBody() {
 		return body;
 	}
 	
-	public Parser getEnd() {
+	Parser getEnd() {
 		return end;
 	}
 	

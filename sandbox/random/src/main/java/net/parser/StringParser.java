@@ -2,16 +2,22 @@ package net.parser;
 
 import java.util.Iterator;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 public class StringParser implements Parser {
 
-	final String string;
+	final Character[] characters;
 	
 	public StringParser(String string) {
-		this.string = string;
+		this.characters = ArrayUtils.toObject(string.toCharArray());
 	}
 
 	public boolean parse(Iterator<Character> iterator) {
-		// TODO Auto-generated method stub
-		return false;
+		for(Character c : characters) {
+			if (!c.equals(iterator.next())) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
