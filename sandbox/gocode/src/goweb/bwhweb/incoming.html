@@ -1,0 +1,54 @@
+{{template "header" .page}}
+<script type="text/javascript" src="http://localhost:8080/css/jquery.jdpicker.js"></script>
+<script type="text/javascript">
+$(function() {
+    $('#date').change(function() {
+        $('#mainForm').submit();
+    });
+});
+</script>
+<div id="content-container">
+		<div id="section-navigation">
+			<ul>
+				<li></li>
+			</ul>
+		</div>
+		<div id="content">
+			<h1>Intrare</h1>
+			{{with .page}}
+				<h2 style="color:red">{{.Message}}</h2>
+			{{end}}
+			<p>
+			<form action="/incoming/add" method="POST" id="mainForm">
+				<div>
+					<input type="text" id="date" name="date" class="jdpicker" value="{{.Date}}"/>
+					<select name="pid">
+					{{range $val := .Products}}
+						<option value="{{$val.Id}}">{{$val.Name}}</option>
+					{{end}}
+					</select>
+					<input type="text" name="qty" rows="20" cols="80" />
+					<input type="text" name="price" rows="20" cols="80" />
+					<input type="submit" name="action" value="Save" >
+				</div>
+			</form>
+			</p>
+			{{if .IncomingProducts}}
+			<table>
+				<tr>
+					<th>Numele</th>
+					<th>Cantitate</th>
+					<th>Pret</th>
+					<th></th>
+				</tr>
+				{{range $v := .IncomingProducts}}
+					<tr>
+						<td>{{$v.Product.Name}}</td>
+						<td>{{$v.Qty}}</td>
+						<td>{{$v.Price}}</td>
+						<td><a href="/incoming/remove?id={{$v.Product.Id}}">Sterge</a></td>
+					</tr>
+				{{end}}
+			</table>
+			{{end}}
+{{template "footer"}}

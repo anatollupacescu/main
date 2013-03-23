@@ -1,0 +1,26 @@
+{{template "header" .page}}
+<div id="content-container">
+		<div id="section-navigation">
+			<ul>
+				<li></li>
+			</ul>
+		</div>
+		<div id="content">
+			<h1>Produsele</h1>
+			{{with .page}}
+				<h2 style="color:red">{{.Message}}</h2>
+			{{end}}
+			<p>
+			<form action="/product/add" method="POST" >
+				<div>
+					<input type="text" name="productName" rows="20" cols="80" />
+					<input type="submit" value="Save" >
+				</div>
+			</form>
+			</p>
+			<ul>
+			{{range $v := .Products}}
+				<li width="100">{{$v.Id}}) {{$v.Name}} &nbsp;<a href="/product/remove?id={{$v.Id}}">Sterge</a></li>
+			{{end}}
+			</ul>
+{{template "footer"}}

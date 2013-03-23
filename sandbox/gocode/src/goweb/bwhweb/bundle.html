@@ -1,0 +1,38 @@
+{{template "header" .page}}
+	<div id="content-container">
+			<div id="section-navigation">
+				<ul>
+					<li></li>
+				</ul>
+			</div>
+			<div id="content">
+			<h1>Retetele</h1>
+				{{with .page}}
+					<h2 style="color:red">{{.Message}}</h2>
+				{{end}}
+				<p>
+				<form action="/bundle/save" method="POST" >
+					<div>
+						<input type="text" name="name" value="{{.Name}}" rows="20" cols="80" />
+						<input type="submit" name="act" value="{{.Action}}" />
+						<input type="hidden" name="id" value = "{{.Id}}" />
+					</div>
+				</form>
+				</p>
+				{{if .Bundles}}
+				<table>
+					<tr>
+						<th>Id</th>
+						<th>Numele</th>
+						<th></th>
+					</tr>
+					{{range $v := .Bundles}}
+						<tr>
+							<td>{{$v.Id}}</td>
+							<td><a href="/bundleItem?id={{$v.Id}}">{{$v.Name}}</a></td>
+							<td><a href="/bundle/edit?id={{$v.Id}}">Editeaza</a></td>
+						</tr>
+					{{end}}
+				</table>
+				{{end}}
+{{template "footer"}}

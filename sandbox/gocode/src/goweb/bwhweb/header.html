@@ -1,0 +1,31 @@
+{{define "header"}}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>{{.Title}}</title>
+	<meta name="Description" content="Max Design - standards based web design, development and training" />
+	<meta name="robots" content="all, index, follow" />
+	<meta name="distribution" content="global" />
+	<link rel="shortcut icon" href="http://localhost:8080/css/favicon.ico" />
+	<link rel="stylesheet" href="http://localhost:8080/css/style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="http://localhost:8080/css/jdpicker.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<h1>
+			Warehouse
+		</h1>
+	</div>
+	<div id="navigation">
+		<ul>
+			<li><a href="/product">Producte</a></li>
+			<li><a href="/bundle">Retete</a></li>
+			<li><a href="/incoming/form">Intrari</a></li>
+			<li><a href="/outgoing/list">Iesiri</a></li>
+			<li><a href="/stoc/form">Stoc</a></li>
+		</ul>
+	</div>
+{{end}}

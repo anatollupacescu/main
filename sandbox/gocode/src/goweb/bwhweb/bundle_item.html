@@ -1,0 +1,48 @@
+{{template "header" .Page}}
+<div id="content-container">
+		<div id="section-navigation">
+			<ul>
+				<li><a href="/">?</a></li>
+			</ul>
+		</div>
+		<div id="content">
+			<h1>Editati reteta: {{.Name}}</h1>
+			{{with .Page}}
+				<h2 style="color:red">{{.Message}}</h2>
+			{{end}}
+			
+			<form action="/bundleItem/add" method="POST" >
+				<p>
+					<div>
+						<select name="pid">
+						{{if .Products}}
+							{{range $val := .Products}}
+								<option value="{{$val.Id}}">{{$val.Name}}</option>
+							{{end}}
+						{{end}}
+						</select>
+						<input type="text" name="qty" rows="20" cols="80" />
+						<input type="hidden" name="bid" value="{{.Id}}" rows="20" cols="80" />
+						<input type="submit" value="Adauga" >
+					</div>
+				</p>
+				
+				{{if .BundleItems}}
+					<table>
+						<tr>
+							<th>Numele</th>
+							<th>Cantitatea</th>
+							<th></th>
+						</tr>
+						{{range $k := .BundleItems}}
+							<tr>
+								<td>{{$k.ProductName}}</td>
+								<td>{{$k.Qty}}</td>
+								<td><a href="/bundleItem/remove?pid={{$k.Pid}}&bid={{$k.Bid}}">Sterge</a></td>
+							</tr>
+						{{end}}
+					</table>
+				{{end}}				
+			</form>
+
+{{template "footer"}}
