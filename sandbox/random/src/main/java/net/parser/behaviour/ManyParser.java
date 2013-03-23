@@ -1,8 +1,11 @@
-package net.parser;
+package net.parser.behaviour;
 
 import java.util.Iterator;
 
-public class ManyParser implements Parser {
+import net.parser.Parser;
+import net.parser.ResetableIterator;
+
+public class ManyParser extends Parser {
 
 	private final Parser parser;
 	
@@ -23,5 +26,10 @@ public class ManyParser implements Parser {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "ManyParser: " + parser.toString();
 	}
 }
