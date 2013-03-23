@@ -2,34 +2,37 @@ package net.parser.behaviour;
 
 import java.util.Iterator;
 
-import net.parser.Parser;
+import net.parser.GenericParser;
 import net.parser.ResetableIterator;
+import net.parser.predicate.CharPredicate;
 
-public class ManyParser extends Parser {
+import com.google.common.base.Predicate;
 
-	private final Parser parser;
+public class ManyParser extends GenericParser {
+
+	public final Predicate<Character> predicate;
 	
-	public ManyParser(Parser parser) {
-		this.parser = parser;
+	public ManyParser(char ch) {
+		predicate = new CharPredicate(ch);
 	}
-
+	
 	public boolean parse(Iterator<Character> iterator) {
-		if(parser.parse(iterator)) {
-			ResetableIterator resetable = (ResetableIterator)iterator;
-			while(true) {
-				int index = resetable.getIndex();
-				boolean result = parser.parse(iterator);
-				if (!result) {
-					resetable.reset(index);
-					return true;
-				}
+		ResetableIterator i = (ResetableIterator)iterator;
+		while(true) {
+			sanitizeIterator(i);
+			i.freeze();
+			char ch = i.next();
+			if(!predicate.apply(ch)) {
+				i.reset();
+				break;
 			}
+			i.forget();
 		}
-		return true;
+		return super.parse(i);
 	}
 	
 	@Override
 	public String toString() {
-		return "ManyParser: " + parser.toString();
+		return "ManyParser: " + predicate.toString();
 	}
 }

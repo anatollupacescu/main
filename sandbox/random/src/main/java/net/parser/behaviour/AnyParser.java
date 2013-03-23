@@ -1,48 +1,36 @@
 package net.parser.behaviour;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
-import net.parser.Parser;
-import net.parser.type.AlphaParser;
+import com.google.common.base.Predicate;
 
-import com.google.common.collect.ImmutableList;
+import net.parser.GenericParser;
+import net.parser.predicate.CharPredicate;
 
-public class AnyParser extends Parser {
+public class AnyParser extends GenericParser {
 
-	final ImmutableList<Parser> parsers;
+	public final Collection<Predicate<Character>> predicates;
 	
-	public AnyParser(String... string) {
-		ImmutableList.Builder<Parser> builder = new ImmutableList.Builder<Parser>();
-		for(String s : string) {
-			builder.add(new AlphaParser(s));
+	public AnyParser(char[] chars) {
+		predicates = new LinkedList<Predicate<Character>>();
+		for(char ch : chars) {
+			Predicate<Character> p = new CharPredicate(ch);
+			predicates.add(p);
 		}
-		parsers = builder.build();
 	}
-
-	public AnyParser(Parser... parser) {
-		ImmutableList.Builder<Parser> builder = new ImmutableList.Builder<Parser>();
-		for(Parser p : parser) {
-			builder.add(p);
-		}
-		parsers = builder.build();
-	}
-
+	
 	public boolean parse(Iterator<Character> iterator) {
-		for (Parser parser : parsers) {
-			if (parser.parse(iterator)) {
-				return true;
+		sanitizeIterator(iterator);
+		boolean result = false;
+		char ch = iterator.next();
+		for(Predicate<Character> p : predicates) {
+			if(p.apply(ch)) {
+				result = true;
+				break;
 			}
 		}
-		return getDelegate().parse(iterator);
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for(Parser p : parsers) {
-			sb.append(p.toString());
-			sb.append(" or ");
-		}
-		return sb.toString();
+		return result && super.parse(iterator);
 	}
 }

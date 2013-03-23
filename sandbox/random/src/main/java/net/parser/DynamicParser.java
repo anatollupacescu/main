@@ -4,18 +4,25 @@ import java.util.Iterator;
 
 import net.parser.behaviour.AnyParser;
 import net.parser.behaviour.ManyParser;
-import net.parser.type.AlphaParser;
+import net.parser.behaviour.SingleParser;
+import net.parser.predicate.CharPredicate;
 
-public class DynamicParser extends Parser {
+public class DynamicParser {
 
-	private final Parser parser;
+	private final GenericParser parser;
+	private final boolean acceptTrash;
 	
 	public DynamicParser(DynamicParserBuilder parserBuilder) {
 		this.parser = parserBuilder.getParser();
+		this.acceptTrash = parserBuilder.getAcceptTrash();
 	}
 
 	public static DynamicParserBuilder newBuilder() {
 		return new DynamicParserBuilder();
+	}
+
+	public static DynamicParserBuilder newBuilder(boolean flag) {
+		return new DynamicParserBuilder(flag);
 	}
 	
 	public boolean parse(String content) {
@@ -25,7 +32,7 @@ public class DynamicParser extends Parser {
 	
 	public boolean parse(Iterator<Character> iterator) {
 		boolean result = parser.parse(iterator);
-		if(iterator.hasNext()) {
+		if(result && !acceptTrash && iterator.hasNext()) {
 			throw new IllegalStateException("Trash found after the end of parsed entity: " + iterator);
 		}
 		return result; 
@@ -33,70 +40,51 @@ public class DynamicParser extends Parser {
 	
 	public static class DynamicParserBuilder {
 		
-		private Parser parser;
-		private Parser delegate;
+		private final boolean acceptTrash;
 		
-		public DynamicParserBuilder one(Predefined predefined) {
-			addParser(predefined.getParser());
-			return this;
+		private GenericParser parser;
+		private GenericParser delegate;
+		
+		public DynamicParserBuilder(boolean flag) {
+			acceptTrash = flag;
 		}
-		
+
+		public DynamicParserBuilder() {
+			acceptTrash = true;
+		}
+
 		public DynamicParserBuilder one(char c) {
-			Parser newParser = new AlphaParser(c);
-			addParser(newParser);
-			return this;
-		}
-		
-		public DynamicParserBuilder one(String string) {
-			addParser(new AlphaParser(string));
-			return this;
-		}
-		
-		public DynamicParserBuilder one(String ... string) {
-			addParser(new AnyParser(string));
-			return this;
-		}
-		
-		public DynamicParserBuilder one(Parser parser) {
-			addParser(parser);
-			return this;
-		}
-		
-		public DynamicParserBuilder start(Parser ... parser) {
-			addParser(new AnyParser(parser));
+			addParser(new SingleParser(new CharPredicate(c)));
 			return this;
 		}
 
-		/*many*/
-		
+		public DynamicParserBuilder one(char... chars) {
+			addParser(new AnyParser(chars));
+			return this;
+		}
+
 		public DynamicParserBuilder many(char c) {
-			addParser(new ManyParser(new AlphaParser(c)));
-			return this;
-		}
-
-		public DynamicParserBuilder many(String string) {
-			addParser(new ManyParser(new AlphaParser(string)));
-			return this;
-		}
-
-		public DynamicParserBuilder many(Parser parser) {
-			addParser(new ManyParser(parser));
+			addParser(new ManyParser(c));
 			return this;
 		}
 		
-		private void addParser(Parser newParser) {
+		private void addParser(GenericParser p) {
 			if(parser == null) {
-				parser = newParser;
-			} else if (delegate == null){
-				parser.setDelegate(newParser);
-				delegate = newParser;
+				parser = p; 
+			} else if(delegate == null) {
+				parser.setDelegate(p);
+				delegate = p;
 			} else {
-				delegate.setDelegate(newParser);
-				delegate = newParser;
+				delegate.setDelegate(p);
+				delegate = p;
 			}
 		}
 		
-		public Parser getParser() {
+		public boolean getAcceptTrash() {
+			return acceptTrash;
+		}
+
+		public GenericParser getParser() {
 			return parser;
 		}
 		

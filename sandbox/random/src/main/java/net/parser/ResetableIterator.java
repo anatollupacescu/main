@@ -25,15 +25,20 @@ public class ResetableIterator implements Iterator<Character> {
 		return sequence.charAt(index++);
 	}
 
-	public void reset(int newIndex) {
-		if (newIndex > index) {
-			throw new IndexOutOfBoundsException("New index must be less than old!");
+	int freezed = -1;
+	
+	public void reset() {
+		if(freezed > 0) {
+			index = freezed;
 		}
-		index = newIndex;
 	}
 	
-	public int getIndex() {
-		return index;
+	public void freeze() {
+		freezed = index;
+	}
+	
+	public void forget() {
+		freezed = -1;
 	}
 	
 	@Override
