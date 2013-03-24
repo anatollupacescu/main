@@ -19,7 +19,9 @@ public class ManyParser extends GenericParser {
 	public boolean parse(Iterator<Character> iterator) {
 		ResetableIterator i = (ResetableIterator)iterator;
 		while(true) {
-			sanitizeIterator(i);
+			if (!iterator.hasNext()) {
+				break;
+			}
 			i.freeze();
 			char ch = i.next();
 			if(!predicate.apply(ch)) {
