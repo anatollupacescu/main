@@ -30,7 +30,6 @@ public class AnyParser extends GenericParser implements Parser {
 	}
 
 	public boolean parse(Iterator<Character> iterator) {
-		sanitizeIterator(iterator);
 		boolean result = false;
 		for (Parser p : parsers) {
 			if (p.parse(iterator)) {
@@ -39,5 +38,14 @@ public class AnyParser extends GenericParser implements Parser {
 			}
 		}
 		return result && super.parse(iterator);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (Parser p : parsers) {
+			sb.append(p.toString());
+		}
+		return sb.toString();
 	}
 }

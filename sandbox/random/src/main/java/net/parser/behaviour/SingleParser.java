@@ -11,7 +11,7 @@ import com.google.common.base.Predicate;
 
 public class SingleParser extends GenericParser implements Parser  {
 	
-	public final Predicate<Character> predicate;
+	private final Predicate<Character> predicate;
 	
 	public SingleParser(Predicate<Character> p) {
 		predicate = p;
@@ -23,7 +23,9 @@ public class SingleParser extends GenericParser implements Parser  {
 
 	@Override
 	public boolean parse(Iterator<Character> i) {
-		sanitizeIterator(i);
+		if(!i.hasNext()) {
+			return false;
+		}
 		if (predicate.apply(((ResetableIterator)i).peek())) {
 			i.next(); 
 			return super.parse(i);

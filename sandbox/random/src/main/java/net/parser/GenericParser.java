@@ -20,12 +20,6 @@ public class GenericParser {
 		return true;
 	}
 
-	protected void sanitizeIterator(Iterator<Character> iterator) {
-		if (!iterator.hasNext()) {
-			throw new IllegalArgumentException("Unexpected end of content");
-		}
-	}
-
 	public void setDelegate(Parser delegate) {
 		this.delegate = delegate;
 	}
