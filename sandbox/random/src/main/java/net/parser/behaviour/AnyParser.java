@@ -1,32 +1,39 @@
 package net.parser.behaviour;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-
-import com.google.common.base.Predicate;
 
 import net.parser.GenericParser;
+import net.parser.Parser;
 import net.parser.predicate.CharPredicate;
 
-public class AnyParser extends GenericParser {
+import com.google.common.collect.ImmutableSet;
 
-	public final Collection<Predicate<Character>> predicates;
+public class AnyParser extends GenericParser implements Parser {
+
+	private final ImmutableSet<Parser> parsers;
 	
 	public AnyParser(char[] chars) {
-		predicates = new LinkedList<Predicate<Character>>();
+		ImmutableSet.Builder<Parser> builder = new ImmutableSet.Builder<Parser>();
 		for(char ch : chars) {
-			Predicate<Character> p = new CharPredicate(ch);
-			predicates.add(p);
+			Parser parser = new SingleParser(new CharPredicate(ch));
+			builder.add(parser);
 		}
+		this.parsers = builder.build();
 	}
 	
+	public AnyParser(Parser[] parsers) {
+		ImmutableSet.Builder<Parser> builder = new ImmutableSet.Builder<Parser>();
+		for(Parser parser : parsers) {
+			builder.add(parser);
+		}
+		this.parsers = builder.build();
+	}
+
 	public boolean parse(Iterator<Character> iterator) {
 		sanitizeIterator(iterator);
 		boolean result = false;
-		char ch = iterator.next();
-		for(Predicate<Character> p : predicates) {
-			if(p.apply(ch)) {
+		for (Parser p : parsers) {
+			if (p.parse(iterator)) {
 				result = true;
 				break;
 			}

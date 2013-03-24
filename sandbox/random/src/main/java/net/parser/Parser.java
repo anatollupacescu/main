@@ -5,4 +5,6 @@ import java.util.Iterator;
 public interface Parser {
 
 	boolean parse(Iterator<Character> i);
+	
+	void setDelegate(Parser parser);
 }

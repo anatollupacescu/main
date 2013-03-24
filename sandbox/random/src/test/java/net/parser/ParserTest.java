@@ -16,6 +16,15 @@ public class ParserTest {
 		assertTrue(parser.parse("cbzzz"));
 		assertTrue(parser.parse("cbccc"));
 	}
-	
+
+	@Test
+	public void testChar2() {
+		Parser inner = DynamicParser.newBuilder().one('b').many('c').build();
+		DynamicParser parser = DynamicParser.newBuilder().one('a').one(inner).build();
+		assertTrue(parser.parse("ab"));
+		assertTrue(parser.parse("abcc"));
+		assertFalse(parser.parse("accc"));
+		assertFalse(parser.parse("bccc"));
+	}
 	/*TODO dea adaugat inca un constructor pentru Character pe linga String ':' vs ":"*/
 }

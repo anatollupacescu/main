@@ -5,11 +5,10 @@ import java.util.Iterator;
 import net.parser.behaviour.AnyParser;
 import net.parser.behaviour.ManyParser;
 import net.parser.behaviour.SingleParser;
-import net.parser.predicate.CharPredicate;
 
-public class DynamicParser {
+public class DynamicParser implements Parser {
 
-	private final GenericParser parser;
+	private final Parser parser;
 	private final boolean acceptTrash;
 	
 	public DynamicParser(DynamicParserBuilder parserBuilder) {
@@ -30,6 +29,7 @@ public class DynamicParser {
 		return parse(iterator);
 	}
 	
+	@Override
 	public boolean parse(Iterator<Character> iterator) {
 		boolean result = parser.parse(iterator);
 		if(result && !acceptTrash && iterator.hasNext()) {
@@ -42,8 +42,8 @@ public class DynamicParser {
 		
 		private final boolean acceptTrash;
 		
-		private GenericParser parser;
-		private GenericParser delegate;
+		private Parser parser;
+		private Parser delegate;
 		
 		public DynamicParserBuilder(boolean flag) {
 			acceptTrash = flag;
@@ -54,7 +54,7 @@ public class DynamicParser {
 		}
 
 		public DynamicParserBuilder one(char c) {
-			addParser(new SingleParser(new CharPredicate(c)));
+			addParser(new SingleParser(c));
 			return this;
 		}
 
@@ -63,12 +63,22 @@ public class DynamicParser {
 			return this;
 		}
 
+		public DynamicParserBuilder one(Parser parser) {
+			addParser(parser);
+			return this;
+		}
+
+		public DynamicParserBuilder one(Parser... parsers) {
+			addParser(new AnyParser(parsers));
+			return this;
+		}
+		
 		public DynamicParserBuilder many(char c) {
 			addParser(new ManyParser(c));
 			return this;
 		}
 		
-		private void addParser(GenericParser p) {
+		private void addParser(Parser p) {
 			if(parser == null) {
 				parser = p; 
 			} else if(delegate == null) {
@@ -84,7 +94,7 @@ public class DynamicParser {
 			return acceptTrash;
 		}
 
-		public GenericParser getParser() {
+		public Parser getParser() {
 			return parser;
 		}
 		
@@ -96,5 +106,9 @@ public class DynamicParser {
 	@Override
 	public String toString() {
 		return parser.toString();
+	}
+
+	@Override
+	public void setDelegate(Parser parser) {
 	}
 }

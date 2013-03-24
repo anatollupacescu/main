@@ -3,12 +3,13 @@ package net.parser.behaviour;
 import java.util.Iterator;
 
 import net.parser.GenericParser;
+import net.parser.Parser;
 import net.parser.ResetableIterator;
 import net.parser.predicate.CharPredicate;
 
 import com.google.common.base.Predicate;
 
-public class ManyParser extends GenericParser {
+public class ManyParser extends GenericParser implements Parser {
 
 	public final Predicate<Character> predicate;
 	

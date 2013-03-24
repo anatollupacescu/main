@@ -8,7 +8,7 @@ public class GenericParser {
 
 	private final static Logger logger = Logger.getAnonymousLogger();
 
-	private GenericParser delegate;
+	private Parser delegate;
 
 	protected boolean parse(Iterator<Character> iterator) {
 		if (delegate != null) {
@@ -26,7 +26,7 @@ public class GenericParser {
 		}
 	}
 
-	public void setDelegate(GenericParser delegate) {
+	public void setDelegate(Parser delegate) {
 		this.delegate = delegate;
 	}
 }

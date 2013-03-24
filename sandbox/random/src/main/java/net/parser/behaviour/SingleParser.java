@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import net.parser.GenericParser;
 import net.parser.Parser;
+import net.parser.ResetableIterator;
+import net.parser.predicate.CharPredicate;
 
 import com.google.common.base.Predicate;
 
@@ -15,10 +17,18 @@ public class SingleParser extends GenericParser implements Parser  {
 		predicate = p;
 	}
 
+	public SingleParser(char c) {
+		predicate = new CharPredicate(c);
+	}
+
 	@Override
 	public boolean parse(Iterator<Character> i) {
 		sanitizeIterator(i);
-		return predicate.apply(i.next()) ? super.parse(i) : false;
+		if (predicate.apply(((ResetableIterator)i).peek())) {
+			i.next(); 
+			return super.parse(i);
+		}
+		return false;
 	}
 	
 	@Override

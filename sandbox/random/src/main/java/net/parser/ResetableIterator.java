@@ -25,6 +25,13 @@ public class ResetableIterator implements Iterator<Character> {
 		return sequence.charAt(index++);
 	}
 
+	public Character peek() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		return sequence.charAt(index);
+	}
+	
 	int freezed = -1;
 	
 	public void reset() {
