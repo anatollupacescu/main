@@ -1,15 +1,7 @@
-grammar ResourcePath;
+grammar Test;
 
 options {
   language = Java;
-}
-
-@header {
-  package com.comcast.cima.sig.producer.parser;
-}
-
-@lexer::header {
-  package com.comcast.cima.sig.producer.parser;
 }
 
 rule: 
