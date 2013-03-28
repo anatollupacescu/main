@@ -1,42 +1,72 @@
 package net.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static net.parser.Predefined.*;
-
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.*;
 
 public class ParserTest {
 
-	private final static String content = "{\"numele\" : valera}";
-	
 	@Test
-	public void testPredefined() {
-		/*char parser*/
-		Parser charParser = CHAR.parser;
-		assertTrue(charParser.parse(ParserUtils.stringIterator("c")));
-		assertFalse(charParser.parse(ParserUtils.stringIterator("1")));
-		assertFalse(charParser.parse(ParserUtils.stringIterator("cc")));
-		DynamicParser dynamicCharParser = DynamicParser.newBuilder().start(Predefined.CHAR).build();
-		assertTrue(dynamicCharParser.parse(ParserUtils.stringIterator("c")));
-		assertFalse(dynamicCharParser.parse(ParserUtils.stringIterator("1")));
-		
-		/*string parser*/
-		Parser charArrayParser = CHAR_ARRAY.parser;
-		assertTrue(charArrayParser.parse(ParserUtils.stringIterator("c")));
-		assertTrue(charArrayParser.parse(ParserUtils.stringIterator("cd")));
-		assertTrue(charArrayParser.parse(ParserUtils.stringIterator("cdf")));
+	public void test1() {
+		DynamicParser parser = DynamicParser.newBuilder().one('c').one('b').many('c').many('z').build();
+		assertTrue(parser.parse("cb"));
+		assertTrue(parser.parse("cbc"));
+		assertTrue(parser.parse("cbccc"));
+		assertFalse(parser.parse("ccc"));
+		assertTrue(parser.parse("cb"));
+		assertTrue(parser.parse("cbzzz"));
+		assertTrue(parser.parse("cbccc"));
 	}
-	
+
 	@Test
-	@Ignore
-	public void test() {
-		Parser key = DynamicParser.newBuilder().start(Predefined.QUOTED_STRING).end(":").build();
-		Parser keyValue = DynamicParser.newBuilder().start(key).end(Predefined.CHAR_ARRAY).build();
-		DynamicParser parser = DynamicParser.newBuilder().start("{").body(keyValue).end("}").build();
-		assertTrue(parser.parse(content));
+	public void test2() {
+		Parser inner = DynamicParser.newBuilder().one('b').many('c').build();
+		DynamicParser parser = DynamicParser.newBuilder().one('a').one(inner).one('n').build();
+		assertTrue(parser.parse("ab"));
+		assertTrue(parser.parse("abcc"));
+		assertFalse(parser.parse("aca"));
+		assertFalse(parser.parse("accc"));
+		assertFalse(parser.parse("bccc"));
+		assertTrue(parser.parse("abcccn"));
 	}
-	
-	/*TODO dea adaugat inca un constructor pentru Character pe linga String ':' vs ":"*/
+
+	@Test
+	public void test3() {
+		DynamicParser parser = DynamicParser.newBuilder().one('a').one('b', 'c', 'd').one('z').build();
+		assertTrue(parser.parse("abz"));
+		assertTrue(parser.parse("acz"));
+		assertTrue(parser.parse("adz"));
+		assertFalse(parser.parse("abc"));
+		assertFalse(parser.parse("aba"));
+		assertFalse(parser.parse("aab"));
+		assertTrue(parser.parse("abzz"));
+	}
+
+	@Test
+	public void test4() {
+		DynamicParser parser = DynamicParser.newBuilder().one("anatol").many("kruta").build();
+		assertTrue(parser.parse("anatol"));
+		assertTrue(parser.parse("anatolkruta"));
+		assertTrue(parser.parse("anatolkrutakruta"));
+		assertFalse(parser.parse("anaolkrutakruta"));
+		assertFalse(parser.parse("abz"));
+		parser = DynamicParser.newBuilder().one("anatol").many("kruta").one("da", "nu").build();
+		assertTrue(parser.parse("anatolda"));
+		assertTrue(parser.parse("anatolnu"));
+		assertTrue(parser.parse("anatolkrutada"));
+		assertTrue(parser.parse("anatolkrutanu"));
+		assertTrue(parser.parse("anatolkrutakrutada"));
+		assertTrue(parser.parse("anatolkrutakrutanu"));
+		assertFalse(parser.parse("anatolkrutakruta"));
+		try {
+			parser = DynamicParser.newBuilder().one("anatol").many("kruta").one("da", "nu").build();
+			parser.parse("anatoldabred");
+		} catch (Exception e) {
+			assertEquals(true, e instanceof IllegalStateException);
+		}
+	}
+
+	/*
+	 * TODO dea adaugat inca un constructor pentru Character pe linga String ':'
+	 * vs ":"
+	 */
 }

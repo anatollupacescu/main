@@ -1,21 +1,35 @@
 package net.parser;
 
+
 public enum Predefined {
 		
-		CHAR(new CharacterParser()),
+/*		ALPHA_CHAR(new CharPredicate()),
 		
-		CHAR_ARRAY(DynamicParser.newBuilder().
-				start(new CharacterParser()).
-				any(new CharacterParser()).build()),
-				
-		QUOTED_STRING(DynamicParser.newBuilder()
-				.start(new AnyParser(new CharacterParser('\''), new CharacterParser('\"')))
-				.any(new CharacterParser())
-				.end(new CharacterParser('\'')).build());
+		NUM_CHAR(new NumericParser()),
 		
-		public final Parser parser;
+		ALPHA_ARRAY(null),
 
-		private Predefined(Parser parser) {
-			this.parser = parser;
+		NUM_ARRAY(null),
+		
+		STRING(null),
+		
+		QUOTED_STRING(DynamicParser.newBuilder()
+				.one(new AnyParser(new AlphaParser('\''), new AlphaParser('\"')))
+				.many(new AlphaParser())
+				.one(new AnyParser(new AlphaParser('\''), new AlphaParser('\"'))).build());
+		
+		private final Predicate<?> predicate;
+
+		private Predefined(Predicate<?> predicate) {
+			this.predicate = predicate;
 		}
+		
+		public Predicate<?> getPredicate() {
+			return predicate;
+		}
+		
+		@Override
+		public String toString() {
+			return "Predefined: " + predicate.toString();
+		}*/
 }

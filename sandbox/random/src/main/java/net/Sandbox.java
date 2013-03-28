@@ -1,13 +1,15 @@
 package net;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.disruptor.BackgroundLogger;
 
 public class Sandbox {
 
-	private final static Logger log = Logger.getAnonymousLogger();
+	private final static BackgroundLogger bl = new BackgroundLogger();
 
 	public static void main(String[] args) {
-		log.log(Level.INFO, "Response is {0}", new Object[] { true });
+		for (int i = 0; i < 5; i++) {
+			bl.log("jora " + i);
+		}
+		bl.stop();
 	}
 }
