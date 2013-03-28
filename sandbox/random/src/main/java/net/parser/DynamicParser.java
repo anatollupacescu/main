@@ -2,9 +2,10 @@ package net.parser;
 
 import java.util.Iterator;
 
-import net.parser.behaviour.AnyParser;
-import net.parser.behaviour.ManyParser;
-import net.parser.behaviour.SingleParser;
+import net.parser.behaviour.logic.AnyParser;
+import net.parser.behaviour.logic.ManyParser;
+import net.parser.behaviour.multiplicity.MultiParser;
+import net.parser.behaviour.multiplicity.SingleParser;
 
 public class DynamicParser implements Parser {
 
@@ -72,12 +73,31 @@ public class DynamicParser implements Parser {
 			addParser(new AnyParser(parsers));
 			return this;
 		}
+
+		public DynamicParserBuilder one(String string) {
+			addParser(new MultiParser(string));
+			return this;
+		}
+		
+		public DynamicParserBuilder one(String... strings) {
+			addParser(new AnyParser(strings));
+			return this;
+		}	
 		
 		public DynamicParserBuilder many(char c) {
 			addParser(new ManyParser(c));
 			return this;
 		}
 		
+		public DynamicParserBuilder many(String string) {
+			addParser(new ManyParser(string));
+			return this;
+		}
+		
+		public DynamicParserBuilder many(Parser parser) {
+			addParser(parser);
+			return this;
+		}
 		private void addParser(Parser p) {
 			if(parser == null) {
 				parser = p; 

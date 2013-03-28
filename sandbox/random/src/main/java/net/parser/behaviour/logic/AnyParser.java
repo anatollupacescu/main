@@ -1,9 +1,11 @@
-package net.parser.behaviour;
+package net.parser.behaviour.logic;
 
 import java.util.Iterator;
 
 import net.parser.GenericParser;
 import net.parser.Parser;
+import net.parser.behaviour.multiplicity.MultiParser;
+import net.parser.behaviour.multiplicity.SingleParser;
 import net.parser.predicate.CharPredicate;
 
 import com.google.common.collect.ImmutableSet;
@@ -25,6 +27,14 @@ public class AnyParser extends GenericParser implements Parser {
 		ImmutableSet.Builder<Parser> builder = new ImmutableSet.Builder<Parser>();
 		for(Parser parser : parsers) {
 			builder.add(parser);
+		}
+		this.parsers = builder.build();
+	}
+
+	public AnyParser(String[] strings) {
+		ImmutableSet.Builder<Parser> builder = new ImmutableSet.Builder<Parser>();
+		for(String string : strings) {
+			builder.add(new MultiParser(string));
 		}
 		this.parsers = builder.build();
 	}

@@ -1,4 +1,4 @@
-package net.parser.behaviour;
+package net.parser.behaviour.multiplicity;
 
 import java.util.Iterator;
 

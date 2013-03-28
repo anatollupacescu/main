@@ -31,7 +31,7 @@ public class ParserTest {
 
 	@Test
 	public void test3() {
-		DynamicParser parser = DynamicParser.newBuilder().one('a').one('b','c','d').one('z').build();
+		DynamicParser parser = DynamicParser.newBuilder().one('a').one('b', 'c', 'd').one('z').build();
 		assertTrue(parser.parse("abz"));
 		assertTrue(parser.parse("acz"));
 		assertTrue(parser.parse("adz"));
@@ -40,6 +40,33 @@ public class ParserTest {
 		assertFalse(parser.parse("aab"));
 		assertTrue(parser.parse("abzz"));
 	}
-	
-	/*TODO dea adaugat inca un constructor pentru Character pe linga String ':' vs ":"*/
+
+	@Test
+	public void test4() {
+		DynamicParser parser = DynamicParser.newBuilder().one("anatol").many("kruta").build();
+		assertTrue(parser.parse("anatol"));
+		assertTrue(parser.parse("anatolkruta"));
+		assertTrue(parser.parse("anatolkrutakruta"));
+		assertFalse(parser.parse("anaolkrutakruta"));
+		assertFalse(parser.parse("abz"));
+		parser = DynamicParser.newBuilder().one("anatol").many("kruta").one("da", "nu").build();
+		assertTrue(parser.parse("anatolda"));
+		assertTrue(parser.parse("anatolnu"));
+		assertTrue(parser.parse("anatolkrutada"));
+		assertTrue(parser.parse("anatolkrutanu"));
+		assertTrue(parser.parse("anatolkrutakrutada"));
+		assertTrue(parser.parse("anatolkrutakrutanu"));
+		assertFalse(parser.parse("anatolkrutakruta"));
+		try {
+			parser = DynamicParser.newBuilder().one("anatol").many("kruta").one("da", "nu").build();
+			parser.parse("anatoldabred");
+		} catch (Exception e) {
+			assertEquals(true, e instanceof IllegalStateException);
+		}
+	}
+
+	/*
+	 * TODO dea adaugat inca un constructor pentru Character pe linga String ':'
+	 * vs ":"
+	 */
 }
