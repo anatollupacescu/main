@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import net.parser.GenericParser;
 import net.parser.Parser;
+import net.parser.ResetableIterator;
 import net.parser.behaviour.multiplicity.MultiParser;
 import net.parser.behaviour.multiplicity.SingleParser;
 import net.parser.predicate.CharPredicate;
@@ -41,11 +42,14 @@ public class AnyParser extends GenericParser implements Parser {
 
 	public boolean parse(Iterator<Character> iterator) {
 		boolean result = false;
+		ResetableIterator i = (ResetableIterator) iterator;
 		for (Parser p : parsers) {
+			int index = i.getIndex();
 			if (p.parse(iterator)) {
 				result = true;
 				break;
 			}
+			i.reset(index);
 		}
 		return result && super.parse(iterator);
 	}

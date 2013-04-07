@@ -64,9 +64,4 @@ public class ParserTest {
 			assertEquals(true, e instanceof IllegalStateException);
 		}
 	}
-
-	/*
-	 * TODO dea adaugat inca un constructor pentru Character pe linga String ':'
-	 * vs ":"
-	 */
 }
