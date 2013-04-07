@@ -1,28 +1,22 @@
 package net.flow;
 
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 
 public class FlowState<A> {
 
-	private final String name;
-	private final ImmutableMap<String, FlowState<A>> codeDest;		
-	private final ImmutableMap<FlowState<A>, Function<Message<A>, Message<A>>> destFunc;
+	protected final String name;
+	protected final Function<A, A> logic;
+	protected final Function<A, String> evaluator;
 	
-	public FlowState(final FlowStateBuilder<A> builder, 
-			ImmutableMap<String, FlowState<A>> codeDest,
-			ImmutableMap<FlowState<A>, Function<Message<A>, Message<A>>> destFunc) {
-		this.name = builder.getName();
-		this.codeDest = codeDest;
-		this.destFunc = destFunc;
+	public FlowState(final String name, final Function<A, A> logic, final Function<A, String> evaluator) {
+		this.name = name;
+		this.logic = logic;
+		this.evaluator = evaluator;
 	}
 	
-	public FlowState<A> getStateForCode(String code) {
-		return codeDest.get(code);
-	}
-	
-	public Function<Message<A>, Message<A>> getFunctionForState(FlowState<A> state) {
-		return destFunc.get(state);
+	public String execute(A input) {
+		A output = logic.apply(input);
+		return evaluator.apply(output);
 	}
 	
 	public String getName() {

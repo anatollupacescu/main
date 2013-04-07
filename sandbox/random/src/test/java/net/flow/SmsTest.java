@@ -1,9 +1,10 @@
 package net.flow;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class SmsTest {
@@ -12,14 +13,14 @@ public class SmsTest {
 	private static final String SMS_TEXT = "privet";
 	
 	@Test
-	public void test() {
-		FlowStateBuilder<Sms> startBuilder = Flow.<Sms>newState("Start");
-		FlowState<Sms> end = Flow.<Sms>newState("End").build();
-		FlowState<Sms> start = startBuilder.transition("end", end, new SmsConversion()).build();
-		Flow<Sms> flow = new Flow<Sms>("myFlow", start);
-		Sms sms = new Sms(SMS_TEXT);
-		Message<Sms> message = new Message<Sms>(sms, "end");
-		Sms sms2 = flow.execute(message);
+	public void test1() {
+		SmsConversion logic = new SmsConversion();
+		SmsEvaluator evaluator = new SmsEvaluator();
+		
+		FlowState<Sms> start = new FlowState<Sms>("start", logic, evaluator);
+		Flow<Sms> flow = Flow.<Sms>newBuilder().add(start).build();
+		Sms sms2 = flow.execute(new Sms(SMS_TEXT));
+		
 		log.log(Level.INFO, "Incoming sms {0}", sms2);
 		assertEquals(sms2.getText(), "received: " + SMS_TEXT);
 	}
