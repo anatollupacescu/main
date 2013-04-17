@@ -43,14 +43,16 @@ public class AnyParser extends GenericParser implements Parser {
 	public boolean parse(Iterator<Character> iterator) {
 		boolean result = false;
 		ResetableIterator i = (ResetableIterator) iterator;
+		int index = 0;
 		for (Parser p : parsers) {
-			int index = i.getIndex();
+			index = i.getIndex();
 			if (p.parse(iterator)) {
 				result = true;
 				break;
 			}
 			i.reset(index);
 		}
+		System.out.println(i.substring(index));
 		return result && super.parse(iterator);
 	}
 	

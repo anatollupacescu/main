@@ -44,6 +44,12 @@ public class ParserTest {
 	@Test
 	public void test4() {
 		DynamicParser parser = DynamicParser.newBuilder().one("anatol").many("kruta").build();
+		assertTrue(parser.parse("anatolkrutakruta"));
+	}
+	
+	@Test
+	public void test5() {
+		DynamicParser parser = DynamicParser.newBuilder().one("anatol").many("kruta").build();
 		assertTrue(parser.parse("anatol"));
 		assertTrue(parser.parse("anatolkruta"));
 		assertTrue(parser.parse("anatolkrutakruta"));

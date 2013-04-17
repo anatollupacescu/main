@@ -10,6 +10,6 @@ public class SmsConversion implements Function<Sms, Sms> {
 		if(text == null || text.isEmpty()) {
 			return null;
 		}
-		return new Sms("received: " + text);
+		return incomingSms;
 	}
 }

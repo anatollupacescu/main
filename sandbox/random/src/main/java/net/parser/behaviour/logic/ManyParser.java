@@ -28,6 +28,7 @@ public class ManyParser extends GenericParser implements Parser {
 		ResetableIterator i = (ResetableIterator) iterator;
 		int index = i.getIndex();
 		while (parser.parse(i)) {
+			System.out.println(i.substring(index));
 			index = i.getIndex();
 		}
 		i.reset(index);

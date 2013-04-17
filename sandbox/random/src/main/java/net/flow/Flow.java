@@ -14,8 +14,12 @@ public class Flow<A> {
 		return new FlowBuilder<A>();
 	}
 	
-	public A execute(final A message) {
-		throw new RuntimeException("Method not implemented");
+	public void execute(final String startingPoint, final A message) {
+		String stateName = startingPoint;
+		while(stateName != null) {
+			FlowState<A> state = states.get(stateName);
+			stateName = state.execute(message);
+		}
 	}
 	
 	public static final class FlowBuilder<A> {

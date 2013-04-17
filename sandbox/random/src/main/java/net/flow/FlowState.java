@@ -14,8 +14,17 @@ public class FlowState<A> {
 		this.evaluator = evaluator;
 	}
 	
+	public FlowState(String name, final Function<A, A> logic) {
+		this.name = name;
+		this.logic = logic;
+		this.evaluator = null;
+	}
+
 	public String execute(A input) {
 		A output = logic.apply(input);
+		if(evaluator == null) {
+			return null;
+		}
 		return evaluator.apply(output);
 	}
 	
