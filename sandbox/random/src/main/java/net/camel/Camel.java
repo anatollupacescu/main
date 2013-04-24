@@ -50,5 +50,6 @@ public class Camel extends RouteBuilder {
 		camelContext.start();
 		
 		from("direct:increment").to("bean:convertor?method=convert").beanRef("convertor","print").log("done");
+		
 	}
 }

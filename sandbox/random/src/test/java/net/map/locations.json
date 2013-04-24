@@ -1,0 +1,41 @@
+{
+    "Key": "weather2-locations",
+    "Value": [
+        {
+            "class": "com.comcast.apps.common.ds.Location",
+            "isDefault": true,
+            "key": "19087",
+            "name": "Wayne, PA",
+            "point": {
+                "class": "com.comcast.xre.toolkit.map.Point",
+                "latitude": 40.07,
+                "longitude": -75.42
+            },
+            "zip": "19087"
+        },
+        {
+            "class": "com.comcast.apps.common.ds.Location",
+            "isDefault": false,
+            "key": "19446",
+            "name": "Lansdale, PA",
+            "point": {
+                "class": "com.comcast.xre.toolkit.map.Point",
+                "latitude": 40.241497,
+                "longitude": -75.28379
+            },
+            "zip": "19446"
+        },
+		{
+            "class": "com.comcast.apps.common.ds.Location",
+            "isDefault": false,
+            "key": "19779",
+            "name": "Hundingdon, PA",
+            "point": {
+                "class": "com.comcast.xre.toolkit.map.Point",
+                "latitude": 41.241497,
+                "longitude": -74.28379
+            },
+            "zip": "19779"
+        }
+    ]
+}

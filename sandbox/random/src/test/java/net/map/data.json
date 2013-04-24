@@ -1,0 +1,28 @@
+{
+"foo" : {
+            "class": "com.comcast.apps.common.ds.Location",
+            "isDefault": true,
+            "key": "19087",
+            "name": "RC Wayne, PA",
+            "points" : [
+            {
+                "class": "com.comcast.xre.toolkit.map.Point1",
+                "latitude": 40.00,
+                "longitude": -75.00
+            }],
+            "zip": "19087"
+        },
+"bar" : {
+            "class": "com.comcast.apps.common.ds.Location",
+            "isDefault": false,
+            "key": "19779",
+            "name": "RC Hundingdon, PA",
+            "points" : [
+            {
+                "class": "com.comcast.xre.toolkit.map.Point1",
+                "latitude": 41.00,
+                "longitude": -74.00
+            }],
+            "zip": "19779"
+        }
+}

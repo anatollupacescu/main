@@ -1,19 +1,24 @@
 package net.camel;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Bean {
 
 	private Map<String,String>[] entries;
+	
+	public Bean convert(String input) throws JsonParseException, JsonMappingException, IOException {
+		Object obj = new ObjectMapper(new JsonFactory()).readValue(input, List.class);
+		
+		return null;
+	}
 	
 	public Map<String, String>[] getEntries() {
 		return entries;
@@ -23,11 +28,7 @@ public class Bean {
 		this.entries = entries;
 	}
 
-	public Bean convert(String input) throws JsonParseException, JsonMappingException, IOException {
-	    return new ObjectMapper(new JsonFactory()).readValue(input, new TypeReference<Bean>() { });
-	}
-	
 	public void print(Bean input) {
-		System.out.println("[print] " + input.getEntries().length);
+		System.out.println("[print] ");
 	}
 }
