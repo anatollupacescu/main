@@ -24,7 +24,7 @@ public class MapTransformer {
 		data = new MapData(propertiesFile, dataFiles);
 	}
 
-	public MapTransformer(String propertiesFile, Map<String, Object> map) {
+	public MapTransformer(String propertiesFile, Map<String, Object> map) throws IOException {
 		data = new MapData(propertiesFile, map);
 	}
 
@@ -32,19 +32,23 @@ public class MapTransformer {
 		if(returnMap.size() > 0) {
 			return returnMap;
 		}
-		Iterator<Cell<String, String, String[]>> transformations = data.iterator();
+		Iterator<Cell<String, Operation, String[]>> transformations = data.iterator();
 		while (transformations.hasNext()) {
-			Cell<String, String, String[]> entry = transformations.next();
+			Cell<String, Operation, String[]> entry = transformations.next();
 			String key = entry.getRowKey();
-			String op = entry.getColumnKey();
-			if (Operation.copy.toString().equals(op)) {
-				insert(key, data.extract(entry.getValue()[0]));
-			} else if (Operation.concat.toString().equals(op)) {
+			switch (entry.getColumnKey()) {
+			case concat:
 				insert(key, concat(entry.getValue()));
-			} else if (Operation.merge.toString().equals(op)) {
+				break;
+			case merge:
 				insert(key, merge(entry.getValue(), false));
-			} else if (Operation.update.toString().equals(op)) {
+				break;
+			case update:
 				insert(key, merge(entry.getValue(), true));
+				break;
+			case copy:
+			default:
+				insert(key, data.extract(entry.getValue()[0]));
 			}
 		}
 		return returnMap;

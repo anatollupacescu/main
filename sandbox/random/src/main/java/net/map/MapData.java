@@ -19,15 +19,15 @@ import com.google.common.collect.Table.Cell;
 
 public class MapData {
 
-	private final Table<String, String, String[]> transformations = HashBasedTable.create();
+	private final Table<String, Operation, String[]> transformations = HashBasedTable.create();
 	private final Map<String, Object> data;
 
-	public MapData(String propertiesFile, Map<String, Object> map) {
+	public MapData(String propertiesFile, Map<String, Object> map) throws IOException {
 		this.data = map;
 		loadProperties(propertiesFile);
 	}
 	
-	Iterator<Cell<String, String, String[]>> iterator() {
+	Iterator<Cell<String, Operation, String[]>> iterator() {
 		return transformations.cellSet().iterator();
 	}
 	
@@ -56,13 +56,9 @@ public class MapData {
     	loadProperties(propertiesFile);
     }
 
-	private void loadProperties(String propertiesFile) {
+	private void loadProperties(String propertiesFile) throws IOException {
 		final Properties props = new Properties();
-    	try {
-    		props.load(this.getClass().getResourceAsStream(propertiesFile));
-    	} catch (IOException ex) {
-    		ex.printStackTrace();
-        }
+		props.load(this.getClass().getResourceAsStream(propertiesFile));
     	Iterator<Entry<Object, Object>> iterator = props.entrySet().iterator();
     	while(iterator.hasNext()) {
     		Entry<Object, Object> entry = iterator.next();
@@ -78,7 +74,7 @@ public class MapData {
 			} else if ("".equals(args[0])) {
 				args[0] = " ";
 			}
-			transformations.put((String)key, values[0], args);
+			transformations.put((String)key, Operation.valueOf(values[0]), args);
 		}
 	}
 }
