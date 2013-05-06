@@ -17,21 +17,21 @@ import com.google.common.io.Files;
 
 public class Camel extends RouteBuilder {
 	
-	private DefaultCamelContext camelContext;
+	private static DefaultCamelContext camelContext;
 	
 	public static void main(String[] args) throws Exception {
 		Camel c = new Camel();
 		c.configure();
+		camelContext.start();
 		String content = Files.toString(new File("/tmp/entry.json"), Charsets.UTF_8);
 		c.send(content);
+		camelContext.stop();
 	}
 	
 	public void send(String i) throws Exception {
-		camelContext.start();
 		ProducerTemplate template = camelContext.createProducerTemplate();
 		template.sendBody("direct:increment", i);
 		Thread.sleep(6000);
-		camelContext.stop();
 	}
 	
 	@Override

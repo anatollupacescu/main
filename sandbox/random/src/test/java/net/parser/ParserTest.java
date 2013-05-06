@@ -66,6 +66,7 @@ public class ParserTest {
 		try {
 			parser = DynamicParser.newBuilder().one("anatol").many("kruta").one("da", "nu").build();
 			parser.parse("anatoldabred");
+			fail("Should have failed");
 		} catch (Exception e) {
 			assertEquals(true, e instanceof IllegalStateException);
 		}

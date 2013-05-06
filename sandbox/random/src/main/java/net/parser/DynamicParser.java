@@ -95,9 +95,10 @@ public class DynamicParser implements Parser {
 		}
 		
 		public DynamicParserBuilder many(Parser parser) {
-			addParser(parser);
+			addParser(new ManyParser(parser));
 			return this;
 		}
+		
 		private void addParser(Parser p) {
 			if(parser == null) {
 				parser = p; 
