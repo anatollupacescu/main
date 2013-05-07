@@ -1,4 +1,4 @@
-package net.parser2;
+package net.parser2.core;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +17,10 @@ public class CharPredicate implements Predicate<Character> {
 		this.character = ch;
 	}
 	
+	public CharPredicate() {
+		this.character = null;
+	}
+
 	@Override
 	public boolean apply(Character ch) {
 		if(ch == null) {

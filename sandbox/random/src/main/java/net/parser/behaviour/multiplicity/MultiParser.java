@@ -46,6 +46,6 @@ public class MultiParser extends GenericParser implements Parser {
 			builder.append(p.toString());
 			builder.append(", ");
 		}
-		return "[MultiParser for " + builder.toString() + "]";
+		return "[StringParser for " + builder.toString() + "]";
 	}
 }

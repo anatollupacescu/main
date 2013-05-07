@@ -37,6 +37,6 @@ public class ManyParser extends GenericParser implements Parser {
 
 	@Override
 	public String toString() {
-		return "ManyParser: " + parser.toString();
+		return "Many: " + parser.toString();
 	}
 }

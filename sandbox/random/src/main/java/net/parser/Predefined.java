@@ -14,9 +14,9 @@ public enum Predefined {
 		STRING(null),
 		
 		QUOTED_STRING(DynamicParser.newBuilder()
-				.one(new AnyParser(new AlphaParser('\''), new AlphaParser('\"')))
+				.one(new AnyOf(new AlphaParser('\''), new AlphaParser('\"')))
 				.many(new AlphaParser())
-				.one(new AnyParser(new AlphaParser('\''), new AlphaParser('\"'))).build());
+				.one(new AnyOf(new AlphaParser('\''), new AlphaParser('\"'))).build());
 		
 		private final Predicate<?> predicate;
 

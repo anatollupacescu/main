@@ -1,13 +1,15 @@
-package net.parser2;
+package net.parser2.core;
+
+import java.util.List;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
-public class MultiParser implements IParser {
+public class StringParser implements Parser {
 
-	private final ImmutableList<Predicate<Character>> predicates;
+	private final List<Predicate<Character>> predicates;
 	
-	public MultiParser(CharSequence sequence) {
+	public StringParser(CharSequence sequence) {
 		ImmutableList.Builder<Predicate<Character>> builder = new ImmutableList.Builder<Predicate<Character>>();
 		for(int i = 0; i < sequence.length(); i++) {
 			char ch = sequence.charAt(i);
@@ -39,6 +41,6 @@ public class MultiParser implements IParser {
 			builder.append(p.toString());
 			builder.append(", ");
 		}
-		return "[MultiParser for " + builder.toString() + "]";
+		return "[StringParser for " + builder.toString() + "]";
 	}
 }

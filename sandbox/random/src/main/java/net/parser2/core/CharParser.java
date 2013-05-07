@@ -1,22 +1,21 @@
-package net.parser2;
+package net.parser2.core;
 
 import com.google.common.base.Predicate;
 
-public class SingleParser implements IParser  {
+public class CharParser implements Parser {
 	
 	private final Predicate<Character> predicate;
-	private boolean ignore = false;
 
-	public void ignore() {
-		ignore = true;
-	}
-	
-	public SingleParser(Predicate<Character> p) {
+	public CharParser(Predicate<Character> p) {
 		predicate = p;
 	}
 
-	public SingleParser(char c) {
+	public CharParser(char c) {
 		predicate = new CharPredicate(c);
+	}
+
+	public CharParser() {
+		predicate = new CharPredicate();
 	}
 
 	@Override
@@ -28,11 +27,11 @@ public class SingleParser implements IParser  {
 			i.next(); 
 			return true;
 		}
-		return ignore;
+		return false;
 	}
 	
 	@Override
 	public String toString() {
-		return "[SingleParser for " + predicate.toString() + "]";
+		return "[CharParser for " + predicate.toString() + "]";
 	}
 }

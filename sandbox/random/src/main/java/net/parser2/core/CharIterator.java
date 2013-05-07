@@ -1,4 +1,4 @@
-package net.parser2;
+package net.parser2.core;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

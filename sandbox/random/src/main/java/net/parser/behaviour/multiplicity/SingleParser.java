@@ -35,6 +35,6 @@ public class SingleParser extends GenericParser implements Parser  {
 	
 	@Override
 	public String toString() {
-		return "[SingleParser for " + predicate.toString() + "]";
+		return "[CharParser for " + predicate.toString() + "]";
 	}
 }
