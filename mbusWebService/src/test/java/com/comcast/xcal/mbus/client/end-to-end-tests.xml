@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="briefload" parallel="methods" thread-count="100">
+    <test name="Blackbox">
+        <groups>
+            <run>
+                <include name="briefload" />
+            </run>
+        </groups>
+        <classes>
+            <class name="com.comcast.xcal.mbus.client.BlackboxTest"/>
+        </classes>
+    </test>
+</suite>

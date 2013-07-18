@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user -->
+<!-- -->
+<!-- For professional support please see -->
+<!-- http://www.qos.ch/shop/products/professionalSupport -->
+<!-- -->
+<configuration>
+
+	<if condition='isNull("LOG_DIR")'>
+		<then>
+			<property name="LOG_DIR" value="logs" />
+		</then>
+	</if>
+	
+	<if condition='isNull("LOG_ROLL_SIZE")'>
+		<then>
+			<property name="LOG_ROLL_SIZE" value="500MB" />
+		</then>
+	</if>
+
+	<appender name="CommonLog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_DIR}/mbusWebService.%d{yyyy-MM-dd}.%i.log
+			</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${LOG_ROLL_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d %-5p [%t] %m%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d %-5p [%t] %m%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="AuditLog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_DIR}/audit-log.%d{yyyy-MM-dd}.%i.log
+			</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<maxFileSize>${LOG_ROLL_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+            <pattern>%d %-5p [%t] %m%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="com.comcast.xcal.mbus.util.AuditLoggingUtil" additivity="false" level="INFO">
+		<appender-ref ref="AuditLog" />
+	</logger>
+	
+	<root level="${LOG_LEVEL}">
+		<appender-ref ref="CommonLog" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>

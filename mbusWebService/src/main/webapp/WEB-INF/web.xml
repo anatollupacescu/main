@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<display-name>MBusWebService</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:applicationContext.xml</param-value>
+	</context-param>
+ 	<listener>
+         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<servlet>
+		<description>AtmosphereServlet</description>
+		<servlet-name>AtmosphereServlet</servlet-name>
+		<!--<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class> -->
+		<!-- <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class> -->
+		<servlet-class>org.atmosphere.cpr.MeteorServlet</servlet-class>
+		<init-param>
+			<param-name>org.atmosphere.servlet</param-name>
+			<param-value>com.sun.jersey.spi.spring.container.servlet.SpringServlet</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.atmosphere.websocket.maxIdleTime</param-name>
+			<param-value>-1</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>com.comcast.xcal.mbus.resource</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.atmosphere.cpr.AtmosphereInterceptor</param-name>
+			<param-value>org.atmosphere.interceptor.HeartbeatInterceptor</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.atmosphere.interceptor.HeartbeatInterceptor.heartbeatFrequencyInSeconds</param-name>
+			<param-value>45</param-value>
+		</init-param>
+		<!-- Uncomment if you want to use Servlet 3.0 Async Support <async-supported>true</async-supported> -->
+		<!--<init-param> -->
+		<!--<param-name>org.atmosphere.cpr.broadcasterClass</param-name> -->
+		<!--<param-value>com.comcast.xcal.mbus.pubsub.PubSubBroadcaster</param-value> -->
+		<!--</init-param> -->
+		<!-- Uncomment if you want to track broadcasted message using http session. 
+			<init-param> <param-name>org.atmosphere.cpr.sessionSupport</param-name> <param-value>true</param-value> 
+			</init-param> Uncomment one of the above to support persistence and QoS so 
+			events are never lost when browser is disconnected. <init-param> <param-name>org.atmosphere.cpr.broadcasterCacheClass</param-name> 
+			<param-value>org.atmosphere.cache.SessionBroadcasterCache</param-value> </init-param> 
+			<init-param> <param-name>org.atmosphere.cpr.broadcasterCacheClass</param-name> 
+			<param-value>org.atmosphere.cache.HeaderBroadcasterCache</param-value> </init-param> -->
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AtmosphereServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+</web-app>
