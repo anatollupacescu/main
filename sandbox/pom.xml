@@ -12,5 +12,6 @@
     <module>cassandra-rest</module>
     <module>warehouse-webapp</module>
     <module>antlr-resource-path</module>
+    <module>dummy-parser</module>
   </modules>
 </project>
