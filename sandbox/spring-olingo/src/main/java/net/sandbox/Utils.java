@@ -9,7 +9,29 @@ import com.google.common.collect.Maps;
 public class Utils {
 
 	private static final Pattern keyPattern = Pattern.compile("[\\(|,]([\\w]+)=(['][\\w]+[']|[\\w])");
-	
+
+	public static boolean hasKey(String pathComponent) {
+		if (pathComponent.contains("(")) {
+			int openingBracketIndex = pathComponent.indexOf("(");
+			int closingBracketIndex = pathComponent.indexOf(")");
+			if (closingBracketIndex < pathComponent.length()) {
+				throw new IllegalArgumentException("Content found after key");
+			}
+			if ((openingBracketIndex + 2) == closingBracketIndex) {
+				throw new IllegalArgumentException("Key cannot be empty");
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public static String[] separateKey(String pathComponent) {
+		final int openingBracketIndex = pathComponent.indexOf("(");
+		return new String[] {	/*entity set name*/ pathComponent.substring(0, openingBracketIndex), 
+								/*key part*/ pathComponent.substring(openingBracketIndex) 
+				};
+	}
+
 	public static Map<String, String> extractKeyMap(final String pathComponent) {
 		int openingBrackets = pathComponent.indexOf("(");
 		int closingBrackets = pathComponent.indexOf(")", openingBrackets);

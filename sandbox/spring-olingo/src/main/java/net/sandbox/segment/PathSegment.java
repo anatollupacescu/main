@@ -11,6 +11,7 @@ public class PathSegment {
 	private String name;
 	private SegmentType type;
 	private Optional<Map<String, String>> keyMap = Optional.absent();
+	private boolean linksToNext;
 
 	public PathSegment getNext() {
 		return next;
@@ -74,5 +75,13 @@ public class PathSegment {
 			prevSegment.setNext(prevSegment);
 			this.setPrev(prevSegment);
 		}
+	}
+
+	public void linksToNext(boolean b) {
+		this.linksToNext = b;
+	}
+	
+	public boolean linksToNext() {
+		return linksToNext;
 	}
 }

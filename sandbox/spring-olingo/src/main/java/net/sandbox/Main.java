@@ -12,6 +12,7 @@ import net.sandbox.segment.PathSegment;
 import net.sandbox.segment.SegmentType;
 
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
+import org.apache.olingo.odata2.api.edm.provider.EntityType;
 import org.apache.olingo.odata2.api.edm.provider.Key;
 import org.apache.olingo.odata2.api.edm.provider.PropertyRef;
 import org.apache.olingo.odata2.api.exception.ODataException;
@@ -32,66 +33,46 @@ public class Main {
 
 	public PathSegment lookupSegments(final String path) throws MalformedURLException {
 		final URI url = URI.create(path);
-		final Optional<String> queryOptionsMap = Optional.fromNullable(url.getQuery());
+//		final Optional<String> queryOptionsMap = Optional.fromNullable(url.getQuery());
 		final String[] pathComponents = url.getPath().split("/");
-		return parse(pathComponents, queryOptionsMap);
-	}
-	
-	private PathSegment parse(String[] pathComponents, Optional<String> queryOptionsMap) {
-		PathSegment segment = createSegment(pathComponents[0]);
-		final AtomicBoolean isLinks = new AtomicBoolean();
+		PathSegment segment = createRootSegment(pathComponents[0]);
 		for (int i = 1; i < pathComponents.length; i++) {
 			final String pathComponent = pathComponents[i];
-			switch (segment.getType()) {
-			case ENTITY_SET_W_ID:
-			case NAV_PROP_W_ID:
-				segment = createSegment(pathComponent, segment);
-				break;
-			case COMPLEX_PROP:
-				segment = createSegment(pathComponent, segment, SegmentType.SIMPLE_PROP);
-				break;
-			case SIMPLE_PROP:
-				if (!VALUE_LITERAL.equals(pathComponent)) {
-					throw new IllegalArgumentException("Only $value expected after simple property");
-				}
-				segment = createSegment(pathComponent, segment, SegmentType.VALUE);
-				break;
-			case ENTITY_SET:
-			case NAV_PROP:
-			case VALUE:
-				throw new IllegalArgumentException("Unexpected segment");
-			default:
-				break;
-			}
+			segment = createSegment(pathComponent, segment);
 		}
-		//rewind
+		/*rewind*/
 		while (segment.hasPrev()) {
 			segment = segment.getPrev();
 		}
 		return segment;
 	}
-
-	private PathSegment createSegment(String pathComponent, PathSegment segment, SegmentType simpleProp) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private PathSegment createSegment(String pathComponent, PathSegment segment) {
-		switch(segment.getType()) {
-		case COMPLEX_PROP:
-			return createSegment(pathComponent, segment, SegmentType.SIMPLE_PROP);
+	
+	private PathSegment createSegment(String pathComponent, PathSegment parent) {
+		final SegmentType segmentType = lookupSegmentType(pathComponent, parent);
+		PathSegment current = null;
+		switch (segmentType) {
+		case NAV_PROP_W_ID:
+		case NAV_PROP:
+			current = createNavigationSegment(pathComponent);
 			break;
-		case 
+		case SIMPLE_PROP:
+		case COMPLEX_PROP:
+			current =  createPropertySegment(pathComponent);
+			break;
+		case $VALUE:
+			current = createValueSegment(pathComponent);
+			break;
+		case $LINKS:
+			current = parent;
+			current.linksToNext(true);
+			break;
+		case ENTITY_SET:
+			throw new IllegalArgumentException("Content not expected after entity set without id specified");
+			break;
+			default:
+				throw new IllegalArgumentException("Unexpected segment type");
 		}
-		String[] parts = separateKey(pathComponent);
-		final String entitySetName = parts[0];
-		final String keyString = parts[1];
-		final SegmentType segmentType;
-		final FullQualifiedName entitySet = wrapper.lookupEntitySet(entitySetName);
-		if(entitySet == null) {
-			wrapper.lookup
-		}
-		return null;
+		return current;
 	}
 
 	/**
@@ -99,17 +80,17 @@ public class Main {
 	 * @param pathComponent
 	 * @return root segment object
 	 */
-	private PathSegment createSegment(final String pathComponent) {
+	private PathSegment createRootSegment(final String pathComponent) {
 		Map<String, String> keyMap = null;
 		String entitySetName = pathComponent;
 		SegmentType segmentType = SegmentType.ENTITY_SET;
-		if (pathComponent.contains("(")) {
-			int openingBracketIndex = pathComponent.indexOf("(");
-			final String keyString = pathComponent.substring(openingBracketIndex);
-			entitySetName = pathComponent.substring(0, openingBracketIndex);
+		if (Utils.hasKey(pathComponent)) {
+			String[] pathSegmentAndKey = Utils.separateKey(pathComponent);
+			entitySetName = pathSegmentAndKey[0];
+			final String keyString = pathSegmentAndKey[1];
 			keyMap = Utils.extractKeyMap(keyString);
-			final FullQualifiedName entityType = wrapper.lookupEntitySet(entitySetName);
-			Key entityKey = wrapper.lookupEntityType(entityType); entityType.
+			final EntityType entityType = wrapper.lookupEntityTypeForEntitySetName(entitySetName);
+			Key entityKey = entityType.getKey();
 			for (final PropertyRef key : entityKey.getKeys()) {
 				if (keyMap.get(key.getName()) == null) {
 					throw new IllegalArgumentException(String.format("Key not provided: '%s'", key.getName()));
@@ -122,16 +103,6 @@ public class Main {
 		segment.setName(entitySetName);
 		segment.setKeyMap(keyMap);
 		return segment;
-	}
-	
-	private String[] separateKey(String pathComponent) {
-		String[] parts = new String[] { pathComponent, null };
-		if (pathComponent.contains("(")) {
-			int openingBracketIndex = pathComponent.indexOf("(");
-			parts[1] = pathComponent.substring(openingBracketIndex);
-			parts[0] = pathComponent.substring(0, openingBracketIndex);
-		}
-		return parts;
 	}
 }
 
