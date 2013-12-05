@@ -1,7 +1,10 @@
 package net.sandbox.metadata;
 
+import net.sandbox.segment.PathSegment;
+
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
 import org.apache.olingo.odata2.api.edm.provider.Association;
+import org.apache.olingo.odata2.api.edm.provider.ComplexType;
 import org.apache.olingo.odata2.api.edm.provider.EntityContainer;
 import org.apache.olingo.odata2.api.edm.provider.EntitySet;
 import org.apache.olingo.odata2.api.edm.provider.EntityType;
@@ -15,6 +18,17 @@ public class MetadataWrapper {
 		this.metadata = metadata;
 	}
 
+	public boolean hasNavigation(PathSegment parent, String pathComponent) {
+		for (Schema schema : metadata.getSchemas()) {
+			for(Association assoc : schema.getAssociations()) {
+				if(assoc.getName().equals(parent.getName())) {
+					return assoc.getEnd1().getType().getName().equals(pathComponent);
+				}
+			}
+		}
+		return false;
+	}
+	
 	public String lookupNavigationProperty(String pathComponent) {
 		for (Schema schema : metadata.getSchemas()) {
 			for(Association assoc : schema.getAssociations()) {
@@ -51,8 +65,36 @@ public class MetadataWrapper {
 	}
 	
 	public EntityType lookupEntityTypeForEntitySetName(final String pathComponent) {
-		final EntitySet entitySEt = lookupEntitySet(pathComponent);
-		final FullQualifiedName entityTypeFullQualifiedName = entitySEt.getEntityType();
+		final EntitySet entitySet = lookupEntitySet(pathComponent);
+		final FullQualifiedName entityTypeFullQualifiedName = entitySet.getEntityType();
 		return lookupEntityTypeForFullQualifiedName(entityTypeFullQualifiedName);
 	}
+
+	public boolean hasProperty(String parent, String pathComponent) {
+		for (Schema schema : metadata.getSchemas()) {
+			for (EntityType type : schema.getEntityTypes()) {
+				if (type.getName().equals(parent)) {
+					return type.getProperties().contains(pathComponent);
+				}
+			}
+		}
+		throw new IllegalStateException(String.format("Entity type not found: '%s'", parent));
+	}
+
+	public boolean hasComplexProperty(String name, String pathComponent) {
+		for (Schema schema : metadata.getSchemas()) {
+			for (ComplexType type : schema.getComplexTypes()) {
+				if (type.getName().equals(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean hasSimpleProperty(String name, String pathComponent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

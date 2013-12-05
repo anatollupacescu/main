@@ -26,6 +26,7 @@ import org.apache.olingo.odata2.api.edm.provider.Association;
 import org.apache.olingo.odata2.api.edm.provider.AssociationEnd;
 import org.apache.olingo.odata2.api.edm.provider.AssociationSet;
 import org.apache.olingo.odata2.api.edm.provider.AssociationSetEnd;
+import org.apache.olingo.odata2.api.edm.provider.ComplexProperty;
 import org.apache.olingo.odata2.api.edm.provider.ComplexType;
 import org.apache.olingo.odata2.api.edm.provider.CustomizableFeedMappings;
 import org.apache.olingo.odata2.api.edm.provider.EntityContainer;
@@ -104,8 +105,7 @@ public class ScenarioEdmProvider {
 		EntitySet teamsEntitySet = getEntitySet(ENTITY_CONTAINER, ENTITY_SET_TEAMS);
 		entityContainer.setEntitySets(ImmutableList.of(teamsEntitySet, employeeEntitySet));
 
-		AssociationSet associationSet = getAssociationSet(ENTITY_CONTAINER, FQ_NAME_ASSOC_TEAM_EMPLOYESS,
-				ENTITY_SET_TEAMS, ROLE_TEAM);
+		AssociationSet associationSet = getAssociationSet(ENTITY_CONTAINER, FQ_NAME_ASSOC_TEAM_EMPLOYESS, ENTITY_SET_TEAMS);
 		entityContainer.setAssociationSets(ImmutableList.of(associationSet));
 
 		schema.setEntityContainers(Arrays.asList(entityContainer));
@@ -156,6 +156,8 @@ public class ScenarioEdmProvider {
 				properties.add(new SimpleProperty().setName("isScrumTeam").setType(EdmSimpleTypeKind.Boolean)
 						.setFacets(new Facets().setNullable(true))
 						.setMapping(new Mapping().setInternalName("isScrumTeam")));
+		        properties.add(new ComplexProperty().setName("City").setType(FQ_NAME_COMPLEX_CITY).setFacets(
+		                new Facets().setNullable(false)));
 				List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
 				navigationProperties.add(new NavigationProperty().setName("nt_Employees")
 						.setRelationship(FQ_NAME_ASSOC_TEAM_EMPLOYESS).setFromRole(ROLE_TEAM)
@@ -210,7 +212,7 @@ public class ScenarioEdmProvider {
 	}
 
 	private AssociationSet getAssociationSet(final String entityContainer,
-			final FullQualifiedName association, final String sourceEntitySetName,
+			final FullQualifiedName association,
 			final String sourceEntitySetRole) throws ODataException {
 		if (ENTITY_CONTAINER.equals(entityContainer)) {
 			if (FQ_NAME_ASSOC_TEAM_EMPLOYESS.equals(association)) {

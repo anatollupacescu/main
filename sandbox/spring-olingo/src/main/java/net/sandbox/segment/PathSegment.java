@@ -2,6 +2,8 @@ package net.sandbox.segment;
 
 import java.util.Map;
 
+import org.apache.olingo.odata2.api.edm.provider.ComplexType;
+
 import com.google.common.base.Optional;
 
 public class PathSegment {
@@ -12,6 +14,7 @@ public class PathSegment {
 	private SegmentType type;
 	private Optional<Map<String, String>> keyMap = Optional.absent();
 	private boolean linksToNext;
+	private ComplexType edmType;
 
 	public PathSegment getNext() {
 		return next;
@@ -83,5 +86,13 @@ public class PathSegment {
 	
 	public boolean linksToNext() {
 		return linksToNext;
+	}
+
+	public void setEdmType(ComplexType entityType) {
+		this.edmType = entityType;
+	}
+	
+	public ComplexType getEdmType() {
+		return edmType;
 	}
 }

@@ -14,7 +14,7 @@ public class Utils {
 		if (pathComponent.contains("(")) {
 			int openingBracketIndex = pathComponent.indexOf("(");
 			int closingBracketIndex = pathComponent.indexOf(")");
-			if (closingBracketIndex < pathComponent.length()) {
+			if (closingBracketIndex < (pathComponent.length() - 1)) {
 				throw new IllegalArgumentException("Content found after key");
 			}
 			if ((openingBracketIndex + 2) == closingBracketIndex) {

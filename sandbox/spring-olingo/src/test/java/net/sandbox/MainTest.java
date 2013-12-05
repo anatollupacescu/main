@@ -19,7 +19,7 @@ public class MainTest {
 	
 	@Test
 	public final void test() throws MalformedURLException {
-		final String path = "Employees(guid=1)/preferences/$value?$expand=account";
+		final String path = "Employees(guid=1)/EmployeeId/$value?$expand=account";
 		PathSegment segments = main.lookupSegments(path);
 		assertEquals(true, segments.hasNext());
 		assertEquals(false, segments.getKeyMap().isEmpty());
