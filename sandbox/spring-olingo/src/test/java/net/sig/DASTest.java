@@ -35,7 +35,7 @@ public class DASTest {
 	
 	@Test
 	public void test1() {
-		Map guid = ImmutableMap.of(AccountDAS.KEYS.accId, "acc1");
+		Map<String,String> guid = ImmutableMap.of(AccountDAS.KEYS.accId.toString(), "acc1");
 		//Accounts
 		Segment accounts = SIGPathSegment.newSegment("Accounts", guid );
 		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, accounts);
@@ -48,7 +48,7 @@ public class DASTest {
 	public void test2() {
 		//Subscribers(guid1)/accounts
 		Segment accounts = SIGPathSegment.newSegment("Accounts");
-		Map guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid, "guid1");
+		Map<String,String> guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), "guid1");
 		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		accounts.setPrev(subscribers);
@@ -62,9 +62,9 @@ public class DASTest {
 	@Test
 	public void test3() {
 		//Subscribers(guid1)/accounts(acc1)
-		Map acc1 = ImmutableMap.of(AccountDAS.KEYS.accId, "acc1");
+		Map<String,String> acc1 = ImmutableMap.of(AccountDAS.KEYS.accId.toString(), "acc1");
 		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
-		Map guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid, "guid1");
+		Map<String,String> guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), "guid1");
 		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		accounts.setPrev(subscribers);
@@ -80,10 +80,10 @@ public class DASTest {
 		//Subscribers(guid1)/accounts(acc1)/subscribers
 		Segment subscribers = SIGPathSegment.newSegment("Subscribers");
 		
-		Map acc1 = ImmutableMap.of(AccountDAS.KEYS.accId, "acc1");
+		Map<String,String> acc1 = ImmutableMap.of(AccountDAS.KEYS.accId.toString(), "acc1");
 		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
 		
-		Map guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid, "guid1");
+		Map<String,String> guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), "guid1");
 		Segment subscriber = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		subscribers.setPrev(accounts);
@@ -99,16 +99,5 @@ public class DASTest {
 	public void test22() {
 		//Subscribers(guid1)/accounts(acc1)/Subscribers(guid2)/accounts
 		
-		Segment accounts = SIGPathSegment.newSegment("accounts");
-		Segment subscribers_guid2 = SIGPathSegment.newSegment("subscribers", ImmutableMap.of("guid", "guid2"));
-		Segment accounts_acc1 = SIGPathSegment.newSegment("accounts", ImmutableMap.of("accId", "acc1"));
-		Segment subscribers_guid1 = SIGPathSegment.newSegment("subscribers", ImmutableMap.of("guid", "guid1"));
-		
-		accounts.setPrev(subscribers_guid2);
-		subscribers_guid2.setPrev(accounts_acc1);
-		accounts_acc1.setPrev(subscribers_guid1);
-		
-		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, accounts);
-		Object result = accountsExecutor.execute();
 	}
 }

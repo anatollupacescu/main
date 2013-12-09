@@ -40,17 +40,21 @@ public class AccountDAS extends SIGAbstractCacheStore {
 	}
 	
 	public Object load(Object arg0) {
-		final String guid = (String) ((Map)arg0).get(KEYS.accId);
+		final String guid = (String) ((Map)arg0).get(KEYS.accId.toString());
 		return accounts.get(guid);
 	}
 
-	public Map loadAll(Collection arg0) {
-		if(arg0 == null) {
+	public Map loadAll(Collection guidMap) {
+		if(guidMap == null) {
 			return accounts;
 		}
 		Builder<Object, Object> builder = ImmutableMap.builder();
-		for(Object id : arg0) {
-			builder.put(id, accounts.get((String)id));
+		for(Object id : guidMap) {
+			String keyValue = (String)((Map)id).get(KEYS.accId.toString());
+			GenericData account = accounts.get(keyValue);
+			if(account != null) {
+				builder.put(id, account);
+			}
 		}
 		return builder.build();
 	}

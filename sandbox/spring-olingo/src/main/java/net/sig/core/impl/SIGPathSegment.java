@@ -52,4 +52,8 @@ public class SIGPathSegment implements Segment {
 		return new SIGPathSegment(service, guid);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s(%s)", serviceName, guid);
+	}
 }

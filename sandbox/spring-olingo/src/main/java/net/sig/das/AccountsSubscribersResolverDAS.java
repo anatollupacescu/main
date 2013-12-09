@@ -6,6 +6,7 @@ import net.sig.core.SIGResolverService;
 import net.sig.core.impl.SIGEntityGateway;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class AccountsSubscribersResolverDAS extends SIGResolverService {
 
@@ -13,9 +14,9 @@ public class AccountsSubscribersResolverDAS extends SIGResolverService {
 		super(gateway2);
 	}
 
-	public Object load(Object arg0) {
-		Object account = getGateway().getService("Accounts").load(arg0);
-		return ImmutableList.of(((Map)account).get("parent"));
+	public Object load(Object guidMap) {
+		Object account = getGateway().getService("Accounts").load(guidMap);
+		return ImmutableList.of(ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), ((Map)account).get("parent")));
 	}
 
 }

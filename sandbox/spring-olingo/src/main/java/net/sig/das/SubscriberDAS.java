@@ -8,6 +8,7 @@ import net.sig.core.impl.GenericData;
 import net.sig.core.impl.SIGEntityGateway;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class SubscriberDAS extends SIGAbstractCacheStore {
 
@@ -31,12 +32,20 @@ public class SubscriberDAS extends SIGAbstractCacheStore {
 	}
 	
 	public Object load(Object arg0) {
-		final String guid = (String) ((Map)arg0).get(KEYS.guid);
+		final String guid = (String) ((Map)arg0).get(KEYS.guid.toString());
 		return subscribers.get(guid);
 	}
 	
-	public Map loadAll(Collection arg0) {
-		return subscribers;
+	public Map loadAll(Collection ids) {
+		Builder<String, GenericData> builder = ImmutableMap.builder();
+		for(Map id : (Collection<Map>)ids) {
+			String keyValue = (String)id.get(KEYS.guid.toString());
+			GenericData subcriber = subscribers.get(keyValue);
+			if(subcriber != null) {
+				builder.put(keyValue, subcriber);
+			}
+		}
+		return builder.build();
 	}
 	
 	public void erase(Object arg0) {
@@ -50,4 +59,5 @@ public class SubscriberDAS extends SIGAbstractCacheStore {
 
 	public void storeAll(Map arg0) {
 	}
+
 }

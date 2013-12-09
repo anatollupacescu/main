@@ -6,6 +6,7 @@ import net.sig.core.SIGResolverService;
 import net.sig.core.impl.SIGEntityGateway;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class SubscribersAccountsResolverDAS extends SIGResolverService {
 
@@ -16,16 +17,13 @@ public class SubscribersAccountsResolverDAS extends SIGResolverService {
 	public Object load(Object arg0) {
 		Map accounts = (Map)getGateway().getService("Accounts").loadAll(null);
 		/*computations*/
-		ImmutableList.Builder<Object> builder = ImmutableList.builder();
+		ImmutableList.Builder<Map<String, String>> builder = ImmutableList.builder();
 		for(Object account : accounts.values()) {
-			if(((Map)account).get("parent").equals(((Map)arg0).get(SubscriberDAS.KEYS.guid))) {
-				builder.add(((Map)account).get(AccountDAS.KEYS.accId.toString()));
+			if(((Map)account).get("parent").equals(((Map)arg0).get(SubscriberDAS.KEYS.guid.toString()))) {
+				final String keyName = AccountDAS.KEYS.accId.toString();
+				builder.add(ImmutableMap.<String, String>of(keyName, (String)((Map)account).get(keyName)));
 			}
 		}
 		return builder.build();
-	}
-
-	private Object compute(Object res1, Object res2) {
-		return null;
 	}
 }

@@ -30,4 +30,5 @@ public abstract class SIGResolverService extends SIGAbstractCacheStore {
 	public Map loadAll(Collection arg0) {
 		throw new UnsupportedOperationException();
 	}
+
 }
