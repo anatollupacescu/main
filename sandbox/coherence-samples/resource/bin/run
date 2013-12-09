@@ -1,0 +1,45 @@
+#!/bin/bash
+# debug
+# set -x
+
+EXAMPLE=$1
+EXAMPLE_PATH_BEGIN=com/tangosol/examples
+
+cd `dirname $0`/..
+EXAMPLES_DIR=`pwd`
+
+if [ -z $EXAMPLE ]; then
+    echo usage: run example
+    echo where \"example\" is a directory under com.tangosol.examples
+    echo
+    echo example: run contacts
+	echo
+    echo current directories: $(ls $EXAMPLES_DIR/src/$EXAMPLE_PATH_BEGIN)
+    exit 1
+fi
+
+shift
+
+if [ -z $COHERENCE_HOME ]; then
+    echo COHERENCE_HOME is not set!
+    echo set COHERENCE_HOME to a Coherence installation.
+    exit 1
+fi
+
+if [ -z $JAVA_HOME ]; then
+    echo JAVA_HOME is not set!
+    echo set JAVA_HOME to a JRE/JDK 1.4.2 or greater installation.
+    exit 1
+fi
+
+
+CONFIG=$EXAMPLES_DIR/resource/config
+
+COH_OPTS="$COH_OPTS -cp $CONFIG:$COHERENCE_HOME/lib/coherence.jar:$EXAMPLES_DIR/classes"
+COH_OPTS="$COH_OPTS -Dtangosol.coherence.cacheconfig=$CONFIG/examples-cache-config.xml"
+
+echo redirecting Coherence logging to ${EXAMPLE}.log...
+$JAVA_HOME/bin/java $COH_OPTS -Xms256m -Xmx256m \
+    -Dtangosol.coherence.distributed.localstorage=false \
+    -Dtangosol.coherence.log=${EXAMPLE}.log \
+    com.tangosol.examples.$EXAMPLE.Driver contacts ${EXAMPLES_DIR}/../resource/contacts.csv $*

@@ -124,6 +124,13 @@
 		  <scope>runtime</scope>
 		</dependency>
 
+		<!-- coherence -->
+		<dependency>
+			<groupId>com.oracle.coherence</groupId>
+			<artifactId>coherence</artifactId>
+			<version>3.7.1</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

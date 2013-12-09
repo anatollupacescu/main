@@ -1,0 +1,25 @@
+#!/bin/bash
+# debug
+# set -x
+
+cd `dirname $0`/..
+EXAMPLES_DIR=`pwd`
+
+if [ -z $COHERENCE_HOME ]; then
+    echo COHERENCE_HOME is not set!
+    echo set COHERENCE_HOME to a Coherence installation.
+    exit 1
+fi
+
+if [ -z $JAVA_HOME ]; then
+    echo JAVA_HOME is not set!
+    echo set JAVA_HOME to a JRE/JDK 1.4.2 or greater installation.
+fi
+
+CONFIG=$EXAMPLES_DIR/resource/config
+
+COH_OPTS="$COH_OPTS -cp $CONFIG:$COHERENCE_HOME/lib/coherence.jar:$EXAMPLES_DIR/classes"
+COH_OPTS="$COH_OPTS -Dtangosol.coherence.cacheconfig=$CONFIG/examples-cache-config.xml"
+COH_OPTS="$COH_OPTS -Dtangosol.coherence.extend.enabled=true"
+
+java $COH_OPTS -Xms1g -Xmx1g com.tangosol.net.DefaultCacheServer $*

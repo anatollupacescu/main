@@ -13,5 +13,6 @@
     <module>warehouse-webapp</module>
     <module>antlr-resource-path</module>
 	<module>spring-olingo</module>
+    <module>coherence-samples</module>
   </modules>
 </project>
