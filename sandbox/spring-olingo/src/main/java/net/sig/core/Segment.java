@@ -1,12 +1,12 @@
 package net.sig.core;
 
-import java.util.Map;
+import net.sig.core.impl.GenericKey;
 
 public interface Segment {
 
 	public boolean hasGuid();
 	
-	public Map getGuid();
+	public GenericKey getGuid();
 	
 	public String getServiceName();
 	

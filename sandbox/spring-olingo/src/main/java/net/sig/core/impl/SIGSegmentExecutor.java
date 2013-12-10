@@ -2,12 +2,16 @@ package net.sig.core.impl;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sig.core.SIGAbstractCacheStore;
 import net.sig.core.Segment;
 
 public class SIGSegmentExecutor {
 
+	private static final Logger log = Logger.getLogger("SIGSegment");
+	
 	private final Segment current;
 	private final SIGEntityGateway gateway;
 	
@@ -17,22 +21,30 @@ public class SIGSegmentExecutor {
 	}
 	
 	public Object execute() {
+		log.log(Level.INFO, "Executing segment {0}", new Object[] { current.toString() });
 		if(current.hasPrev()) {
+			log.log(Level.INFO, "Segment {0} has parent {1}, we will execute it", new Object[] { current, current.getPrev() });
 			/* will be executing previous segment */
 			final SIGSegmentExecutor previousSegmentExecutor = SIGSegmentExecutor.newExecutor(gateway, current.getPrev());
 			GenericData prevSegmentResult = (GenericData)previousSegmentExecutor.execute();
 			if(current.hasGuid()) {
+				log.log(Level.INFO, "Segment {0} has guid, will check if it is a valid child of previous segment {1}", new Object[] { current,  current.getPrev() });
     			/* will check if current segment is a valid child of the previous */
     			if(hasChild(prevSegmentResult, current)) {
+    				log.log(Level.INFO, "Segment {0} is a valid child of previous segment {1}, will return its value", new Object[] { current,  current.getPrev() });
+    				/* if it is, then retrieve it */
     				final SIGAbstractCacheStore currentSegmentService = gateway.getService(current.getServiceName());
-    				return (Map)currentSegmentService.load(current.getGuid());
+    				return currentSegmentService.load(current.getGuid());
     			} else {
     				throw new IllegalStateException(String.format("%s is not a valid child of %s", current, current.getPrev()));
     			}
 			} else {
+				/* will retrieve previous segment's childs */
+				log.log(Level.INFO, "Segment {0} does not have guid, will return childs of previous segment {1}", new Object[] {  current, current.getPrev() });
 				return getChilds(current);
 			}
 		} else {
+			log.log(Level.INFO, "Reached the root segment {0}, will return its value", new Object[] { current });
 			final SIGAbstractCacheStore currentSegmentService = gateway.getService(current.getServiceName());
 			if(current.hasGuid()) {
 				return currentSegmentService.load(current.getGuid());
@@ -42,40 +54,35 @@ public class SIGSegmentExecutor {
 		}
 	}
 	
-	public Map getChilds(Segment child) {
-		String resolverName = getResolverName(child);
-		SIGAbstractCacheStore resolverService = gateway.getService(resolverName);
+	private Map<GenericKey, GenericData> getChilds(Segment child) {
+		SIGAbstractCacheStore resolverService = getResolverService(child);
 		SIGAbstractCacheStore targetDAS = gateway.getService(child.getServiceName());
-		Collection entityIds = (Collection) resolverService.load(child.getPrev().getGuid());
-		return targetDAS.loadAll(entityIds);
+		GenericKey parentGuid = child.getPrev().getGuid();
+		@SuppressWarnings("unchecked")
+		Collection<GenericKey> childEntityIds = (Collection<GenericKey>) resolverService.load(parentGuid);
+		@SuppressWarnings("unchecked")
+		Map<GenericKey, GenericData> childEntities = (Map<GenericKey, GenericData>)targetDAS.loadAll(childEntityIds);
+		return childEntities;
 	}
 	
-	public boolean hasChild(GenericData prevResult, Segment child) {
-		String resolverName = getResolverName(child);
-		SIGAbstractCacheStore resolverService = gateway.getService(resolverName);
-		SIGAbstractCacheStore targetDAS = gateway.getService(child.getServiceName());
-		Collection<Map<String, String>> entityIds = (Collection<Map<String, String>>) resolverService.load(prevResult);
-		return containsChildId(entityIds, current.getGuid());
-	}
-
-	private boolean containsChildId(Collection<Map<String, String>> entityIds, Map<String, String> childGuidMap) {
-		for(Map guidMap : entityIds) {
-			boolean found = true;
-			for (Object key : guidMap.keySet()) {
-				String keyValue = childGuidMap.get(key);
-				if( ! ((String)guidMap.get(key)).equals(keyValue)) {
-					found = false;
-				}
-			}
-			if(found) {
-				return true;
-			}
-		}
-		return false;
+	private boolean hasChild(GenericData prevResult, Segment child) {
+		SIGAbstractCacheStore resolverService = getResolverService(child);
+		@SuppressWarnings("unchecked")
+		Collection<GenericKey> entityIds = (Collection<GenericKey>) resolverService.load(prevResult.getKey());
+		return entityIds.contains(current.getGuid());
 	}
 
 	private String getResolverName(Segment child) {
 		return child.getPrev().getServiceName() + child.getServiceName() + "Resolver";
+	}
+	
+	private SIGAbstractCacheStore getResolverService(Segment child) {
+		String resolerName = getResolverName(child);
+		SIGAbstractCacheStore resolverService = gateway.getService(resolerName);
+		if(resolverService == null) {
+			throw new IllegalStateException("Could not find resolver service for " + resolerName);
+		}
+		return resolverService;
 	}
 	
 	public static SIGSegmentExecutor newExecutor(SIGEntityGateway gateway, Segment accounts) {

@@ -3,10 +3,11 @@ package net.sig.das;
 import java.util.Map;
 
 import net.sig.core.SIGResolverService;
+import net.sig.core.impl.GenericData;
+import net.sig.core.impl.GenericKey;
 import net.sig.core.impl.SIGEntityGateway;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class SubscribersAccountsResolverDAS extends SIGResolverService {
 
@@ -14,14 +15,17 @@ public class SubscribersAccountsResolverDAS extends SIGResolverService {
 		super(gateway2);
 	}
 
-	public Object load(Object arg0) {
-		Map accounts = (Map)getGateway().getService("Accounts").loadAll(null);
-		/*computations*/
-		ImmutableList.Builder<Map<String, String>> builder = ImmutableList.builder();
-		for(Object account : accounts.values()) {
-			if(((Map)account).get("parent").equals(((Map)arg0).get(SubscriberDAS.KEYS.guid.toString()))) {
-				final String keyName = AccountDAS.KEYS.accId.toString();
-				builder.add(ImmutableMap.<String, String>of(keyName, (String)((Map)account).get(keyName)));
+	@SuppressWarnings("rawtypes")
+	public Object load(Object subscriberKeyObject) {
+		final GenericKey subscriberKey = (GenericKey)subscriberKeyObject;
+		final String subscriberGuid = subscriberKey.get("guid");
+		final Object accounts = getGateway().getService("Accounts").loadAll(null);
+		ImmutableList.Builder<GenericKey> builder = ImmutableList.builder();
+		for(Object account : ((Map)accounts).values()) {
+			final GenericData accountEntity = (GenericData)account;
+			final String parent = accountEntity.get("parent");
+			if(parent.equals(subscriberGuid)) {
+				builder.add(accountEntity.getKey());
 			}
 		}
 		return builder.build();

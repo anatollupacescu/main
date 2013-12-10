@@ -1,48 +1,61 @@
 package net.sig.das;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import net.sig.core.SIGAbstractCacheStore;
 import net.sig.core.impl.GenericData;
+import net.sig.core.impl.GenericKey;
 import net.sig.core.impl.SIGEntityGateway;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class SubscriberDAS extends SIGAbstractCacheStore {
 
-	public enum KEYS { guid };
+	public static final List<String> entityKeys = ImmutableList.of("guid");
 	
 	private final Map<String, GenericData> subscribers;
 	
 	public SubscriberDAS(SIGEntityGateway gateway) {
 		super(gateway);
 		final GenericData subscriber1 = new GenericData();
+		final GenericKey subscriber1Key = new GenericKey(entityKeys);
+		subscriber1.setKey(subscriber1Key);
 		final String guid = "guid1";
-		subscriber1.put(KEYS.guid.toString(), guid);
+		subscriber1.put("guid", guid);
 		subscriber1.put("age", "21");
+		subscriber1.inferKeyValues();
 		
 		final GenericData subscriber2 = new GenericData();
+		final GenericKey subscriber2Key = new GenericKey(entityKeys);
+		subscriber2.setKey(subscriber2Key);
 		final String guid2 = "guid2";
-		subscriber2.put(KEYS.guid.toString(), guid2);
+		subscriber2.put("guid", guid2);
 		subscriber2.put("age", "58");
+		subscriber2.inferKeyValues();
 		
 		subscribers = ImmutableMap.of(guid, subscriber1, guid2, subscriber2);
 	}
 	
 	public Object load(Object arg0) {
-		final String guid = (String) ((Map)arg0).get(KEYS.guid.toString());
-		return subscribers.get(guid);
+		final GenericKey requestKey = (GenericKey) arg0;
+		final String keyValue = requestKey.get("guid");
+		return subscribers.get(keyValue);
 	}
 	
 	public Map loadAll(Collection ids) {
-		Builder<String, GenericData> builder = ImmutableMap.builder();
-		for(Map id : (Collection<Map>)ids) {
-			String keyValue = (String)id.get(KEYS.guid.toString());
-			GenericData subcriber = subscribers.get(keyValue);
+		if(ids == null) {
+			return subscribers;
+		}
+		Builder<GenericKey, GenericData> builder = ImmutableMap.builder();
+		for(Object id : ids) {
+			GenericKey subscriberKey = (GenericKey)id;
+			GenericData subcriber = subscribers.get(subscriberKey.get("guid"));
 			if(subcriber != null) {
-				builder.put(keyValue, subcriber);
+				builder.put(subscriberKey, subcriber);
 			}
 		}
 		return builder.build();

@@ -7,6 +7,8 @@ import java.util.Map;
 
 import net.sig.core.SIGAbstractCacheStore;
 import net.sig.core.Segment;
+import net.sig.core.impl.GenericData;
+import net.sig.core.impl.GenericKey;
 import net.sig.core.impl.SIGEntityGateway;
 import net.sig.core.impl.SIGPathSegment;
 import net.sig.core.impl.SIGSegmentExecutor;
@@ -16,6 +18,7 @@ import net.sig.das.SubscriberDAS;
 import net.sig.das.SubscribersAccountsResolverDAS;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -33,28 +36,40 @@ public class DASTest {
 		gateway.setRegistry(registry);
 	}
 	
+	private GenericKey newAccountKey() {
+		 return new GenericKey(AccountDAS.entityKeys);
+	}
+	
+	private GenericKey newSubscriberKey() {
+		 return new GenericKey(SubscriberDAS.entityKeys);
+	}
+	
 	@Test
 	public void test1() {
-		Map<String,String> guid = ImmutableMap.of(AccountDAS.KEYS.accId.toString(), "acc1");
+		GenericKey accountKey = newAccountKey();
+		accountKey.inferValues(ImmutableMap.of("accId", "acc1"));
 		//Accounts
-		Segment accounts = SIGPathSegment.newSegment("Accounts", guid );
+		Segment accounts = SIGPathSegment.newSegment("Accounts", accountKey);
 		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, accounts);
-		Object result = accountsExecutor.execute();
+		GenericData result = (GenericData)accountsExecutor.execute();
 		assertNotNull(result);
-		assertEquals("jora", ((Map)result).get("name"));
+		assertEquals("jora", result.get("name"));
 	}
 	
 	@Test
 	public void test2() {
 		//Subscribers(guid1)/accounts
 		Segment accounts = SIGPathSegment.newSegment("Accounts");
-		Map<String,String> guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), "guid1");
-		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
+		
+		GenericKey subscriberKey = newSubscriberKey(); 
+		subscriberKey.inferValues(ImmutableMap.of("guid", "guid1"));
+		Segment subscribers = SIGPathSegment.newSegment("Subscribers", subscriberKey);
 		
 		accounts.setPrev(subscribers);
 		
 		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, accounts);
-		Map result = (Map)accountsExecutor.execute();
+		@SuppressWarnings("unchecked")
+		Map<GenericKey, GenericData> result = (Map<GenericKey, GenericData>)accountsExecutor.execute();
 		assertNotNull(result);
 		assertEquals(2, result.values().size());
 	}
@@ -62,15 +77,18 @@ public class DASTest {
 	@Test
 	public void test3() {
 		//Subscribers(guid1)/accounts(acc1)
-		Map<String,String> acc1 = ImmutableMap.of(AccountDAS.KEYS.accId.toString(), "acc1");
+		GenericKey acc1 = newAccountKey(); 
+		acc1.inferValues(ImmutableMap.of("accId", "acc1"));
 		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
-		Map<String,String> guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), "guid1");
+		
+		GenericKey guid1 = newSubscriberKey(); 
+		guid1.inferValues(ImmutableMap.of("guid", "guid1"));
 		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		accounts.setPrev(subscribers);
 		
 		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, accounts);
-		Map result = (Map)accountsExecutor.execute();
+		GenericData result = (GenericData)accountsExecutor.execute();
 		assertNotNull(result);
 		assertEquals("guid1", result.get("parent"));
 	}
@@ -80,22 +98,26 @@ public class DASTest {
 		//Subscribers(guid1)/accounts(acc1)/subscribers
 		Segment subscribers = SIGPathSegment.newSegment("Subscribers");
 		
-		Map<String,String> acc1 = ImmutableMap.of(AccountDAS.KEYS.accId.toString(), "acc1");
+		GenericKey acc1 = newAccountKey(); 
+		acc1.inferValues(ImmutableMap.of("accId", "acc1"));
 		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
 		
-		Map<String,String> guid1 = ImmutableMap.of(SubscriberDAS.KEYS.guid.toString(), "guid1");
+		GenericKey guid1 = newSubscriberKey(); 
+		guid1.inferValues(ImmutableMap.of("guid", "guid1"));
 		Segment subscriber = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		subscribers.setPrev(accounts);
 		accounts.setPrev(subscriber);
 		
 		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, subscribers);
-		Map result = (Map)accountsExecutor.execute();
+		@SuppressWarnings("unchecked")
+		Map<GenericKey, GenericData> result = (Map<GenericKey, GenericData>)accountsExecutor.execute();
 		assertNotNull(result);
-		assertEquals("21", ((Map)result.values().iterator().next()).get("age"));
+		assertEquals("21", ((GenericData)result.values().iterator().next()).get("age"));
 	}
-	
+
 	@Test
+	@Ignore
 	public void test22() {
 		//Subscribers(guid1)/accounts(acc1)/Subscribers(guid2)/accounts
 		

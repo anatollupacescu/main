@@ -1,12 +1,12 @@
 package net.sig.core.impl;
 
-import java.util.Map;
+import com.google.common.base.Strings;
 
 import net.sig.core.Segment;
 
 public class SIGPathSegment implements Segment {
 
-	private final Map guid;
+	private final GenericKey guid;
 	private final String serviceName;
 	private Segment prev;
 	
@@ -15,7 +15,7 @@ public class SIGPathSegment implements Segment {
 		this.serviceName = serviceName;
 	}
 
-	private SIGPathSegment(String serviceName, Map guid) {
+	private SIGPathSegment(String serviceName, GenericKey guid) {
 		this.guid = guid;
 		this.serviceName = serviceName;
 	}
@@ -36,7 +36,7 @@ public class SIGPathSegment implements Segment {
 		this.prev = segment;
 	}
 
-	public Map getGuid() {
+	public GenericKey getGuid() {
 		return guid;
 	}
 
@@ -48,12 +48,12 @@ public class SIGPathSegment implements Segment {
 		return new SIGPathSegment(service);
 	}
 	
-	public static Segment newSegment(String service, Map guid) {
-		return new SIGPathSegment(service, guid);
+	public static Segment newSegment(String service, GenericKey key) {
+		return new SIGPathSegment(service, key);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s(%s)", serviceName, guid);
+		return String.format("/%s(%s)", serviceName, (guid == null ? "" : guid));
 	}
 }
