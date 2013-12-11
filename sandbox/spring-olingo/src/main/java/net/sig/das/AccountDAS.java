@@ -71,6 +71,12 @@ public class AccountDAS extends SIGAbstractCacheStore {
 		}
 		return builder.build();
 	}
+
+	@Override
+	public List<String> getKeyNames() {
+		return entityKeys;
+	}
+
 	
 	public void erase(Object arg0) {
 		// TODO Auto-generated method stub

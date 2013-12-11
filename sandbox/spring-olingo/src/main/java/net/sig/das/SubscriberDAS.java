@@ -73,4 +73,9 @@ public class SubscriberDAS extends SIGAbstractCacheStore {
 	public void storeAll(Map arg0) {
 	}
 
+	@Override
+	public List<String> getKeyNames() {
+		return entityKeys;
+	}
+
 }

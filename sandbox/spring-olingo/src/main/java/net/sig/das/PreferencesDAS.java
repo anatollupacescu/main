@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class PreferencesDAS extends SIGAbstractCacheStore {
 
-	public static final List<String> entityKeys = ImmutableList.of("guid");
+	public static final List<String> entityKeys = ImmutableList.of("pguid");
 	
 	private final Map<String, GenericData> preferences;
 	
@@ -25,7 +25,7 @@ public class PreferencesDAS extends SIGAbstractCacheStore {
 		final GenericKey pref1Key = new GenericKey(entityKeys);
 		pref1.setKey(pref1Key);
 		final String guid = "guid1";
-		pref1.put("guid", guid);
+		pref1.put("pguid", guid);
 		pref1.put("pin_flag", "off");
 		pref1.put("photo_flag", "on");
 		pref1.inferKeyValues();
@@ -34,7 +34,7 @@ public class PreferencesDAS extends SIGAbstractCacheStore {
 		final GenericKey pref2Key = new GenericKey(entityKeys);
 		pref2.setKey(pref2Key);
 		final String guid2 = "guid2";
-		pref2.put("guid", guid2);
+		pref2.put("pguid", guid2);
 		pref2.put("pin_flag", "off");
 		pref2.put("photo_flag", "on");
 		pref2.inferKeyValues();
@@ -44,7 +44,7 @@ public class PreferencesDAS extends SIGAbstractCacheStore {
 
 	public Object load(Object arg0) {
 		final GenericKey requestKey = (GenericKey) arg0;
-		final String keyValue = requestKey.get("guid");
+		final String keyValue = requestKey.get("pguid");
 		return preferences.get(keyValue);
 	}
 	
@@ -64,5 +64,10 @@ public class PreferencesDAS extends SIGAbstractCacheStore {
 
 	public Map loadAll(Collection arg0) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<String> getKeyNames() {
+		return entityKeys;
 	}
 }
