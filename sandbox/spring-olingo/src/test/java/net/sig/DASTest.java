@@ -14,14 +14,16 @@ import net.sig.core.impl.SIGPathSegment;
 import net.sig.core.impl.SIGSegmentExecutor;
 import net.sig.das.AccountDAS;
 import net.sig.das.AccountsSubscribersResolverDAS;
+import net.sig.das.PreferencesDAS;
 import net.sig.das.SubscriberDAS;
 import net.sig.das.SubscribersAccountsResolverDAS;
+import net.sig.das.SubscribersPreferencesResolverDAS;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class DASTest {
 
@@ -29,11 +31,14 @@ public class DASTest {
 	
 	@Before
 	public void setUp() {
-		Map<String, SIGAbstractCacheStore> registry = ImmutableMap.<String, SIGAbstractCacheStore> of(
-				"Subscribers", new SubscriberDAS(gateway), "Accounts", new AccountDAS(gateway),
-				"SubscribersAccountsResolver", new SubscribersAccountsResolverDAS(gateway),
-				"AccountsSubscribersResolver", new AccountsSubscribersResolverDAS(gateway));
-		gateway.setRegistry(registry);
+		final Builder<String, SIGAbstractCacheStore> registryBuilder = ImmutableMap.builder();
+		registryBuilder.put("Subscribers", new SubscriberDAS(gateway));
+		registryBuilder.put("Accounts", new AccountDAS(gateway));
+		registryBuilder.put("AccountsSubscribersResolver", new AccountsSubscribersResolverDAS(gateway));
+		registryBuilder.put("SubscribersAccountsResolver", new SubscribersAccountsResolverDAS(gateway));
+		registryBuilder.put("Preferences", new PreferencesDAS(gateway));
+		registryBuilder.put("SubscribersPreferencesResolver", new SubscribersPreferencesResolverDAS(gateway));
+		gateway.setRegistry(registryBuilder.build());
 	}
 	
 	private GenericKey newAccountKey() {
@@ -42,6 +47,10 @@ public class DASTest {
 	
 	private GenericKey newSubscriberKey() {
 		 return new GenericKey(SubscriberDAS.entityKeys);
+	}
+	
+	private GenericKey newPreferenceKey() {
+		 return new GenericKey(PreferencesDAS.entityKeys);
 	}
 	
 	@Test
@@ -117,9 +126,41 @@ public class DASTest {
 	}
 
 	@Test
-	@Ignore
-	public void test22() {
-		//Subscribers(guid1)/accounts(acc1)/Subscribers(guid2)/accounts
+	public void test5() {
+		//Subscribers(guid1)/preferences
+		final String guid1value = "guid1";
+		GenericKey guid1 = newSubscriberKey(); 
+		guid1.inferValues(ImmutableMap.of("guid", guid1value));
+		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
+		GenericKey pref = newPreferenceKey(); 
+		pref.inferValues(ImmutableMap.of(pref.getKeyNames().iterator().next(), guid1value));
+		Segment preferences = SIGPathSegment.newSegment("Preferences", pref);
+		
+		preferences.setPrev(subscribers);
+		SIGSegmentExecutor ex = SIGSegmentExecutor.newExecutor(gateway, preferences);
+		GenericData obj = (GenericData)ex.execute();
+		assertNotNull(obj);
+		assertEquals("off", obj.get("pin_flag"));
+	}
+	
+	@Test
+	public void test6() {
+		//Subscribers(guid1)/preferences
+		final String guid1value = "guid1";
+		GenericKey guid1 = newSubscriberKey(); 
+		guid1.inferValues(ImmutableMap.of("guid", guid1value));
+		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
+		
+		Segment preferences = SIGPathSegment.newSegment("Preferences");
+		
+		preferences.setPrev(subscribers);
+		SIGSegmentExecutor ex = SIGSegmentExecutor.newExecutor(gateway, preferences);
+		@SuppressWarnings("unchecked")
+		Map<GenericKey, GenericData> objMap = (Map<GenericKey, GenericData>)ex.execute();
+		assertNotNull(objMap);
+		GenericData obj = (GenericData)objMap.values().iterator().next();
+		
+		assertEquals("off", obj.get("pin_flag"));
 	}
 }

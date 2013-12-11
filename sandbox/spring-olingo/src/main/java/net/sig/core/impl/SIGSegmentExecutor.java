@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import net.sig.core.SIGAbstractCacheStore;
 import net.sig.core.Segment;
 
+import com.google.common.collect.ImmutableMap;
+
 public class SIGSegmentExecutor {
 
 	private static final Logger log = Logger.getLogger("SIGSegment");
@@ -60,6 +62,11 @@ public class SIGSegmentExecutor {
 		GenericKey parentGuid = child.getPrev().getGuid();
 		@SuppressWarnings("unchecked")
 		Collection<GenericKey> childEntityIds = (Collection<GenericKey>) resolverService.load(parentGuid);
+		if(childEntityIds.size() == 1) {
+			GenericKey key = childEntityIds.iterator().next();
+			Object relatedEntity = targetDAS.load(key);
+			return ImmutableMap.<GenericKey, GenericData> of(key, (GenericData)relatedEntity);
+		}
 		@SuppressWarnings("unchecked")
 		Map<GenericKey, GenericData> childEntities = (Map<GenericKey, GenericData>)targetDAS.loadAll(childEntityIds);
 		return childEntities;
