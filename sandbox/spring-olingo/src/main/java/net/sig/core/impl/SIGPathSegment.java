@@ -1,15 +1,11 @@
 package net.sig.core.impl;
 
-import com.google.common.base.Strings;
-
-import net.sig.core.Segment;
-
-public class SIGPathSegment implements Segment {
+public class SIGPathSegment {
 
 	private final GenericKey guid;
 	private final String serviceName;
-	private Segment prev;
-	
+	private SIGPathSegment prev;
+
 	private SIGPathSegment(String serviceName) {
 		this.guid = null;
 		this.serviceName = serviceName;
@@ -19,20 +15,20 @@ public class SIGPathSegment implements Segment {
 		this.guid = guid;
 		this.serviceName = serviceName;
 	}
-	
+
 	public String getServiceName() {
 		return serviceName;
 	}
-	
+
 	public boolean hasPrev() {
 		return prev != null;
 	}
 
-	public Segment getPrev() {
+	public SIGPathSegment getPrev() {
 		return prev;
 	}
-	
-	public void setPrev(Segment segment) {
+
+	public void setPrev(SIGPathSegment segment) {
 		this.prev = segment;
 	}
 
@@ -44,11 +40,11 @@ public class SIGPathSegment implements Segment {
 		return guid != null;
 	}
 
-	public static Segment newSegment(String service) {
+	public static SIGPathSegment newSegment(String service) {
 		return new SIGPathSegment(service);
 	}
-	
-	public static Segment newSegment(String service, GenericKey key) {
+
+	public static SIGPathSegment newSegment(String service, GenericKey key) {
 		return new SIGPathSegment(service, key);
 	}
 

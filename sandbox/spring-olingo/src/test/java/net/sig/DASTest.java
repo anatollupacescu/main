@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Map;
 
 import net.sig.core.SIGAbstractCacheStore;
-import net.sig.core.Segment;
 import net.sig.core.impl.GenericData;
 import net.sig.core.impl.GenericKey;
 import net.sig.core.impl.GenericOneToOneResolverDAS;
@@ -61,7 +60,7 @@ public class DASTest {
 		GenericKey accountKey = newAccountKey();
 		accountKey.inferValues(ImmutableMap.of("accId", "acc1"));
 		//Accounts
-		Segment accounts = SIGPathSegment.newSegment("Accounts", accountKey);
+		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", accountKey);
 		SIGSegmentExecutor accountsExecutor = SIGSegmentExecutor.newExecutor(gateway, accounts);
 		GenericData result = (GenericData)accountsExecutor.execute();
 		assertNotNull(result);
@@ -71,11 +70,11 @@ public class DASTest {
 	@Test
 	public void test2() {
 		//Subscribers(guid1)/accounts
-		Segment accounts = SIGPathSegment.newSegment("Accounts");
+		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts");
 		
 		GenericKey subscriberKey = newSubscriberKey(); 
 		subscriberKey.inferValues(ImmutableMap.of("guid", "guid1"));
-		Segment subscribers = SIGPathSegment.newSegment("Subscribers", subscriberKey);
+		SIGPathSegment subscribers = SIGPathSegment.newSegment("Subscribers", subscriberKey);
 		
 		accounts.setPrev(subscribers);
 		
@@ -91,11 +90,11 @@ public class DASTest {
 		//Subscribers(guid1)/accounts(acc1)
 		GenericKey acc1 = newAccountKey(); 
 		acc1.inferValues(ImmutableMap.of("accId", "acc1"));
-		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
+		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", acc1);
 		
 		GenericKey guid1 = newSubscriberKey(); 
 		guid1.inferValues(ImmutableMap.of("guid", "guid1"));
-		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
+		SIGPathSegment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		accounts.setPrev(subscribers);
 		
@@ -108,15 +107,15 @@ public class DASTest {
 	@Test
 	public void test4() {
 		//Subscribers(guid1)/accounts(acc1)/subscribers
-		Segment subscribers = SIGPathSegment.newSegment("Subscribers");
+		SIGPathSegment subscribers = SIGPathSegment.newSegment("Subscribers");
 		
 		GenericKey acc1 = newAccountKey(); 
 		acc1.inferValues(ImmutableMap.of("accId", "acc1"));
-		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
+		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", acc1);
 		
 		GenericKey guid1 = newSubscriberKey(); 
 		guid1.inferValues(ImmutableMap.of("guid", "guid1"));
-		Segment subscriber = SIGPathSegment.newSegment("Subscribers", guid1);
+		SIGPathSegment subscriber = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		subscribers.setPrev(accounts);
 		accounts.setPrev(subscriber);
@@ -134,11 +133,11 @@ public class DASTest {
 		final String guid1value = "guid1";
 		GenericKey guid1 = newSubscriberKey(); 
 		guid1.inferValues(ImmutableMap.of("guid", guid1value));
-		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
+		SIGPathSegment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		GenericKey pref = newPreferenceKey(); 
 		pref.inferValues(ImmutableMap.of(pref.getKeyNames().iterator().next(), guid1value));
-		Segment preferences = SIGPathSegment.newSegment("Preferences", pref);
+		SIGPathSegment preferences = SIGPathSegment.newSegment("Preferences", pref);
 		
 		preferences.setPrev(subscribers);
 		SIGSegmentExecutor ex = SIGSegmentExecutor.newExecutor(gateway, preferences);
@@ -153,9 +152,9 @@ public class DASTest {
 		final String guid1value = "guid1";
 		GenericKey guid1 = newSubscriberKey(); 
 		guid1.inferValues(ImmutableMap.of("guid", guid1value));
-		Segment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
+		SIGPathSegment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
 		
-		Segment preferences = SIGPathSegment.newSegment("Preferences");
+		SIGPathSegment preferences = SIGPathSegment.newSegment("Preferences");
 		
 		preferences.setPrev(subscribers);
 		SIGSegmentExecutor ex = SIGSegmentExecutor.newExecutor(gateway, preferences);
@@ -171,17 +170,17 @@ public class DASTest {
 	public void test7() {
 		//Subscribers(guid1)/accounts(acc1)/subscribers(guid1)/preferences
 		
-		Segment preferences = SIGPathSegment.newSegment("Preferences");
+		SIGPathSegment preferences = SIGPathSegment.newSegment("Preferences");
 		
 		GenericKey guid1 = newSubscriberKey(); 
 		guid1.inferValues(ImmutableMap.of("guid", "guid1"));
-		Segment subscriber2 = SIGPathSegment.newSegment("Subscribers", guid1);
+		SIGPathSegment subscriber2 = SIGPathSegment.newSegment("Subscribers", guid1);
 		
 		GenericKey acc1 = newAccountKey(); 
 		acc1.inferValues(ImmutableMap.of("accId", "acc1"));
-		Segment accounts = SIGPathSegment.newSegment("Accounts", acc1);
+		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", acc1);
 		
-		Segment subscriber1 = SIGPathSegment.newSegment("Subscribers", guid1);
+		SIGPathSegment subscriber1 = SIGPathSegment.newSegment("Subscribers", guid1);
 		preferences.setPrev(subscriber2);
 		subscriber2.setPrev(accounts);
 		accounts.setPrev(subscriber1);

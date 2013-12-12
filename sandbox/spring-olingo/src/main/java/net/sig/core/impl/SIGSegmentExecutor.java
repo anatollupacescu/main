@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sig.core.SIGAbstractCacheStore;
-import net.sig.core.Segment;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -14,10 +13,10 @@ public class SIGSegmentExecutor {
 
 	private static final Logger log = Logger.getLogger("SIGSegment");
 	
-	private final Segment current;
+	private final SIGPathSegment current;
 	private final SIGEntityGateway gateway;
 	
-	private SIGSegmentExecutor(SIGEntityGateway gateway, Segment segment) {
+	private SIGSegmentExecutor(SIGEntityGateway gateway, SIGPathSegment segment) {
 		this.gateway = gateway;
 		this.current = segment;
 	}
@@ -56,7 +55,7 @@ public class SIGSegmentExecutor {
 		}
 	}
 	
-	private Map<GenericKey, GenericData> getChilds(Segment child) {
+	private Map<GenericKey, GenericData> getChilds(SIGPathSegment child) {
 		SIGAbstractCacheStore resolverService = getResolverService(child);
 		SIGAbstractCacheStore targetDAS = gateway.getService(child.getServiceName());
 		GenericKey parentGuid = child.getPrev().getGuid();
@@ -72,18 +71,18 @@ public class SIGSegmentExecutor {
 		return childEntities;
 	}
 	
-	private boolean hasChild(GenericData prevResult, Segment child) {
+	private boolean hasChild(GenericData prevResult, SIGPathSegment child) {
 		SIGAbstractCacheStore resolverService = getResolverService(child);
 		@SuppressWarnings("unchecked")
 		Collection<GenericKey> entityIds = (Collection<GenericKey>) resolverService.load(prevResult.getKey());
 		return entityIds.contains(current.getGuid());
 	}
 
-	private String getResolverName(Segment child) {
+	private String getResolverName(SIGPathSegment child) {
 		return child.getPrev().getServiceName() + child.getServiceName() + "Resolver";
 	}
 	
-	private SIGAbstractCacheStore getResolverService(Segment child) {
+	private SIGAbstractCacheStore getResolverService(SIGPathSegment child) {
 		String resolerName = getResolverName(child);
 		SIGAbstractCacheStore resolverService = gateway.getService(resolerName);
 		if(resolverService == null) {
@@ -92,11 +91,11 @@ public class SIGSegmentExecutor {
 		return resolverService;
 	}
 	
-	public static SIGSegmentExecutor newExecutor(SIGEntityGateway gateway, Segment accounts) {
+	public static SIGSegmentExecutor newExecutor(SIGEntityGateway gateway, SIGPathSegment accounts) {
 		return new SIGSegmentExecutor(gateway, accounts);
 	}
 	
-	public void createChild(Segment child) {
+	public void createChild(SIGPathSegment child) {
 		throw new UnsupportedOperationException();
 	}
 }

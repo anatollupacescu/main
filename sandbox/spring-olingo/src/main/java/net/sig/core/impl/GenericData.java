@@ -20,7 +20,7 @@ public class GenericData extends HashMap<String, String> {
 	
 	public void inferKeyValues() {
 		if(key == null) {
-			throw new IllegalStateException("Trying to infer key values on request entity");
+			throw new IllegalStateException("Trying to infer key values on null key");
 		}
 		for(String keyName : key.getKeyNames()) {
 			key.put(keyName, this.get(keyName));
