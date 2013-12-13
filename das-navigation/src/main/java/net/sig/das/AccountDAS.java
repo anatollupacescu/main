@@ -12,6 +12,7 @@ import net.sig.core.impl.SIGEntityGateway;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Maps;
 
 public class AccountDAS extends SIGAbstractCacheStore {
 
@@ -48,7 +49,10 @@ public class AccountDAS extends SIGAbstractCacheStore {
 		account3.put("parent", "guid2");
 		account3.inferKeyValues();
 		
-		accounts = ImmutableMap.of(guid, account1, guid2, account2, guid3, account3);
+		accounts = Maps.newHashMap();
+		accounts.put(guid, account1);
+		accounts.put(guid2, account2);
+		accounts.put(guid3, account3);
 	}
 	
 	public Object load(Object arg0) {
@@ -79,8 +83,9 @@ public class AccountDAS extends SIGAbstractCacheStore {
 
 	
 	public void erase(Object arg0) {
-		// TODO Auto-generated method stub
-
+		final GenericKey queryKey = (GenericKey) arg0;
+		final String guid = queryKey.get("accId");
+		accounts.put(guid, null);
 	}
 
 	public void eraseAll(Collection arg0) {

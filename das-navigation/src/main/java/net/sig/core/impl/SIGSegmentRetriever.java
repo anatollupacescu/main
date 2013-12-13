@@ -9,16 +9,12 @@ import net.sig.core.SIGAbstractCacheStore;
 
 import com.google.common.collect.ImmutableMap;
 
-public class SIGSegmentExecutor {
+public class SIGSegmentRetriever extends SIGSegmentExecuterBase {
 
 	private static final Logger log = Logger.getLogger("SIGSegment");
 	
-	private final SIGPathSegment current;
-	private final SIGEntityGateway gateway;
-	
-	private SIGSegmentExecutor(SIGEntityGateway gateway, SIGPathSegment segment) {
-		this.gateway = gateway;
-		this.current = segment;
+	public SIGSegmentRetriever(SIGEntityGateway gateway, SIGPathSegment current) {
+		super(gateway, current);
 	}
 	
 	public Object execute() {
@@ -26,7 +22,7 @@ public class SIGSegmentExecutor {
 		if(current.hasPrev()) {
 			log.log(Level.INFO, "Segment {0} has parent {1}, we will execute it", new Object[] { current, current.getPrev() });
 			/* will be executing previous segment */
-			final SIGSegmentExecutor previousSegmentExecutor = SIGSegmentExecutor.newExecutor(gateway, current.getPrev());
+			final SIGSegmentRetriever previousSegmentExecutor = SIGSegmentRetriever.newExecutor(gateway, current.getPrev());
 			GenericData prevSegmentResult = (GenericData)previousSegmentExecutor.execute();
 			if(current.hasGuid()) {
 				log.log(Level.INFO, "Segment {0} has guid, will check if it is a valid child of previous segment {1}", new Object[] { current,  current.getPrev() });
@@ -71,28 +67,8 @@ public class SIGSegmentExecutor {
 		return childEntities;
 	}
 	
-	private boolean hasChild(GenericData prevResult, SIGPathSegment child) {
-		SIGAbstractCacheStore resolverService = getResolverService(child);
-		@SuppressWarnings("unchecked")
-		Collection<GenericKey> entityIds = (Collection<GenericKey>) resolverService.load(prevResult.getKey());
-		return entityIds.contains(current.getGuid());
-	}
-
-	private String getResolverName(SIGPathSegment child) {
-		return child.getPrev().getServiceName() + child.getServiceName() + "Resolver";
-	}
-	
-	private SIGAbstractCacheStore getResolverService(SIGPathSegment child) {
-		String resolerName = getResolverName(child);
-		SIGAbstractCacheStore resolverService = gateway.getService(resolerName);
-		if(resolverService == null) {
-			throw new IllegalStateException("Could not find resolver service for " + resolerName);
-		}
-		return resolverService;
-	}
-	
-	public static SIGSegmentExecutor newExecutor(SIGEntityGateway gateway, SIGPathSegment accounts) {
-		return new SIGSegmentExecutor(gateway, accounts);
+	public static SIGSegmentRetriever newExecutor(SIGEntityGateway gateway, SIGPathSegment accounts) {
+		return new SIGSegmentRetriever(gateway, accounts);
 	}
 	
 	public void createChild(SIGPathSegment child) {
