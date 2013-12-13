@@ -12,8 +12,9 @@ import net.sig.core.impl.GenericKey;
 import net.sig.core.impl.GenericOneToOneResolverDAS;
 import net.sig.core.impl.SIGEntityGateway;
 import net.sig.core.impl.SIGPathSegment;
-import net.sig.core.impl.SIGSegmentDeleter;
-import net.sig.core.impl.SIGSegmentRetriever;
+import net.sig.core.impl.SIGCreateRequest;
+import net.sig.core.impl.SIGDeleteRequest;
+import net.sig.core.impl.SIGRetrieveRequest;
 import net.sig.das.AccountDAS;
 import net.sig.das.AccountsSubscribersResolverDAS;
 import net.sig.das.PreferencesDAS;
@@ -21,7 +22,6 @@ import net.sig.das.SubscriberDAS;
 import net.sig.das.SubscribersAccountsResolverDAS;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -65,7 +65,7 @@ public class DASTest {
 		accountKey.inferValues(ImmutableMap.of("accId", "acc1"));
 		//Accounts
 		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", accountKey);
-		SIGSegmentRetriever accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, accounts);
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
 		GenericData result = (GenericData)accountsExecutor.execute();
 		assertNotNull(result);
 		assertEquals("jora", result.get("name"));
@@ -82,7 +82,7 @@ public class DASTest {
 		
 		accounts.setPrev(subscribers);
 		
-		SIGSegmentRetriever accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, accounts);
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
 		@SuppressWarnings("unchecked")
 		Map<GenericKey, GenericData> result = (Map<GenericKey, GenericData>)accountsExecutor.execute();
 		assertNotNull(result);
@@ -102,7 +102,7 @@ public class DASTest {
 		
 		accounts.setPrev(subscribers);
 		
-		SIGSegmentRetriever accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, accounts);
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
 		GenericData result = (GenericData)accountsExecutor.execute();
 		assertNotNull(result);
 		assertEquals("guid1", result.get("parent"));
@@ -124,7 +124,7 @@ public class DASTest {
 		subscribers.setPrev(accounts);
 		accounts.setPrev(subscriber);
 		
-		SIGSegmentRetriever accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, subscribers);
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, subscribers);
 		@SuppressWarnings("unchecked")
 		Map<GenericKey, GenericData> result = (Map<GenericKey, GenericData>)accountsExecutor.execute();
 		assertNotNull(result);
@@ -144,7 +144,7 @@ public class DASTest {
 		SIGPathSegment preferences = SIGPathSegment.newSegment("Preferences", pref);
 		
 		preferences.setPrev(subscribers);
-		SIGSegmentRetriever ex = SIGSegmentRetriever.newExecutor(gateway, preferences);
+		SIGRetrieveRequest ex = SIGRetrieveRequest.newExecutor(gateway, preferences);
 		GenericData obj = (GenericData)ex.execute();
 		assertNotNull(obj);
 		assertEquals("off", obj.get("pin_flag"));
@@ -161,7 +161,7 @@ public class DASTest {
 		SIGPathSegment preferences = SIGPathSegment.newSegment("Preferences");
 		
 		preferences.setPrev(subscribers);
-		SIGSegmentRetriever ex = SIGSegmentRetriever.newExecutor(gateway, preferences);
+		SIGRetrieveRequest ex = SIGRetrieveRequest.newExecutor(gateway, preferences);
 		@SuppressWarnings("unchecked")
 		Map<GenericKey, GenericData> objMap = (Map<GenericKey, GenericData>)ex.execute();
 		assertNotNull(objMap);
@@ -189,7 +189,7 @@ public class DASTest {
 		subscriber2.setPrev(accounts);
 		accounts.setPrev(subscriber1);
 		
-		SIGSegmentRetriever accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, preferences);
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, preferences);
 		@SuppressWarnings("unchecked")
 		Map<GenericKey, GenericData> result = (Map<GenericKey, GenericData>)accountsExecutor.execute();
 		assertNotNull(result);
@@ -206,17 +206,44 @@ public class DASTest {
 		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", accountKey);
 		
 		//retrieve
-		SIGSegmentRetriever accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, accounts);
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
 		Object result = accountsExecutor.execute();
 		assertNotNull(result);
 		
 		//delete
-		SIGSegmentDeleter accountsDeleter = new SIGSegmentDeleter(gateway, accounts);
+		SIGDeleteRequest accountsDeleter = new SIGDeleteRequest(gateway, accounts);
 		accountsDeleter.execute();
 		//retrieve
 		
-		accountsExecutor = SIGSegmentRetriever.newExecutor(gateway, accounts);
+		accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
 		result = accountsExecutor.execute();
 		assertNull(result);
+	}
+	
+	@Test
+	public void test9() {
+		//CREATE /Accounts(acc1)
+		GenericKey accountKey = newAccountKey();
+		accountKey.inferValues(ImmutableMap.of("accId", "acc13"));
+		
+		//Accounts
+		SIGPathSegment accounts = SIGPathSegment.newSegment("Accounts", accountKey);
+		GenericData body = new GenericData();
+		body.put("accId", "acc13");
+		body.put("name", "inga");
+		body.put("parent", "guid3");
+		accounts.setBody(body);
+		
+		SIGRetrieveRequest accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
+		Object result = accountsExecutor.execute();
+		assertNull(result);
+		
+		SIGCreateRequest creator = new SIGCreateRequest(gateway, accounts);
+		creator.execute();
+		
+		accountsExecutor = SIGRetrieveRequest.newExecutor(gateway, accounts);
+		result = accountsExecutor.execute();
+		assertNotNull(result);
+		assertEquals("inga", ((GenericData)result).get("name"));
 	}
 }

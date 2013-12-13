@@ -22,22 +22,20 @@ public class PreferencesDAS extends SIGAbstractCacheStore {
 		super(gateway);
 		
 		final GenericData pref1 = new GenericData();
-		final GenericKey pref1Key = new GenericKey(entityKeys);
-		pref1.setKey(pref1Key);
 		final String guid = "guid1";
 		pref1.put("pguid", guid);
 		pref1.put("pin_flag", "off");
 		pref1.put("photo_flag", "on");
-		pref1.inferKeyValues();
+		final GenericKey pref1Key = new GenericKey(entityKeys, pref1);
+		pref1.setKey(pref1Key);
 		
 		final GenericData pref2 = new GenericData();
-		final GenericKey pref2Key = new GenericKey(entityKeys);
-		pref2.setKey(pref2Key);
 		final String guid2 = "guid2";
 		pref2.put("pguid", guid2);
 		pref2.put("pin_flag", "off");
 		pref2.put("photo_flag", "on");
-		pref2.inferKeyValues();
+		final GenericKey pref2Key = new GenericKey(entityKeys, pref2);
+		pref2.setKey(pref2Key);
 		
 		preferences = ImmutableMap.of(guid, pref1, guid2, pref2);
 	}

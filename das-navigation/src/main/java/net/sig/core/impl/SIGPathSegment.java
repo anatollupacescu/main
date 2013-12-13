@@ -3,6 +3,7 @@ package net.sig.core.impl;
 public class SIGPathSegment {
 
 	private final GenericKey guid;
+	private GenericData body;
 	private final String serviceName;
 	private SIGPathSegment prev;
 
@@ -40,6 +41,18 @@ public class SIGPathSegment {
 		return guid != null;
 	}
 
+	public GenericData getBody() {
+		return body;
+	}
+
+	public void setBody(GenericData body) {
+		this.body = body;
+	}
+
+	public boolean hasBody() {
+		return body != null;
+	}
+	
 	public static SIGPathSegment newSegment(String service) {
 		return new SIGPathSegment(service);
 	}

@@ -1,22 +1,23 @@
-package net.sig.core.impl;
+package net.sig.core;
 
 import java.util.Collection;
 
-import net.sig.core.SIGAbstractCacheStore;
-import net.sig.core.SIGSegmentExecuter;
+import net.sig.core.impl.GenericData;
+import net.sig.core.impl.GenericKey;
+import net.sig.core.impl.SIGEntityGateway;
+import net.sig.core.impl.SIGPathSegment;
 
-public abstract class SIGSegmentExecuterBase implements SIGSegmentExecuter {
+public abstract class SIGSegmentRequest {
 
 	protected final SIGPathSegment current;
 	protected final SIGEntityGateway gateway;
 	
-	public SIGSegmentExecuterBase(SIGEntityGateway gateway, SIGPathSegment current) {
+	public SIGSegmentRequest(SIGEntityGateway gateway, SIGPathSegment current) {
 		super();
 		this.current = current;
 		this.gateway = gateway;
 	}
 
-	@Override
 	public abstract Object execute();
 	
 	protected boolean hasChild(GenericData prevResult, SIGPathSegment child) {

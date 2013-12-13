@@ -12,7 +12,7 @@ public class GenericKey extends HashMap<String, String> {
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<String> keyNames = Collections.emptyList();
-
+	
 	public List<String> getKeyNames() {
 		return keyNames;
 	}
@@ -21,7 +21,14 @@ public class GenericKey extends HashMap<String, String> {
 		this.keyNames = keyNames;
 	}
 
-	public void inferValues(Map<String, String> of) {
+	/**
+	 * creates a key with consistent values
+	 * 
+	 * @param keyNames
+	 * @param of
+	 */
+	public GenericKey(List<String> keyNames, Map<String, String> of) {
+		this.keyNames = keyNames;
 		for(String keyName : keyNames) {
 			String keyValue = of.get(keyName);
 			if(keyValue == null) {
@@ -31,6 +38,35 @@ public class GenericKey extends HashMap<String, String> {
 		}
 	}
 	
+	/**
+	 * may result in inconsistent keys
+	 * 
+	 * @param of
+	 */
+	public void inferValues(Map<String, String> of) {
+		for(String keyName : keyNames) {
+			String keyValue = of.get(keyName);
+			if(keyValue != null) {
+				put(keyName, keyValue);
+			}
+		}
+	}
+	
+	public void inferMissingValues(Map<String, String> of) {
+		for(String keyName : keyNames) {
+			String keyValue = of.get(keyName);
+			if(keyValue != null) {
+				if(get(keyName) == null) {
+					put(keyName, keyValue);
+				}
+			}
+		}
+	}
+	
+	public boolean isIncompleteKey() {
+		return keyNames.size() > values().size();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if(o == null) {
