@@ -35,7 +35,14 @@ public class SubscriberDAS extends SIGAbstractCacheStore {
 		final GenericKey subscriber2Key = new GenericKey(entityKeys, subscriber2);
 		subscriber2.setKey(subscriber2Key);
 		
-		subscribers = ImmutableMap.of(guid, subscriber1, guid2, subscriber2);
+		final GenericData subscriber3 = new GenericData();
+		final String guid3 = "guid3";
+		subscriber3.put("guid", guid2);
+		subscriber3.put("age", "58");
+		final GenericKey subscriber3Key = new GenericKey(entityKeys, subscriber2);
+		subscriber3.setKey(subscriber3Key);
+		
+		subscribers = ImmutableMap.of(guid, subscriber1, guid2, subscriber2, guid3, subscriber3);
 	}
 	
 	public Object load(Object arg0) {

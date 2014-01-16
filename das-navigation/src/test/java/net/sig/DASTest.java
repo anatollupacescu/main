@@ -246,4 +246,30 @@ public class DASTest {
 		assertNotNull(result);
 		assertEquals("inga", ((GenericData)result).get("name"));
 	}
+	
+	@Test
+	public void test10() {
+		//CREATE /Subscribers(guid3)/preferences
+		final String guid1value = "guid3";
+		GenericKey guid1 = newSubscriberKey(); 
+		guid1.inferValues(ImmutableMap.of("guid", guid1value));
+		SIGPathSegment subscribers = SIGPathSegment.newSegment("Subscribers", guid1);
+		
+		SIGPathSegment preferences = SIGPathSegment.newSegment("Preferences");
+		GenericData pref = new GenericData();
+		
+		preferences.setBody(pref);
+		preferences.setPrev(subscribers);
+		
+		SIGRetrieveRequest preferencesExecutor = SIGRetrieveRequest.newExecutor(gateway, preferences);
+		Object result = preferencesExecutor.execute();
+		assertNull(result);
+		
+		SIGCreateRequest creator = new SIGCreateRequest(gateway, preferences);
+		creator.execute();
+		
+		preferencesExecutor = SIGRetrieveRequest.newExecutor(gateway, preferences);
+		result = preferencesExecutor.execute();
+		assertNotNull(result);
+	}
 }

@@ -1,9 +1,11 @@
 package net.sig.core.impl;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sig.core.SIGAbstractCacheStore;
+import net.sig.core.SIGResolverService;
 import net.sig.core.SIGSegmentRequest;
 
 public class SIGCreateRequest extends SIGSegmentRequest {
@@ -29,10 +31,14 @@ public class SIGCreateRequest extends SIGSegmentRequest {
     		if(current.hasPrev()) {
     			log.log(Level.INFO, "Segment {0} has parent {1}", new Object[] { current, current.getPrev() });
     			final SIGPathSegment previous = current.getPrev();
-    			if(previous.hasGuid()) {
-    				log.log(Level.INFO, "Segment {0} has guid, will check if its child {1} has a complete key", new Object[] { current,  current.getPrev() });
-    				guid.inferMissingValues(previous.getBody());
+    			final SIGRetrieveRequest previousSegmentExecutor = SIGRetrieveRequest.newExecutor(gateway, previous);
+    			GenericData prevSegmentResult = (GenericData)previousSegmentExecutor.execute();
+    			if(prevSegmentResult == null) {
+    				throw new IllegalArgumentException(String.format("Parent segment %s could not be found", current.getPrev().toString()));
     			}
+    			final SIGResolverService resolverService = (SIGResolverService)getResolverService(current);
+    			final Map<String, String> map = resolverService.getKeyMappingMap();
+    			guid.inferValues(prevSegmentResult, map);
 			} else {
 				throw new IllegalArgumentException("Could not infer missing key values: parent not found");
 			}

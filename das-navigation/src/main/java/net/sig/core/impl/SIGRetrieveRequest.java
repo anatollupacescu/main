@@ -25,6 +25,9 @@ public class SIGRetrieveRequest extends SIGSegmentRequest {
 			/* will be executing previous segment */
 			final SIGRetrieveRequest previousSegmentExecutor = SIGRetrieveRequest.newExecutor(gateway, current.getPrev());
 			GenericData prevSegmentResult = (GenericData)previousSegmentExecutor.execute();
+			if(prevSegmentResult == null) {
+				throw new IllegalArgumentException(String.format("Parent segment %s could not be found", current.getPrev().toString()));
+			}
 			if(current.hasGuid()) {
 				log.log(Level.INFO, "Segment {0} has guid, will check if it is a valid child of previous segment {1}", new Object[] { current,  current.getPrev() });
     			/* will check if current segment is a valid child of the previous */
@@ -58,9 +61,15 @@ public class SIGRetrieveRequest extends SIGSegmentRequest {
 		GenericKey parentGuid = child.getPrev().getGuid();
 		@SuppressWarnings("unchecked")
 		Collection<GenericKey> childEntityIds = (Collection<GenericKey>) resolverService.load(parentGuid);
+		if(childEntityIds.isEmpty()) {
+			return ImmutableMap.of();
+		}
 		if(childEntityIds.size() == 1) {
 			GenericKey key = childEntityIds.iterator().next();
 			Object relatedEntity = targetDAS.load(key);
+			if(relatedEntity == null) {
+				return null;
+			}
 			return ImmutableMap.<GenericKey, GenericData> of(key, (GenericData)relatedEntity);
 		}
 		@SuppressWarnings("unchecked")

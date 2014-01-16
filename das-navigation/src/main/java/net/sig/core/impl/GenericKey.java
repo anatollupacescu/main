@@ -22,7 +22,7 @@ public class GenericKey extends HashMap<String, String> {
 	}
 
 	/**
-	 * creates a key with consistent values
+	 * creates a consistent key
 	 * 
 	 * @param keyNames
 	 * @param of
@@ -52,9 +52,10 @@ public class GenericKey extends HashMap<String, String> {
 		}
 	}
 	
-	public void inferMissingValues(Map<String, String> of) {
+	public void inferValues(Map<String, String> of, Map<String, String> translationMap) {
 		for(String keyName : keyNames) {
-			String keyValue = of.get(keyName);
+			String translatedKey = translationMap.get(keyName);
+			String keyValue = of.get(translatedKey);
 			if(keyValue != null) {
 				if(get(keyName) == null) {
 					put(keyName, keyValue);
@@ -96,4 +97,5 @@ public class GenericKey extends HashMap<String, String> {
 		sb.append(" }");
 		return sb.toString();
 	}
+
 }

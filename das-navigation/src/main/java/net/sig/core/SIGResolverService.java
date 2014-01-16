@@ -8,8 +8,20 @@ import net.sig.core.impl.SIGEntityGateway;
 
 public abstract class SIGResolverService extends SIGAbstractCacheStore {
 
+	protected final Map<String, String> keyMapping;
+
 	public SIGResolverService(SIGEntityGateway gateway2) {
 		super(gateway2);
+		this.keyMapping = null;
+	}
+	
+	public SIGResolverService(SIGEntityGateway gateway2, Map<String, String> keyMapping) {
+		super(gateway2);
+		this.keyMapping = keyMapping;
+	}
+
+	public Map<String, String> getKeyMappingMap() {
+		return keyMapping;
 	}
 
 	public void erase(Object arg0) {

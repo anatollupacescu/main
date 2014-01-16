@@ -12,18 +12,15 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class GenericOneToOneResolverDAS extends SIGResolverService {
 
 	private final SIGAbstractCacheStore childDAS;
-	private final Map<String, String> keyMapping;
 	
 	public GenericOneToOneResolverDAS(SIGEntityGateway gateway, SIGAbstractCacheStore childDAS) {
-		super(gateway);
+		super(gateway, null);
 		this.childDAS = childDAS;
-		this.keyMapping = null;
 	}
 
 	public GenericOneToOneResolverDAS(SIGEntityGateway gateway, SIGAbstractCacheStore childDAS, Map<String,String> keyMapping) {
-		super(gateway);
+		super(gateway, keyMapping);
 		this.childDAS = childDAS;
-		this.keyMapping = keyMapping;
 	}
 	
 	public Object load(final Object parentKey) {
