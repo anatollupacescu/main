@@ -1,9 +1,7 @@
 package mr.f.spring_boot_camel;
 
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.rx.ObservableBody;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -11,10 +9,6 @@ import rx.functions.Func1;
 
 public class MyRouteBuilder extends RouteBuilder {
 
-//	@Autowired CamelContext camelContext;
-
-	@Autowired protected ProducerTemplate template;
-	
 	@Override
 	public void configure() throws Exception {
 
@@ -44,7 +38,6 @@ public class MyRouteBuilder extends RouteBuilder {
 	            }
 	        }).subscribe(new Action1<String>() {
 	            public void call(String body) {
-	            	template.asyncSendBody("seda:foo", "JORA!");
 	            }
 	        });
 	    }

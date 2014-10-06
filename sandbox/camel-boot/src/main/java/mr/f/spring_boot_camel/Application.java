@@ -1,8 +1,13 @@
 package mr.f.spring_boot_camel;
 
+import mr.reactor.QuotesHandlerBean;
+import mr.reactor.ReactorRoute;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.apache.camel.spring.SpringCamelContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -11,33 +16,71 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+import reactor.core.Environment;
+import reactor.core.Reactor;
+import reactor.core.spec.Reactors;
+import reactor.spring.context.config.EnableReactor;
+
 @EnableAutoConfiguration
-@ComponentScan
-class Application {
-	private static final String CAMEL_URL_MAPPING = "/camel/*";
-	private static final String CAMEL_SERVLET_NAME = "CamelServlet";
+public class Application {
 
 	public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-     }
-		
-	@Bean
-	public ServletRegistrationBean servletRegistrationBean() {
-		ServletRegistrationBean registration = new ServletRegistrationBean(new CamelHttpTransportServlet(), CAMEL_URL_MAPPING);
-		registration.setName(CAMEL_SERVLET_NAME);
-		return registration;
+		SpringApplication.run(Application.class, args);
+	}
+
+	@Configuration
+	@EnableReactor
+	@ComponentScan
+	public static class ReactorConfiguration {
+
+		@Bean
+		public Reactor reactor(Environment env) {
+			return Reactors.reactor().env(env).dispatcher(Environment.RING_BUFFER).get();
+		}
+
+		@Bean
+		public Logger log() {
+			return LoggerFactory.getLogger(Application.class);
+		}
+
+	}
+
+	@Configuration
+	@ComponentScan
+	public static class CamelConfiguration {
+
+		private static final String CAMEL_URL_MAPPING = "/camel/*";
+		private static final String CAMEL_SERVLET_NAME = "CamelServlet";
+
+		@Bean
+		public ServletRegistrationBean servletRegistrationBean() {
+			ServletRegistrationBean registration = new ServletRegistrationBean(new CamelHttpTransportServlet(),
+					CAMEL_URL_MAPPING);
+			registration.setName(CAMEL_SERVLET_NAME);
+			return registration;
+		}
+
+		@Bean
+		public SpringCamelContext camelContext(ApplicationContext applicationContext) throws Exception {
+			SpringCamelContext camelContext = new SpringCamelContext(applicationContext);
+			camelContext.addRoutes(routeBuilder());
+			camelContext.addRoutes(reactorRoute());
+			return camelContext;
+		}
+
+		@Bean
+		public RouteBuilder routeBuilder() {
+			return new MyRouteBuilder();
+		}
+
+		@Bean
+		public RouteBuilder reactorRoute() {
+			return new ReactorRoute();
+		}
 	}
 
 	@Bean
-	public SpringCamelContext camelContext(ApplicationContext applicationContext) throws Exception {
-		SpringCamelContext camelContext = new SpringCamelContext(applicationContext);
-		camelContext.addRoutes(routeBuilder());
-		return camelContext;
-	}
-	
-	@Bean
-	public RouteBuilder routeBuilder() {
-		return new MyRouteBuilder();
+	public QuotesHandlerBean handlerBean() {
+		return new QuotesHandlerBean();
 	}
 }

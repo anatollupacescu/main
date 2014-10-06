@@ -39,6 +39,12 @@ dependencies {
 
 	compile('org.apache.camel:camel-rx:2.13.2')
 
+	compile("org.projectreactor.spring:reactor-spring-context")
+
+	compile('com.google.guava:guava:18.0')
+
+	compile('ch.qos.logback:logback-classic:0.9.26')
+
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
