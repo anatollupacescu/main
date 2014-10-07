@@ -32,19 +32,20 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 
-    compile('org.apache.camel:camel-servlet:2.13.2')
-    compile('org.apache.camel:camel-spring-javaconfig:2.13.2')
+    compile('org.apache.camel:camel-servlet:2.14.0')
+    compile('org.apache.camel:camel-spring-javaconfig:2.14.0')
+	compile('org.apache.camel:camel-rx:2.14.0')
+	compile('org.apache.camel:camel-stream:2.14.0')
+	compile('org.apache.camel:camel-test-spring:2.14.0')
 
 	compile('io.reactivex:rxjava:1.0.0-rc.3')
-
-	compile('org.apache.camel:camel-rx:2.13.2')
 
 	compile("org.projectreactor.spring:reactor-spring-context")
 
 	compile('com.google.guava:guava:18.0')
 
 	compile('ch.qos.logback:logback-classic:0.9.26')
-
+	
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 

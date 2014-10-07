@@ -1,6 +1,7 @@
 package mr.f.spring_boot_camel;
 
-import mr.reactor.QuotesHandlerBean;
+import mr.reactor.ReactorQueues;
+import mr.reactor.FlushBean;
 import mr.reactor.ReactorRoute;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -18,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 
 import reactor.core.Environment;
 import reactor.core.Reactor;
-import reactor.core.spec.Reactors;
 import reactor.spring.context.config.EnableReactor;
 
 @EnableAutoConfiguration
@@ -35,14 +35,13 @@ public class Application {
 
 		@Bean
 		public Reactor reactor(Environment env) {
-			return Reactors.reactor().env(env).dispatcher(Environment.RING_BUFFER).get();
+			return env.getRootReactor();
 		}
 
 		@Bean
 		public Logger log() {
 			return LoggerFactory.getLogger(Application.class);
 		}
-
 	}
 
 	@Configuration
@@ -63,14 +62,13 @@ public class Application {
 		@Bean
 		public SpringCamelContext camelContext(ApplicationContext applicationContext) throws Exception {
 			SpringCamelContext camelContext = new SpringCamelContext(applicationContext);
-			camelContext.addRoutes(routeBuilder());
 			camelContext.addRoutes(reactorRoute());
 			return camelContext;
 		}
 
 		@Bean
-		public RouteBuilder routeBuilder() {
-			return new MyRouteBuilder();
+		public RouteBuilder rxBuilder() {
+			return new RxRouteBuilder();
 		}
 
 		@Bean
@@ -80,7 +78,12 @@ public class Application {
 	}
 
 	@Bean
-	public QuotesHandlerBean handlerBean() {
-		return new QuotesHandlerBean();
+	public FlushBean flushBean() {
+		return new FlushBean();
+	}
+	
+	@Bean
+	public ReactorQueues queues() {
+		return new ReactorQueues();
 	}
 }

@@ -1,35 +1,66 @@
 package mr.reactor;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import reactor.core.Environment;
 import reactor.core.Reactor;
+import reactor.core.composable.Deferred;
+import reactor.core.composable.Stream;
+import reactor.core.composable.spec.Streams;
 import reactor.event.Event;
+import reactor.function.Consumer;
+import reactor.tuple.Tuple;
 
 public class ReactorRoute extends RouteBuilder {
 
 	@Autowired
-	private Reactor mainReactor;
+	private Reactor reactor;
 
 	@Autowired
 	private Logger log;
 
+	@Autowired
+	private Environment env;
+
 	@Override
 	public void configure() throws Exception {
-		from("servlet:///reactor").log("Reactor route enter").process(new ReactorProcessor());
+		from("direct:reactor").log("Reactor route enter").process(new ReactorProcessor());
 	}
 
 	class ReactorProcessor implements Processor {
+
 		public void process(Exchange exchange) throws Exception {
+
 			String name = exchange.getIn().getHeader("name", String.class);
-			for (int i = 0; i < 10; i++) {
-				Thread.sleep(100);
-				mainReactor.notify("quotes", Event.wrap(name + ":" + i));
-				log.info("sent {} : {}", name, i);
-			}
+
+			final Deferred<String, Stream<String>> deferred = Streams.<String> defer(env);
+
+			final Stream<String> stream = deferred.compose();
+
+			final CountDownLatch latch = new CountDownLatch(1);
+
+			stream.collect(2).consume(new Consumer<List<String>>() {
+				@Override
+				public void accept(List<String> t) {
+					log.info("Consumed {}", t);
+					exchange.getOut().setBody(t);
+					latch.countDown();
+				}
+			});
+
+			reactor.notify("quotes", Event.wrap(Tuple.of(name, deferred)));
+
+			reactor.notify("faqs", Event.wrap(Tuple.of(name, deferred)));
+
+			latch.await(3, TimeUnit.SECONDS);
 		}
 	}
 }
