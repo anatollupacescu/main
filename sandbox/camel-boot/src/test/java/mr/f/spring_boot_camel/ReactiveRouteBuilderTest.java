@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.google.common.collect.ImmutableMap;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class ReactiveRouteBuilderTest {
@@ -32,7 +30,11 @@ public class ReactiveRouteBuilderTest {
 
 	@Test
 	public void testRoute() throws InterruptedException {
-		testProducer.sendBodyAndHeaders(null, ImmutableMap.<String, Object> of("name", "test"));
+		testProducer.requestBody("direct:reactor", "test1");
+		testProducer.requestBody("direct:reactor", "test2");
+		
+//		testProducer.sendBodyAndHeaders(null, ImmutableMap.<String, Object> of("name", "test"));
+//		testProducer.sendBodyAndHeaders(null, ImmutableMap.<String, Object> of("name", "test2"));
 	}
 
 }

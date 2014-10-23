@@ -39,7 +39,7 @@ public class ReactorRoute extends RouteBuilder {
 
 		public void process(Exchange exchange) throws Exception {
 
-			String name = exchange.getIn().getHeader("name", String.class);
+			String name = exchange.getIn().getBody(String.class);
 
 			final Deferred<String, Stream<String>> deferred = Streams.<String> defer(env);
 
@@ -60,6 +60,8 @@ public class ReactorRoute extends RouteBuilder {
 
 			reactor.notify("faqs", Event.wrap(Tuple.of(name, deferred)));
 
+			log.info("Waiting in thread {}", Thread.currentThread().getName());
+			
 			latch.await(3, TimeUnit.SECONDS);
 		}
 	}

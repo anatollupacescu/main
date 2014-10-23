@@ -24,8 +24,10 @@ jar {
 }
 
 repositories {
-    mavenCentral()
+    
     maven { url "http://repo.spring.io/libs-release" }
+    
+    mavenCentral()
 }
 
 dependencies {
@@ -40,7 +42,7 @@ dependencies {
 
 	compile('io.reactivex:rxjava:1.0.0-rc.3')
 
-	compile("org.projectreactor.spring:reactor-spring-context")
+	compile('org.projectreactor:reactor-core:1.1.5.RELEASE')
 
 	compile('com.google.guava:guava:18.0')
 
