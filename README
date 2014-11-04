@@ -1,7 +1,1 @@
-Sandbox projects:
-	- antlr-resource-path: An attempt to create a parser for odata URI convensions
-	- cassandra-rest: Rest API over cassandra database
-	- discussion-site: A forum with a specific thread architecture
-	- random: Contains classes I currently experiment with
-	- warehouse-webapp: Simple spring MVC/JPA project
-	- webflow-xquery: Spring webflow project with xquery parsing service
+My everyday stuff
