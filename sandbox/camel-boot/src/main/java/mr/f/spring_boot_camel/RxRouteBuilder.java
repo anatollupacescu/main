@@ -21,9 +21,9 @@ public class RxRouteBuilder extends RouteBuilder {
 		// .map(m -> "Hello " + m.getHeader("nam")).toBlocking();
 		// .subscribe(s -> { System.out.print(s); });
 
-		from("servlet:///rx").process(new MyObservableBody()).process(exch -> {
-			exch.getIn().setBody("Jora");
-		});
+//		from("servlet:///rx").process(new MyObservableBody()).process(exch -> {
+//			exch.getIn().setBody("Jora");
+//		});
 	}
 
 	public class MyObservableBody extends ObservableBody<String> {

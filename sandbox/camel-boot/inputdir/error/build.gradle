@@ -31,22 +31,16 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    springBootVersion = '1.1.6.RELEASE'
-    springReactorVersion = '1.1.5.RELEASE'
-}
-
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 
-    compile('org.apache.camel:camel-servlet:2.13.2')
-    compile('org.apache.camel:camel-spring-javaconfig:2.13.2')
-	compile('org.apache.camel:camel-rx:2.13.2')
-	compile('org.apache.camel:camel-stream:2.13.2')
-	compile('org.apache.camel:camel-test-spring:2.13.2')
-	compile('org.apache.camel:camel-ftp:2.13.2')
-	compile('commons-net:commons-net:2.0')
+    compile('org.apache.camel:camel-servlet:2.14.0')
+    compile('org.apache.camel:camel-spring-javaconfig:2.14.0')
+	compile('org.apache.camel:camel-rx:2.14.0')
+	compile('org.apache.camel:camel-stream:2.14.0')
+	compile('org.apache.camel:camel-test-spring:2.14.0')
+	compile('org.apache.camel:camel-ftp:2.14.0')
 
 	compile('io.reactivex:rxjava:1.0.0-rc.3')
 

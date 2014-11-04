@@ -3,6 +3,7 @@ package mr.f.spring_boot_camel;
 import mr.reactor.ReactorQueues;
 import mr.reactor.FlushBean;
 import mr.reactor.ReactorRoute;
+import mr.serioja.FtpUploadRoute;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
@@ -63,6 +64,7 @@ public class Application {
 		public SpringCamelContext camelContext(ApplicationContext applicationContext) throws Exception {
 			SpringCamelContext camelContext = new SpringCamelContext(applicationContext);
 			camelContext.addRoutes(reactorRoute());
+			camelContext.addRoutes(ftpRoute());
 			return camelContext;
 		}
 
@@ -74,6 +76,11 @@ public class Application {
 		@Bean
 		public RouteBuilder reactorRoute() {
 			return new ReactorRoute();
+		}
+		
+		@Bean
+		public RouteBuilder ftpRoute() {
+			return new FtpUploadRoute();
 		}
 	}
 
