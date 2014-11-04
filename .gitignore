@@ -10,3 +10,4 @@
 /sandbox/**/.classpath
 /sandbox/**/.project
 /sandbox/**/.settings
+.gradle/
