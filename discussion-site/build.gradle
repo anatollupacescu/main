@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'jetty'
+
+targetCompatibility = 1.7
+sourceCompatibility = 1.7
+
+jar {
+    baseName = 'discussion-site'
+    version =  '0.0.1-SNAPSHOT'
+}
+
+repositories {
+    maven { url "http://repo.spring.io/libs-release" }
+    mavenCentral()
+}
+
+dependencies {
+    compile('junit:junit:4.+')
+    compile('org.apache.thrift:libthrift:+')
+    compile('javax.servlet:javax.servlet-api:+')
+    
+    compile('org.slf4j:slf4j-api:+')
+    compile('ch.qos.logback:logback-core:+')
+
+    compile('org.hectorclient:hector-core:+')
+    compile('org.apache.cassandra:cassandra-thrift:+')
+    compile('org.apache.cassandra:cassandra-all:+')
+    compile('com.google.guava:guava:+')
+    compile('org.xerial.snappy:snappy-java:+')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.8'
+}

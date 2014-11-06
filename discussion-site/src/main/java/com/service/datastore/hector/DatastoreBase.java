@@ -25,7 +25,7 @@ import me.prettyprint.hector.api.query.QueryResult;
 public class DatastoreBase {
 
 	private final static String KEYSPACE = "discussion";
-	private final static String HOST_PORT = "192.168.16.115:9160";
+	private final static String HOST_PORT = "127.0.0.1:9160";
 	private final static int MAX_INDEX_COLS = 100;
 	
 	private static final class holder {

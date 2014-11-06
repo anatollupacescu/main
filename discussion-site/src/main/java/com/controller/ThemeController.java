@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.model.Theme;
 import com.model.User;
@@ -22,7 +23,7 @@ import com.util.HistoryUtils;
 @SuppressWarnings("serial")
 public class ThemeController extends HttpServlet {
 	
-	final static Logger logger = Logger.getLogger(ThemeController.class);
+	final static Logger logger = LoggerFactory.getLogger(ThemeController.class); 
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 

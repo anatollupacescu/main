@@ -7,24 +7,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.model.User;
 import com.service.IUserService;
 import com.service.impl.UserServiceImpl;
 import com.util.Const;
-import com.util.EmbeddedCassandra;
 
 @SuppressWarnings("serial")
 public class UserController extends HttpServlet {
 	
-	final static Logger logger = Logger.getLogger(UserController.class);
+	final static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		final EmbeddedCassandra cassandra = EmbeddedCassandra.INSTANCE;
-		
 		String email = (String)req.getSession().getAttribute(User.field.email.toString());
 		
 		if(!isEmpty(email)) {
