@@ -14,7 +14,7 @@ import org.apache.cassandra.db.composites.SimpleDenseCellNameType;
 import org.apache.cassandra.db.marshal.UTF8Type;
 import org.apache.cassandra.locator.AbstractReplicationStrategy;
 import org.apache.cassandra.locator.SimpleStrategy;
-import org.apache.cassandra.service.StorageService;
+import org.apache.cassandra.service.EmbeddedCassandraService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +25,8 @@ public enum EmbeddedCassandra {
 
 	private EmbeddedCassandra() {
 		try {
-			StorageService.instance.initServer();
-			logger.debug("sleeping");
+			EmbeddedCassandraService cassandra = new EmbeddedCassandraService();
+	        cassandra.start();
 			Thread.sleep(10000L);
 			logger.debug("woke up!");
 			loadDataSchema("myKs", Arrays.asList("users"));

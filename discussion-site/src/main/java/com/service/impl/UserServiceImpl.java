@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.model.User;
 import com.service.IUserService;
-import com.service.datastore.hector.Datastore;
+import com.service.datastore.thrift.Datastore;
 import com.util.Const;
 
 public class UserServiceImpl implements IUserService {

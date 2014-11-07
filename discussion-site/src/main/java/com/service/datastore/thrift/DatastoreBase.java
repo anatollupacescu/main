@@ -20,7 +20,7 @@ public class DatastoreBase {
 		public static final Cassandra.Client client = get();
 		
 		private static TTransport getTransport() {
-		    return new TFramedTransport(new TSocket("192.168.16.115", 9160));
+		    return new TFramedTransport(new TSocket("localhost", 9160));
 		}
 		
 		private static Cassandra.Client get() {
