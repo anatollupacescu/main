@@ -10,7 +10,7 @@ import com.model.Theme;
 import com.model.Theme.Side;
 import com.model.User;
 import com.service.IThemeService;
-import com.service.datastore.thrift.Datastore;
+import com.service.datastore.hector.Datastore;
 import com.util.Const;
 import com.util.Convert;
 

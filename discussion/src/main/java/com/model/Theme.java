@@ -7,7 +7,6 @@ public class Theme {
 	public final static String THEMES_HISTORY = "THEMES_HISTORY";
 	
 	public final static String entityGroup = "THEMES";
-//	public final static String entityTheme = "THEME";
 	
 	public static enum field { id, parent, date, author, content, pro, contra, side, argumentCount };
 	

@@ -32,4 +32,8 @@ public class User {
 		this.password = password;
 	}
 	
+	public String toString() {
+		return email + ":" + name + ":" + password;
+	}
+	
 }

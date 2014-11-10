@@ -5,13 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.controller.ThemeController;
 import com.model.User;
 import com.service.IUserService;
-import com.service.datastore.thrift.Datastore;
+import com.service.datastore.hector.Datastore;
 import com.util.Const;
 
 public class UserServiceImpl implements IUserService {
 
+	final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	
 	public User get(String email) {
 		
 		User user = new User();
@@ -28,6 +34,8 @@ public class UserServiceImpl implements IUserService {
 						
 					new String[] { email }
 			);
+			
+			logger.debug("Got result {}", result);
 			
 			if (result.size() > 0) {
 				

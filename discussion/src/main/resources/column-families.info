@@ -1,0 +1,3 @@
+create column family user;
+create column family theme;
+create column family theme_index;

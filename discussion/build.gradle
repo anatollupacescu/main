@@ -6,7 +6,7 @@ targetCompatibility = 1.7
 sourceCompatibility = 1.7
 
 jar {
-    baseName = 'discussion-site'
+    baseName = 'discussion'
     version =  '0.0.1-SNAPSHOT'
 }
 
@@ -24,8 +24,8 @@ dependencies {
     compile('ch.qos.logback:logback-core:+')
 
     compile('org.hectorclient:hector-core:+')
-    compile('org.apache.cassandra:cassandra-thrift:+')
     compile('org.apache.cassandra:cassandra-all:+')
+    compile('org.apache.pig:pig:0.13.0')
     compile('com.google.guava:guava:+')
     compile('org.xerial.snappy:snappy-java:+')
 }

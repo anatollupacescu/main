@@ -76,7 +76,8 @@ public class UserController extends HttpServlet {
 			if (go) { // save
 				IUserService userService = new UserServiceImpl();
 				User user = userService.get(email);
-				if (isEmpty(user.getEmail())) {
+				logger.debug("Got user {}", user);
+				if (isEmpty(user.getName())) {
 					user.setEmail(email);
 					user.setName(username);
 					user.setPassword(password);
