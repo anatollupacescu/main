@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.service.ClinicService;
@@ -45,7 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class OwnerController {
 
     private final ClinicService clinicService;
-
+    private final Logger log = Logger.getLogger(OwnerController.class);
 
     @Autowired
     public OwnerController(ClinicService clinicService) {
@@ -94,6 +95,7 @@ public class OwnerController {
         if (results.size() < 1) {
             // no owners found
             result.rejectValue("lastName", "notFound", "not found");
+            log.error("notFound");
             return "owners/findOwners";
         }
         if (results.size() > 1) {

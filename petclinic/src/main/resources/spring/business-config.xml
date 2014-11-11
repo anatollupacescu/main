@@ -52,5 +52,11 @@
         <!-- Custom configuration for the custom implementation based on JPA -->
         <bean id="owerRepository"
               class="org.springframework.samples.petclinic.repository.springdatajpa.JpaOwnerRepositoryImpl"/>
+              
+       <bean id="exceptionRepository"
+              class="org.springframework.samples.petclinic.repository.springdatajpa.JpaExceptionRepository"/>
+              
+       <bean id="exceptionDbAppender" class="org.springframework.samples.petclinic.util.ExceptionDbAppender" 
+       		p:repository-ref="exceptionRepository" />
     </beans>
 </beans>
