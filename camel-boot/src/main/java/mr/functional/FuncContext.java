@@ -1,6 +1,11 @@
 package mr.functional;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 import com.google.common.collect.Maps;
@@ -10,13 +15,15 @@ import com.google.common.collect.Maps;
  */
 public class FuncContext {
 
-	private final Map<String, SFunction> vars = Maps.newHashMap();
+	private static final ExecutorService executor = Executors.newCachedThreadPool();
+
+	private final Map<String, Future<Object>> vars = Maps.newHashMap();
 
 	public static FuncContext newContext() {
 		return new FuncContext();
 	}
 
-	private void put(String key, SFunction func) {
+	private void put(String key, Future<Object> func) {
 		vars.put(key, func);
 	}
 
@@ -29,91 +36,68 @@ public class FuncContext {
 	}
 
 	public FuncContext register(String varName, Function<FuncContext, Object> function) {
-		vars.put(varName, new SFunction(function));
+		FuncCallable callable = new FuncCallable(function);
+		callable.setContext(this);
+		vars.put(varName, executor.submit(callable));
 		return this;
 	}
 
-	public FuncContext register(String varName, Function<FuncContext, Object> function, String[] strings) {
-		SFunction f = new SFunction(function);
-		FuncContext localContext = view(strings);
-		f.setLocalContext(localContext);
-		vars.put(varName, f);
+	public FuncContext register(String varName, Function<FuncContext, Object> function, String[] filter) {
+		FuncCallable f = new FuncCallable(function);
+		FuncContext localContext = view(filter);
+		f.setContext(localContext);
+		vars.put(varName, executor.submit(f));
 		return this;
 	}
 
-	public Object get(String string) {
-		SFunction func = vars.get(string);
+	public Object get(String string) throws RuntimeException {
+		Future<Object> func = vars.get(string);
 		if (func == null) {
 			throw new IllegalStateException(string + " not registred");
 		}
-		return func.apply(this);
+		try {
+			return func.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw (RuntimeException)e.getCause();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <V> V get(String string, Class<V> classType) {
-		SFunction func = vars.get(string);
-		if (func == null) {
-			throw new IllegalStateException(string + " not registred");
-		}
-		return (V) func.apply(this);
+	public <V> V get(String string, Class<V> classType) throws RuntimeException {
+		return (V) get(string);
 	}
 
-	public SFunction wrapFunc(Function<FuncContext, Object> func) {
-		SFunction f = new SFunction(func);
-		f.setLocalContext(this);
-		return f;
+	public static Callable<Object> ready(Object obj) {
+		return new FuncCallable(obj);
 	}
-
-	public static Function<FuncContext, Object> ready(Object obj) {
-		return new SFunction(obj);
-	}
-
-	private static final class SFunction implements Function<FuncContext, Object> {
-
-		enum NOTHING {
-			$
-		}
+	
+	private final static class FuncCallable implements Callable<Object> {
 
 		private final Function<FuncContext, Object> function;
 		private Object cached;
-		private FuncContext localContext;
+		private FuncContext context;
 
-		public SFunction(Function<FuncContext, Object> func) {
+		public FuncCallable(Function<FuncContext, Object> func) {
 			this.function = func;
 		}
 
-		public SFunction(Object ready) {
+		public FuncCallable(Object ready) {
 			this.cached = ready;
 			this.function = null;
 		}
 
 		@Override
-		public Object apply(FuncContext sContext) {
-
-			if (cached == NOTHING.$) {
-				return null;
-			}
-
-			FuncContext context = localContext;
-
-			if (context == null) {
-				context = sContext;
-			}
+		public Object call() throws Exception {
 
 			if (cached == null) {
 				cached = function.apply(context);
 			}
 
-			if (cached == null) {
-				cached = NOTHING.$;
-				return null;
-			}
-
 			return cached;
 		}
 
-		public void setLocalContext(FuncContext localContext) {
-			this.localContext = localContext;
+		public void setContext(FuncContext localContext) {
+			this.context = localContext;
 		}
 	}
 }
