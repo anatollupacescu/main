@@ -12,6 +12,7 @@ public class FuncContextTest {
 	public void test1() {
 		FuncContext context = FuncContext.newContext();
 		context.register("test", testValueF);
+		context.run();
 		assertEquals("testValue", context.get("test"));
 	}
 
@@ -20,6 +21,7 @@ public class FuncContextTest {
 		FuncContext context = FuncContext.newContext();
 		context.register("test", testValueF);
 		context.register("echo", concatF);
+		context.run();
 		assertEquals("hi testValue", context.get("echo"));
 	}
 
@@ -28,6 +30,7 @@ public class FuncContextTest {
 		FuncContext context = FuncContext.newContext();
 		context.register("test", testValueF);
 		context.register("echo", concatF, new String[] {});
+		context.run();
 		context.get("echo");
 	}
 
@@ -37,6 +40,7 @@ public class FuncContextTest {
 		context.register("test1", testValueF);
 		context.register("test2", testValueF);
 		context.register("echo2", concat2F, new String[] { "test1", "test2" });
+		context.run();
 		assertEquals("testValue-testValue", context.get("echo2"));
 	}
 
@@ -53,11 +57,11 @@ public class FuncContextTest {
 			return "hi " + t.get("test");
 		}
 	};
-	
+
 	private final Function<FuncContext, Object> concat2F = new Function<FuncContext, Object>() {
 		@Override
 		public Object apply(FuncContext t) {
-			return String.format("%s-%s", (String)t.get("test1"), (String)t.get("test2"));
+			return String.format("%s-%s", (String) t.get("test1"), (String) t.get("test2"));
 		}
 	};
 }
