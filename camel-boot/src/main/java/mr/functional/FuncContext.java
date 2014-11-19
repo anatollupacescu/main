@@ -24,27 +24,33 @@ public class FuncContext {
 	private final Map<String, Future<Object>> futureMap = new WeakHashMap<String, Future<Object>>();
 	private final Map<String, Object> readyMap = new WeakHashMap<String, Object>();
 
-	private void put(String key, Future<Object> func) {
+	private void putFuture(String key, Future<Object> func) {
 		futureMap.put(key, func);
+	}
+
+	private void putReady(String key, Object obj) {
+		readyMap.put(key, obj);
 	}
 
 	private FuncContext view(String... strings) {
 		FuncContext local = new FuncContext();
 		for (String key : strings) {
-			local.put(key, futureMap.get(key));
+			Object readyObject = readyMap.get(key);
+			if(readyObject != null) {
+				local.putReady(key, readyObject);
+			} else {
+				local.putFuture(key, futureMap.get(key));
+			}
 		}
 		return local;
 	}
 
 	public FuncContext register(String varName, Function<FuncContext, Object> function) {
-		FuncCallable callable = new FuncCallable(this, function);
-		callableMap.put(varName, callable);
-		return this;
+		return register(varName, function, null);
 	}
 
 	public FuncContext register(String varName, Function<FuncContext, Object> function, String[] filter) {
-		FuncContext localContext = view(filter);
-		FuncCallable callable = new FuncCallable(localContext, function);
+		FuncCallable callable = new FuncCallable(this, function, filter);
 		callableMap.put(varName, callable);
 		return this;
 	}
@@ -97,12 +103,15 @@ public class FuncContext {
 	private final static class FuncCallable implements Callable<Object> {
 
 		private final Function<FuncContext, Object> function;
-		private final FuncContext context;
+		
+		private FuncContext context;
 		private CountDownLatch latch;
-
-		public FuncCallable(FuncContext localContext, Function<FuncContext, Object> func) {
+		private String[] filter;
+		
+		public FuncCallable(FuncContext localContext, Function<FuncContext, Object> func, String[] filter) {
 			this.context = localContext;
 			this.function = func;
+			this.filter = filter;
 		}
 
 		public void setLatch(CountDownLatch latch) {
@@ -112,6 +121,9 @@ public class FuncContext {
 		@Override
 		public Object call() throws Exception {
 			latch.await();
+			if(filter != null) {
+				this.context = context.view(filter);
+			}
 			return function.apply(context);
 		}
 	}
@@ -129,19 +141,31 @@ public class FuncContext {
 		for (Field field : klass.getDeclaredFields()) {
 			FuncAnnotation annotation = field.getAnnotation(FuncAnnotation.class);
 			if (annotation != null) {
-				Class<?> fieldType = field.getType();
-				if (!Function.class.equals(fieldType)) {
+				/* check type */
+				if (!Function.class.equals(field.getType())) {
 					throw new IllegalArgumentException(String.format(FUNC_NOT_FOUND_MESSAGE, field.getName()));
 				}
-				final String name = field.getName();
 				field.setAccessible(true);
+				/* function body */
 				Function<FuncContext, Object> function = null;
 				try {
 					function = (Function<FuncContext, Object>) field.get(test);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
-				context.register(name, function);
+				/* name */
+				final String name;
+				if(annotation.name().length() > 0) {
+					name = annotation.name();
+				} else {
+					name = field.getName();
+				}
+				/* register */
+				if(annotation.mappedVars().length > 0) {
+					context.register(name, function, annotation.mappedVars());
+				} else {
+					context.register(name, function);
+				}
 			}
 		}
 		return context;

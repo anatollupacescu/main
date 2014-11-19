@@ -44,7 +44,7 @@ public class FuncAnnotationTest {
 		}
 	};
 
-	@FuncAnnotation
+	@FuncAnnotation(name = "concat1", mappedVars = { "testValueF", "greeting" })
 	private final Function<FuncContext, Object> concat1 = new Function<FuncContext, Object>() {
 		@Override
 		public Object apply(FuncContext t) {
@@ -52,7 +52,7 @@ public class FuncAnnotationTest {
 		}
 	};
 
-	@FuncAnnotation
+	@FuncAnnotation(mappedVars = { "testValueF" })
 	private final Function<FuncContext, Object> concat2 = new Function<FuncContext, Object>() {
 		@Override
 		public Object apply(FuncContext t) {
