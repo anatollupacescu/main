@@ -21,26 +21,23 @@ public class FuncContext {
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
 
 	private final Map<String, FuncCallable> callableMap = new WeakHashMap<String, FuncCallable>();
-	private final Map<String, Future<Object>> futureMap = new WeakHashMap<String, Future<Object>>();
-	private final Map<String, Object> readyMap = new WeakHashMap<String, Object>();
 
-	private void putFuture(String key, Future<Object> func) {
-		futureMap.put(key, func);
+	private Map<String, ReadyOrFuture> resultMap;
+
+	private void initResultMap() {
+		resultMap = new WeakHashMap<String, ReadyOrFuture>();
 	}
 
-	private void putReady(String key, Object obj) {
-		readyMap.put(key, obj);
+	private void put(String key, ReadyOrFuture obj) {
+		resultMap.put(key, obj);
 	}
 
 	private FuncContext view(String... strings) {
 		FuncContext local = new FuncContext();
+		local.initResultMap();
 		for (String key : strings) {
-			Object readyObject = readyMap.get(key);
-			if(readyObject != null) {
-				local.putReady(key, readyObject);
-			} else {
-				local.putFuture(key, futureMap.get(key));
-			}
+			ReadyOrFuture mappedValue = resultMap.get(key);
+			local.put(key, mappedValue);
 		}
 		return local;
 	}
@@ -56,40 +53,37 @@ public class FuncContext {
 	}
 
 	public void run() {
+		run(new Object[] {});
+	}
+
+	public void run(Object... args) {
+		initResultMap();
+		Object key = null;
+		for (final Object object : args) {
+			if (key == null) {
+				key = object;
+			} else {
+				resultMap.put((String) key, new ReadyOrFuture(object));
+			}
+		}
 		Set<Entry<String, FuncCallable>> entrySet = callableMap.entrySet();
 		CountDownLatch latch = new CountDownLatch(1);
 		for (Entry<String, FuncCallable> entry : entrySet) {
 			String name = entry.getKey();
 			FuncCallable value = entry.getValue();
 			value.setLatch(latch);
-			futureMap.put(name, executor.submit(value));
+			resultMap.put(name, new ReadyOrFuture(executor.submit(value)));
 		}
 		latch.countDown();
 	}
 
-	public void run(Object... args) {
-		Object key = null;
-		for (final Object object : args) {
-			if (key == null) {
-				key = object;
-			} else {
-				readyMap.put((String) key, object);
-			}
-		}
-		run();
-	}
-
-	public Object get(String string) throws RuntimeException {
-		Object ready = readyMap.get(string);
-		if (ready != null) {
-			return ready;
-		}
-		Future<Object> func = futureMap.get(string);
-		if (func == null) {
+	public Object get(String string) {
+		ReadyOrFuture r = resultMap.get(string);
+		if (r == null) {
 			throw new IllegalStateException(string + " not registred");
 		}
 		try {
-			return func.get();
+			return r.get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw (RuntimeException) e.getCause();
 		}
@@ -103,11 +97,11 @@ public class FuncContext {
 	private final static class FuncCallable implements Callable<Object> {
 
 		private final Function<FuncContext, Object> function;
-		
+
 		private FuncContext context;
 		private CountDownLatch latch;
 		private String[] filter;
-		
+
 		public FuncCallable(FuncContext localContext, Function<FuncContext, Object> func, String[] filter) {
 			this.context = localContext;
 			this.function = func;
@@ -121,10 +115,31 @@ public class FuncContext {
 		@Override
 		public Object call() throws Exception {
 			latch.await();
-			if(filter != null) {
+			if (filter != null) {
 				this.context = context.view(filter);
 			}
 			return function.apply(context);
+		}
+	}
+
+	private final static class ReadyOrFuture {
+		private final Object ready;
+		private final Future<Object> future;
+
+		public ReadyOrFuture(Object obj) {
+			this.ready = obj;
+			this.future = null;
+		}
+
+		public ReadyOrFuture(Future<Object> future) {
+			this.ready = null;
+			this.future = future;
+		}
+
+		public Object get() throws InterruptedException, ExecutionException {
+			if (ready != null)
+				return ready;
+			return future.get();
 		}
 	}
 
@@ -155,13 +170,13 @@ public class FuncContext {
 				}
 				/* name */
 				final String name;
-				if(annotation.name().length() > 0) {
+				if (annotation.name().length() > 0) {
 					name = annotation.name();
 				} else {
 					name = field.getName();
 				}
 				/* register */
-				if(annotation.mappedVars().length > 0) {
+				if (annotation.mappedVars().length > 0) {
 					context.register(name, function, annotation.mappedVars());
 				} else {
 					context.register(name, function);
