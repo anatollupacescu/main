@@ -18,11 +18,19 @@ import java.util.function.Function;
  */
 public class FuncContext {
 
-	private static final ExecutorService executor = Executors.newCachedThreadPool();
+	private final ExecutorService executor;
 
 	private final Map<String, FuncCallable> callableMap = new WeakHashMap<String, FuncCallable>();
 
 	private Map<String, ReadyOrFuture> resultMap;
+
+	private FuncContext(ExecutorService service) {
+		if (service == null) {
+			this.executor = Executors.newCachedThreadPool();
+		} else {
+			this.executor = service;
+		}
+	}
 
 	private void initResultMap() {
 		resultMap = new WeakHashMap<String, ReadyOrFuture>();
@@ -33,7 +41,7 @@ public class FuncContext {
 	}
 
 	private FuncContext view(String... strings) {
-		FuncContext local = new FuncContext();
+		FuncContext local = cloneContext();
 		local.initResultMap();
 		for (String key : strings) {
 			ReadyOrFuture mappedValue = resultMap.get(key);
@@ -52,11 +60,11 @@ public class FuncContext {
 		return this;
 	}
 
-	public void run() {
-		run(new Object[] {});
+	public FuncContext run() {
+		return run(new Object[] {});
 	}
 
-	public void run(Object... args) {
+	public FuncContext run(Object... args) {
 		initResultMap();
 		Object key = null;
 		for (final Object object : args) {
@@ -75,6 +83,7 @@ public class FuncContext {
 			resultMap.put(name, new ReadyOrFuture(executor.submit(value)));
 		}
 		latch.countDown();
+		return this;
 	}
 
 	public Object get(String string) {
@@ -146,12 +155,20 @@ public class FuncContext {
 	private static final String FUNC_NOT_FOUND_MESSAGE = "Field '%s' must be an instance of Function";
 
 	public static FuncContext newContext() {
-		return new FuncContext();
+		return new FuncContext(null);
+	}
+
+	public static FuncContext newContext(ExecutorService service) {
+		return new FuncContext(service);
+	}
+
+	private FuncContext cloneContext() {
+		return new FuncContext(executor);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> FuncContext build(T test) {
-		final FuncContext context = new FuncContext();
+		final FuncContext context = FuncContext.newContext();
 		Class<?> klass = test.getClass();
 		for (Field field : klass.getDeclaredFields()) {
 			FuncAnnotation annotation = field.getAnnotation(FuncAnnotation.class);
