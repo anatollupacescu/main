@@ -72,6 +72,7 @@ public class FuncContext {
 				key = object;
 			} else {
 				resultMap.put((String) key, new ReadyOrFuture(object));
+				key = null;
 			}
 		}
 		Set<Entry<String, FuncCallable>> entrySet = callableMap.entrySet();

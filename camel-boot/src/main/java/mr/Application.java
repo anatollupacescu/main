@@ -1,7 +1,7 @@
-package mr.f.spring_boot_camel;
+package mr;
 
-import mr.reactor.ReactorQueues;
 import mr.reactor.FlushBean;
+import mr.reactor.ReactorQueues;
 import mr.reactor.ReactorRoute;
 import mr.serioja.FtpUploadRoute;
 
@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 import reactor.core.Environment;
 import reactor.core.Reactor;
@@ -42,6 +43,11 @@ public class Application {
 		@Bean
 		public Logger log() {
 			return LoggerFactory.getLogger(Application.class);
+		}
+		
+		@Bean
+		public RestTemplate restTemplate() {
+			return new RestTemplate();
 		}
 	}
 

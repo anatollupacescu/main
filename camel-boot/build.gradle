@@ -39,6 +39,9 @@ ext {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+	
+	compile('org.hsqldb:hsqldb:+')
 
     compile('org.apache.camel:camel-servlet:2.13.2')
     compile('org.apache.camel:camel-spring-javaconfig:2.13.2')
@@ -57,6 +60,7 @@ dependencies {
 
 	compile('ch.qos.logback:logback-classic:0.9.26')
 	
+	compile('com.fasterxml.jackson.dataformat:jackson-dataformat-csv:+')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
