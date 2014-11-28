@@ -1,5 +1,6 @@
 package mr.f.spring_boot_camel;
 
+import mr.Application;
 import mr.reactor.ReactorRoute;
 
 import org.apache.camel.Produce;

@@ -1,5 +1,6 @@
 package mr;
 
+import mr.odata.HelloMethods;
 import mr.reactor.FlushBean;
 import mr.reactor.ReactorQueues;
 import mr.reactor.ReactorRoute;
@@ -30,6 +31,15 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
+	@Configuration
+	@ComponentScan
+	public static class FunctionalContextConfiguration {
+		@Bean
+		public HelloMethods helloMethods() {
+			return new HelloMethods();
+		}
+	}
+	
 	@Configuration
 	@EnableReactor
 	@ComponentScan
@@ -72,11 +82,6 @@ public class Application {
 			camelContext.addRoutes(reactorRoute());
 			camelContext.addRoutes(ftpRoute());
 			return camelContext;
-		}
-
-		@Bean
-		public RouteBuilder rxBuilder() {
-			return new RxRouteBuilder();
 		}
 
 		@Bean
