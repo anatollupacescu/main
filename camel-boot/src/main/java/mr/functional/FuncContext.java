@@ -94,7 +94,7 @@ public class FuncContext {
 		}
 		try {
 			return r.get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (Exception e) {
 			throw (RuntimeException) e.getCause();
 		}
 	}
@@ -183,7 +183,7 @@ public class FuncContext {
 				Function<FuncContext, Object> function = null;
 				try {
 					function = (Function<FuncContext, Object>) field.get(test);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
+				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 				/* name */

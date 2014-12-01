@@ -42,9 +42,7 @@ class HelloController {
 
 		Preconditions.checkNotNull(productId);
 
-		mc.run(ImmutableMap.<String, Object> of("productId", productId));
-
-		List<Product> syblingList = (List<Product>) mc.get("productSyblings");
+		List<Product> syblingList = (List<Product>) mc.get("productSyblings", ImmutableMap.<String, Object> of("productId", productId));
 
 		for (Product product : syblingList) {
 			products.save(product);
