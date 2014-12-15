@@ -3,7 +3,7 @@ package mr.odata;
 import java.io.IOException;
 import java.util.List;
 
-import mr.odata.methods.MethodsContext;
+import mr.functional.MethodsContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

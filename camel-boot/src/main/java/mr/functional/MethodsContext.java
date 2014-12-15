@@ -1,31 +1,38 @@
-package mr.odata.methods;
+package mr.functional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import mr.functional.FuncAnnotation;
-
 import com.google.common.base.Preconditions;
 
 public class MethodsContext {
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final Object instance;
-
 	private final List<Invokable> ils = new ArrayList<Invokable>();
 
-	public MethodsContext(Object instance) {
+	private final ExecutorService executor;
+	private final Object instance;
+
+	public MethodsContext(Object instance, ExecutorService executor) {
+		this.executor = Executors.newCachedThreadPool();
 		this.instance = instance;
+		populateInvokableList(instance);
+	}
+
+	public MethodsContext(Object instance) {
+		this.executor = Executors.newCachedThreadPool();
+		this.instance = instance;
+		populateInvokableList(instance);
+	}
+
+	private void populateInvokableList(Object instance) {
 		Class<?> klass = instance.getClass();
 		for (Method method : klass.getDeclaredMethods()) {
 			FuncAnnotation annotation = method.getAnnotation(FuncAnnotation.class);
@@ -43,8 +50,7 @@ public class MethodsContext {
 		}
 		try {
 			Future<?> future = getFuture(name);
-			Object result = future.get();
-			return result;
+			return future.get();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -53,7 +59,7 @@ public class MethodsContext {
 	private Future<?> getFuture(String name) throws InterruptedException, ExecutionException {
 		Preconditions.checkNotNull(name);
 		Iterator<Invokable> iterator = ils.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			Invokable invoke = iterator.next();
 			if (invoke.isNamed(name)) {
 				String[] argNames = invoke.getArgumentNames();
@@ -70,7 +76,9 @@ public class MethodsContext {
 
 	private interface Invokable {
 		Object go(Future<?>[] args) throws Exception;
+
 		String[] getArgumentNames();
+
 		boolean isNamed(String name);
 	}
 
@@ -110,7 +118,7 @@ public class MethodsContext {
 			this.method = method;
 			this.annotation = annotation;
 		}
-		
+
 		@Override
 		public boolean isNamed(String name) {
 			return annotation.name().equals(name);

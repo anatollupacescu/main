@@ -1,8 +1,6 @@
 package mr.functional;
 
 import static org.junit.Assert.assertEquals;
-import mr.odata.methods.Methods;
-import mr.odata.methods.MethodsContext;
 
 import org.junit.Test;
 

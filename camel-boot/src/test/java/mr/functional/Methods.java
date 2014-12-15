@@ -1,4 +1,4 @@
-package mr.odata.methods;
+package mr.functional;
 
 import mr.functional.FuncAnnotation;
 
