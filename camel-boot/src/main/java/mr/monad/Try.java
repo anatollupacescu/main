@@ -1,6 +1,5 @@
 package mr.monad;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -55,19 +54,24 @@ public abstract class Try<V> {
 	public Try<RuntimeException> ifPresentOrFail(Consumer<V> c) {
 		if (isSuccess()) {
 			c.accept(successValue());
-			return failure("Failed to fail!");
+			return failure("No further chaining expected");
 		} else {
 			return success(failureValue());
 		}
 	}
 
-	public <T> Optional<T> map(Function<V, Optional<T>> func) {
+	public <T> Try<T> map(Function<V, T> func) {
 		if (isSuccess()) {
-			return func.apply(successValue());
+			try {
+				T res = func.apply(successValue());
+				return Try.success(res);
+			} catch (Exception e) {
+				return Try.failure(e);
+			}
 		}
-		return Optional.empty();
+		return Try.failure(failureValue());
 	}
-	
+
 	private static class Failure<V> extends Try<V> {
 
 		private RuntimeException exception;
@@ -135,7 +139,7 @@ public abstract class Try<V> {
 
 		@Override
 		public void throwException() {
-			// log.error("Method throwException() called on a Success instance");
+			throw new IllegalStateException("Should not be called on a Success class");
 		}
 
 		@Override

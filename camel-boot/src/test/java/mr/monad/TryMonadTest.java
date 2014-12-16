@@ -1,24 +1,62 @@
 package mr.monad;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.junit.Test;
 
 public class TryMonadTest {
-	
-    @Test
-    public void testM() {
-        MyMap<String, String> map = new MyMap<String, String>();
-        map.put("name", "jora");
 
-        Consumer<String> c = new Consumer<String>() {
-            @Override
-            public void accept(String o) {
-                System.out.println("Received " + o);
-            }
-        };
-        RuntimeException v = map.find("nam1e").ifPresentOrFail(c).successValue();
+	@Test
+	public void testM0() {
 
-        System.out.println(v);
-    }
+		test(Try.success("jora1"));
+	}
+
+	@Test
+	public void testM1() {
+
+		test(Try.success("jora"));
+	}
+
+	private <T> void test(Try<String> monad) {
+
+		Try<RuntimeException> e = monad
+
+		.map(new Function<String, Integer>() {
+			@Override
+			public Integer apply(String t) {
+				return t.length();
+			}
+		})
+
+		.map(new Function<Integer, String>() {
+			@Override
+			public String apply(Integer t) {
+				if (t > 4) {
+					return "E ok";
+				}
+				throw new RuntimeException("Too short");
+			}
+		})
+
+		.ifPresentOrFail(new Consumer<String>() {
+			@Override
+			public void accept(String t) {
+				assertTrue("E ok".equals(t));
+			}
+		})
+
+		;
+
+		e.ifPresent(new Consumer<RuntimeException>() {
+			@Override
+			public void accept(RuntimeException t) {
+				assertTrue(t instanceof IllegalStateException);
+				assertTrue(t.getCause() instanceof RuntimeException);
+			}
+		});
+	}
 }
