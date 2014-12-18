@@ -21,7 +21,7 @@ public class MethodsContext {
 	private final Object instance;
 
 	public MethodsContext(Object instance, ExecutorService executor) {
-		this.executor = Executors.newCachedThreadPool();
+		this.executor = executor;
 		this.instance = instance;
 		populateInvokableList(instance);
 	}
@@ -75,6 +75,7 @@ public class MethodsContext {
 	}
 
 	private interface Invokable {
+
 		Object go(Future<?>[] args) throws Exception;
 
 		String[] getArgumentNames();

@@ -1,4 +1,4 @@
-package mr.f.spring_boot_camel;
+package mr.camel;
 
 import mr.Application;
 import mr.reactor.ReactorRoute;

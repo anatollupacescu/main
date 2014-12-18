@@ -37,7 +37,7 @@ public class ReactorRoute extends RouteBuilder {
 
 	class ReactorProcessor implements Processor {
 
-		public void process(Exchange exchange) throws Exception {
+		public void process(Exchange exchange) throws InterruptedException {
 
 			String name = exchange.getIn().getBody(String.class);
 
