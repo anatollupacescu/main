@@ -40,6 +40,8 @@ public class KafkaLocalBroker {
 
 	private Properties createProperties() {
 		Properties properties = new Properties(System.getProperties());
+		properties.put("zookeeper.connect", "localhost:2181");
+		properties.put("broker.id", "0");
 		properties.put("enable.zookeeper", "true");
 		properties.put("group.id", "testgroup");		
 		return properties;

@@ -21,11 +21,12 @@ public class MultiThreadHLConsumer {
 	public MultiThreadHLConsumer(String zookeeper, String groupId, String topic) {
 		Properties properties = new Properties();
 		properties.put("zookeeper.connect", zookeeper);
+		properties.put("zk.connect", zookeeper);
 		properties.put("group.id", groupId);
 		properties.put("zookeeper.session.timeout.ms", "500");
 		properties.put("zookeeper.sync.time.ms", "250");
 		properties.put("auto.commit.interval.ms", "1000");
-
+		properties.put("auto.offset.reset", "smallest");
 		consumer = Consumer.createJavaConsumerConnector(new ConsumerConfig(properties));
 		this.topic = topic;
 	}
