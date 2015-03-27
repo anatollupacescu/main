@@ -13,7 +13,6 @@ import kafka.server.KafkaServer;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.TestingServer;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +28,9 @@ import demo.bean.SingleThreadProducer;
 public class DemoApplication {
 
 	private static final Logger log = Logger.getAnonymousLogger();
-	
+
+	private static final int messageCount = 10;
+
 	public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(DemoApplication.class, args);
         MultiThreadConsumer consumerTester = context.getBean(MultiThreadConsumer.class);
@@ -37,26 +38,15 @@ public class DemoApplication {
         SingleThreadProducer producer = context.getBean(SingleThreadProducer.class);
         CuratorFramework framework = context.getBean(CuratorFramework.class);
 
-        if(CuratorFrameworkState.STARTED != framework.getState()) {
-        	log.info("Framework not started, starting...");
-        	framework.start();
-        }
-
-        while(CuratorFrameworkState.STARTED != framework.getState()) {
-        	log.info("Framework starting...");
-        }
-
         log.info("Kafka starting...");
         kafkaServer.startup();
         
-        Thread.sleep(1000);
-        
         log.info("Starting consumer...");
         consumerTester.testConsumer();
+        
         log.info("Publishing messages...");
 		producer.sendMessages(10);
-		log.info("Waiting to be consumed...");
-		Thread.sleep(1000);
+		
 		log.info("Shutting down...");
 		consumerTester.close();
 		kafkaServer.shutdown();
@@ -77,8 +67,6 @@ public class DemoApplication {
 	public KafkaServer kafkaServer(
 			@Value("${kafka.zookeeper.connect}") String zookeeperConnect,
 			@Value("${kafka.broker.id}") String brokerId,
-			@Value("${kafka.enable.zookeeper}") String enableZookeeper,
-			@Value("${kafka.group.id}") String groupId,
 			CuratorFramework framework)
 	{
 			Properties properties = new Properties();
@@ -103,7 +91,7 @@ public class DemoApplication {
 	public MultiThreadConsumer consumerTester(ConsumerConnector consumer, 
 			@Value("topic") String topic) 
 	{
-		return new MultiThreadConsumer(consumer, topic);
+		return new MultiThreadConsumer(consumer, topic, messageCount);
 	}
 	
 	@Bean
@@ -130,9 +118,8 @@ public class DemoApplication {
 	@Bean
 	public Producer<Integer, String> producer(
 			@Value("${producer.metadata.broker.list}") String metadataBrokerList,
-			@Value("${producer.serializer-class}") String serializerClass,
-			@Value("${producer.request-required-acks}") String requestRequiredAcks,
-			@Value("${producer.advertised-hostname}") String hostname,
+			@Value("${producer.serializer.class}") String serializerClass,
+			@Value("${producer.request.required.acks}") String requestRequiredAcks,
 			KafkaServer kafkaServer) {
 		/*
 		 * properties.put("partitioner.class","test.kafka.SimplePartitioner");
