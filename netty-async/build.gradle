@@ -1,0 +1,38 @@
+ext {
+    reactorVersion = '1.1.0.M3'
+}
+
+buildscript {
+    repositories {
+        maven { url "https://repo.spring.io/libs-release" }
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.2.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://repo.spring.io/libs-milestone" }
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter:1.2.2.RELEASE'
+	compile 'com.google.guava:guava:18.0'
+	compile 'com.spotify:trickle:0.6.1'
+    compile "org.projectreactor:reactor-net:$reactorVersion"
+    compile "org.projectreactor.spring:reactor-spring-context:$reactorVersion"
+	compile "com.netflix.rxnetty:rx-netty:+"
+	compile 'io.netty:netty-all:4.0.25.Final'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
