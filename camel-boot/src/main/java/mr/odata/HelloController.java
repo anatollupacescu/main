@@ -52,7 +52,7 @@ class HelloController {
         if (person == null) {
             throw new EntityNotFoundException(String.format("Person with name '%s' has not been found", name));
         }
-        return person.toDto();
+        return person;
     }
 
     @RequestMapping(value = "/persons", produces = "application/json", method = RequestMethod.POST)
