@@ -30,7 +30,8 @@ dependencies {
     	exclude module: 'spring-boot-starter-logging'
     }
     compile('org.springframework.boot:spring-boot-starter-log4j')
-	compile('org.apache.kafka:kafka_2.9.2:0.8.2.1')
+    compile('org.springframework.boot:spring-boot-starter-test')
+	compile('org.apache.kafka:kafka_2.10:0.8.2.1')
 	compile('org.apache.curator:curator-framework:2.7.1')
 	compile('org.apache.curator:curator-test:2.7.1')
 	compile('org.apache.zookeeper:zookeeper:3.4.6')

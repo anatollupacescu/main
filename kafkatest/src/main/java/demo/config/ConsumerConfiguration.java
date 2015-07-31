@@ -32,8 +32,9 @@ public class ConsumerConfiguration {
 			@Value("${consumer.zookeeper.session.timeout.ms}") String timeout,
 			@Value("${consumer.zookeeper.sync.time.ms}") String sync,
 			@Value("${consumer.auto.commit.interval.ms}") String interval,
-			@Value("${consumer.auto.offset.reset}") String offset,
-			KafkaServer kafkaServer) 
+			@Value("${consumer.auto.offset.reset}") String offset
+//			,KafkaServer kafkaServer
+			) 
 	{
 		Properties properties = new Properties();
 		properties.put("zookeeper.connect", zookeeper);
@@ -43,6 +44,7 @@ public class ConsumerConfiguration {
 		properties.put("zookeeper.sync.time.ms", sync);
 		properties.put("auto.commit.interval.ms", interval);
 		properties.put("auto.offset.reset", offset);
-		return Consumer.createJavaConsumerConnector(new ConsumerConfig(properties));
+		ConsumerConfig config = new ConsumerConfig(properties);
+		return Consumer.createJavaConsumerConnector(config);
 	}
 }
