@@ -1,52 +1,41 @@
 package demo;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.ConsumerIterator;
-import kafka.consumer.KafkaStream;
-import kafka.javaapi.consumer.ConsumerConnector;
-import kafka.message.MessageAndMetadata;
-import kafka.serializer.Decoder;
-import kafka.serializer.StringDecoder;
+import demo.bean.SingleThreadConsumer;
+import kafka.server.KafkaServer;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = DemoApplication.class)
+@ActiveProfiles("consumer")
 public class ConsumerTest {
 
-	private final Logger log = Logger.getAnonymousLogger();
+	private @Autowired KafkaServer kafkaBroker;
 
-	final String topic = "task-output";
+	private @Autowired Logger logger;
+
+	private @Autowired SingleThreadConsumer consumer;
+
+	public @Value("${kafka.topic}") String topic;
 
 	@Test
-	public void consumerTest1() {
-
-		Properties properties = new Properties();
-		properties.put("zookeeper.connect", "7ce9e795682a:2181");
-		properties.put("group.id", "test");
-		properties.put("auto.offset.reset", "smallest");
-		ConsumerConfig config = new ConsumerConfig(properties);
-		ConsumerConnector consumer = Consumer.createJavaConsumerConnector(config);
-
-		Map<String, Integer> topicCount = new HashMap<>();
-		topicCount.put(topic, 1);
-		Decoder<String> decoder = new StringDecoder(null);
-		Map<String, List<KafkaStream<String, String>>> consumerStreamsMap = consumer.createMessageStreams(topicCount, decoder, decoder);
-		List<KafkaStream<String, String>> consumerStreams = consumerStreamsMap.values().iterator().next();
-		Iterator<KafkaStream<String, String>> it = consumerStreams.iterator();
-		KafkaStream<String, String> stream1 = it.next();
-		ConsumerIterator<String, String> streamIt = stream1.iterator();
-		while (streamIt.hasNext()) {
-			MessageAndMetadata<String, String> message = streamIt.next();
-			log.info(new String(message.message()));
-		}
-		System.out.println("done");
-		consumer.shutdown();
+	@Ignore
+	public void test() {
+		assertThat(topic, notNullValue());
+		assertThat((byte) 4, equalTo(kafkaBroker.brokerState().currentState()));
+		logger.warn("Reading messages from '{}'", topic);
+		consumer.readMessages();
 	}
 }

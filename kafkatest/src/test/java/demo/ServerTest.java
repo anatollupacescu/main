@@ -2,9 +2,12 @@ package demo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
+import java.io.IOException;
 import java.util.Scanner;
 
+import org.apache.curator.test.TestingServer;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,29 +17,33 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import demo.bean.SingleThreadProducer;
 import kafka.server.KafkaServer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DemoApplication.class)
-@ActiveProfiles("producer")
-public class ProducerTest {
+@ActiveProfiles("server")
+public class ServerTest {
 
 	private @Autowired KafkaServer kafkaBroker;
 
+	private @Autowired TestingServer zk;
+	
 	private @Autowired Logger logger;
 
-	private @Autowired SingleThreadProducer producer;
-	
 	@Test
 	@Ignore
-	public void producerTest1() {
-		assertThat((byte) 4, equalTo(kafkaBroker.brokerState().currentState()));
-		logger.warn("Sending messages to topic '{}', type 'exit' when done");
-		try (Scanner scanner = new Scanner(System.in)) {
-			for (String message = scanner.nextLine(); !"exit".equals(message);) {
-				producer.sendMessage(message);
-			}
+	public void test() throws IOException {
+		logger.warn("Kafka broker starting...");
+		kafkaBroker.startup();
+		assertThat((byte) 4, is(equalTo(kafkaBroker.brokerState().currentState())));
+		try (final Scanner scanner = new Scanner(System.in)) {
+			logger.warn("Hit 'Enter' to close");
+			scanner.nextLine();
 		}
+		logger.warn("Shutting everything down...");
+		kafkaBroker.shutdown();
+		kafkaBroker.awaitShutdown();
+		assertThat((byte) 0, is(equalTo(kafkaBroker.brokerState().currentState())));
+		zk.stop();
 	}
 }

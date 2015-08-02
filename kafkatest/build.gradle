@@ -1,9 +1,10 @@
 buildscript {
     ext {
-        springBootVersion = '1.2.2.RELEASE'
+        springBootVersion = '1.2.5.RELEASE'
     }
     repositories {
         mavenCentral()
+        maven { url "http://repo.spring.io/milestone" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -14,29 +15,52 @@ apply plugin: 'java'
 apply plugin: 'spring-boot' 
 apply plugin: 'eclipse'
 
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
 jar {
-    baseName = 'demo'
+    baseName = 'kafka-util'
     version = '0.0.1-SNAPSHOT'
+    jar {
+	    manifest {
+	        attributes 'Main-Class': 'demo.DemoApplication'
+	    }
+	}
 }
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Main-Class': 'demo.DemoApplication'
+    }
+    baseName = project.name
+    version = '0.0.1-SNAPSHOT'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter') {
-    	exclude module: 'spring-boot-starter-logging'
-    }
-    compile('org.springframework.boot:spring-boot-starter-log4j')
+    compile('org.springframework.boot:spring-boot-starter')
+    compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.data:spring-data-commons')
+    
 	compile('org.apache.kafka:kafka_2.10:0.8.2.1')
 	compile('org.apache.curator:curator-framework:2.7.1')
 	compile('org.apache.curator:curator-test:2.7.1')
 	compile('org.apache.zookeeper:zookeeper:3.4.6')
 }
 
+configurations.all {
+    exclude module: 'logback-classic'
+    exclude module: 'log4j-over-slf4j'
+}
+
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.4'
 }

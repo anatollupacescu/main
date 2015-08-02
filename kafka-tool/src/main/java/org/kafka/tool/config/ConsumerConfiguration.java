@@ -1,4 +1,4 @@
-package demo.config;
+package org.kafka.tool.config;
 
 import java.util.Properties;
 
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import demo.bean.SingleThreadConsumer;
+import org.kafka.tool.bean.SingleThreadConsumer;
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
 import kafka.javaapi.consumer.ConsumerConnector;

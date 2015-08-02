@@ -1,42 +1,41 @@
-package demo;
+package org.kafka.tool;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-
-import java.util.Scanner;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import demo.bean.SingleThreadProducer;
+import org.kafka.tool.bean.SingleThreadConsumer;
 import kafka.server.KafkaServer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = DemoApplication.class)
-@ActiveProfiles("producer")
-public class ProducerTest {
+@SpringApplicationConfiguration(classes = KafkaToolApplication.class)
+@ActiveProfiles("consumer")
+public class ConsumerTest {
 
 	private @Autowired KafkaServer kafkaBroker;
 
 	private @Autowired Logger logger;
 
-	private @Autowired SingleThreadProducer producer;
-	
+	private @Autowired SingleThreadConsumer consumer;
+
+	public @Value("${kafka.topic}") String topic;
+
 	@Test
 	@Ignore
-	public void producerTest1() {
+	public void test() {
+		assertThat(topic, notNullValue());
 		assertThat((byte) 4, equalTo(kafkaBroker.brokerState().currentState()));
-		logger.warn("Sending messages to topic '{}', type 'exit' when done");
-		try (Scanner scanner = new Scanner(System.in)) {
-			for (String message = scanner.nextLine(); !"exit".equals(message);) {
-				producer.sendMessage(message);
-			}
-		}
+		logger.warn("Reading messages from '{}'", topic);
+		consumer.readMessages(logger);
 	}
 }

@@ -1,8 +1,7 @@
-package demo.config;
+package org.kafka.tool.config;
 
 import java.util.Properties;
 
-import org.apache.curator.test.TestingServer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -11,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import demo.bean.SingleThreadProducer;
+import org.kafka.tool.bean.SingleThreadProducer;
 
 @Configuration
 @Profile("producer")
@@ -45,7 +44,7 @@ public class ProducerConfiguration {
 	}
 
 	@Bean
-	public SingleThreadProducer producerTester(Producer<Integer, String> producer, TestingServer testServer) {
+	public SingleThreadProducer producerTester(Producer<Integer, String> producer) {
 		return new SingleThreadProducer();
 	}
 }

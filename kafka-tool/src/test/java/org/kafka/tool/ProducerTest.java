@@ -1,4 +1,4 @@
-package demo;
+package org.kafka.tool;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,11 +14,11 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import demo.bean.SingleThreadProducer;
+import org.kafka.tool.bean.SingleThreadProducer;
 import kafka.server.KafkaServer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = DemoApplication.class)
+@SpringApplicationConfiguration(classes = KafkaToolApplication.class)
 @ActiveProfiles("producer")
 public class ProducerTest {
 
@@ -35,7 +35,7 @@ public class ProducerTest {
 		logger.warn("Sending messages to topic '{}', type 'exit' when done");
 		try (Scanner scanner = new Scanner(System.in)) {
 			for (String message = scanner.nextLine(); !"exit".equals(message);) {
-				producer.sendMessage(message);
+				producer.sendMessage("topic", message);
 			}
 		}
 	}
