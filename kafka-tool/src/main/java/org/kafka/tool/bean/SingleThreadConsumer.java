@@ -29,15 +29,13 @@ public class SingleThreadConsumer {
 		Map<String, List<KafkaStream<byte[], byte[]>>> consumerStreams = consumer.createMessageStreams(ImmutableMap.of(topic, 1));
 		ConsumerIterator<byte[], byte[]> stream = consumerStreams.values().iterator().next().iterator().next().iterator();
 		int counter = 0;
+		logger.debug("Listening for messages from topic '{}'", topic);
 		while (counter++ < Integer.valueOf(messageCount) && stream.hasNext()) {
 			MessageAndMetadata<byte[], byte[]> messageMetadata = stream.next();
 			if(messageMetadata != null && messageMetadata.message() != null) {
-				logger.info("Offset: {}, Message: {}", messageMetadata.offset(), new String(messageMetadata.message()));
+				logger.info("Partition: {}, Offset: {}, Message: {}", messageMetadata.partition(), messageMetadata.offset(), new String(messageMetadata.message()));
 			}
 		}
-	}
-
-	public void shutdown() {
 		consumer.shutdown();
 	}
 }

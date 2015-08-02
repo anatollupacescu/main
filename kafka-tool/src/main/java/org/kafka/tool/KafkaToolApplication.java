@@ -38,9 +38,7 @@ public class KafkaToolApplication {
                 break;
             case "consumer":
                 SingleThreadConsumer consumer = context.getBean(SingleThreadConsumer.class);
-                logger.debug("Listening for messages...");
                 consumer.readMessages(logger);
-                consumer.shutdown();
                 break;
             case "server":
                 logger.debug("Kafka broker starting...");
@@ -62,10 +60,6 @@ public class KafkaToolApplication {
             default:
                 logger.error("Profile not provided or not recognized, will exit now");
         }
-    }
-
-    public @Bean String port(@Value("${zookeeper.port}") String port) {
-        return port;
     }
 
     public @Bean String profile(@Value("${spring.profiles.active}") String profile) {

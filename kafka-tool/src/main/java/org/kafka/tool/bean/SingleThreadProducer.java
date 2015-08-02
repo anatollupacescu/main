@@ -1,8 +1,7 @@
 package org.kafka.tool.bean;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import com.google.common.base.Strings;
+import kafka.javaapi.producer.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import kafka.producer.KeyedMessage;
@@ -12,21 +11,35 @@ public class SingleThreadProducer {
 
 	private @Value("${kafka.topic}") String topic;
 
-	private @Autowired Producer<Integer, String> producer;
-
-	private @Autowired kafka.javaapi.producer.Producer<Integer, String> kafkaProducer;
-
-	public void sendMessage(final String topic, final String message) {
-		final ProducerRecord<Integer, String> record = new ProducerRecord<>(topic, message);
-		producer.send(record);
-	}
+	private @Autowired Producer<byte[], String> kafkaProducer;
 
 	public void sendMessage(final String message) {
-		KeyedMessage<Integer, String> keyedMessage = new KeyedMessage<>(topic, message);
-		kafkaProducer.send(keyedMessage);
+        KeyedMessage<byte[], String> keyedMessage = null;
+        if(!Strings.isNullOrEmpty(message)) {
+            if(message.contains(" ")) {
+                String[] keyAndMessage = message.split(" ");
+                String key = parseKey(keyAndMessage[0]);
+                String msg = keyAndMessage[1];
+                keyedMessage = new KeyedMessage<>(topic, key.getBytes(), msg);
+            } else {
+                keyedMessage = new KeyedMessage<>(topic, message);
+            }
+            if(keyedMessage != null) {
+                kafkaProducer.send(keyedMessage);
+            }
+        }
 	}
 
-	public void shutdown() {
-		((KafkaProducer<Integer, String>) producer).close();
+    private String parseKey(String s) {
+        try {
+            Integer intValue = Integer.valueOf(s);
+            return intValue.toString();
+        } catch (Exception e) {
+        }
+        return "0";
+    }
+
+    public void shutdown() {
+		kafkaProducer.close();
 	}
 }

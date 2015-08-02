@@ -2,9 +2,9 @@ package org.kafka.tool.config;
 
 import java.util.Properties;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import kafka.javaapi.producer.Producer;
+import kafka.producer.ProducerConfig;
+import org.kafka.tool.bean.SimplePartitioner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,35 +16,25 @@ import org.kafka.tool.bean.SingleThreadProducer;
 @Profile("producer")
 public class ProducerConfiguration {
 
+    @Bean
+    public SingleThreadProducer producerTester(Producer<byte[], String> producer) {
+        return new SingleThreadProducer();
+    }
+
 	@Bean
-	public Properties producerConfigurationProperties(
+	public Producer<byte[], String> kafkaProducer(
 			@Value("${producer.metadata.broker.list}") String metadataBrokerList,
 			@Value("${producer.serializer.class}") String serializerClass,
-			@Value("${producer.request.required.acks}") String requestRequiredAcks) {
+            @Value("${producer.key.serializer.class}") String keySerializerClass,
+			@Value("${producer.request.required.acks}") String requestRequiredAcks)
+    {
 		final Properties properties = new Properties();
-		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, metadataBrokerList);
-		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializerClass);
-		properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializerClass);
-		properties.put(ProducerConfig.RETRIES_CONFIG, requestRequiredAcks);
 		properties.put("metadata.broker.list", metadataBrokerList);
-		properties.put("serializer.class", "kafka.serializer.StringEncoder");
-		return properties;
-	}
-
-	@Bean
-	public Producer<Integer, String> producer(Properties producerConfigurationProperties) {
-		return new KafkaProducer<Integer, String>(producerConfigurationProperties);
-	}
-
-	@Bean
-	public kafka.javaapi.producer.Producer<Integer, String> kafkaProducer(Properties producerConfigurationProperties) {
-		kafka.producer.ProducerConfig producerConfig = new kafka.producer.ProducerConfig(
-				producerConfigurationProperties);
-		return new kafka.javaapi.producer.Producer<>(producerConfig);
-	}
-
-	@Bean
-	public SingleThreadProducer producerTester(Producer<Integer, String> producer) {
-		return new SingleThreadProducer();
+		properties.put("serializer.class", serializerClass);
+        properties.put("key.serializer.class", keySerializerClass);
+		properties.put("request.required.acks", requestRequiredAcks);
+        properties.put("partitioner.class", SimplePartitioner.class.getCanonicalName());
+		ProducerConfig producerConfig = new ProducerConfig(properties);
+		return new Producer<>(producerConfig);
 	}
 }
