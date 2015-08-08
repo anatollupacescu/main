@@ -4,25 +4,25 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.test</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>reactor-test</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>reactor-test</name>
+	<description>Experimenting with project reactor org</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.1.RELEASE</version>
+		<version>1.2.5.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>demo.DemoApplication</start-class>
-		<java.version>1.7</java.version>
-		<reactor.version>2.0.3.RELEASE</reactor.version>
+		<java.version>1.8</java.version>
+		<reactor.version>2.0.4.RELEASE</reactor.version>
 	</properties>
 	
 	<repositories>

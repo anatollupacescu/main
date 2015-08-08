@@ -4,21 +4,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
-
 import org.slf4j.LoggerFactory;
+
 import reactor.Environment;
 import reactor.core.Dispatcher;
 import reactor.core.DispatcherSupplier;
 import reactor.core.processor.RingBufferProcessor;
 import reactor.core.processor.RingBufferWorkProcessor;
-import reactor.fn.*;
+import reactor.fn.BiFunction;
+import reactor.fn.Consumer;
+import reactor.fn.Function;
+import reactor.fn.Predicate;
 import reactor.fn.tuple.Tuple;
 import reactor.fn.tuple.Tuple2;
 import reactor.io.buffer.Buffer;
