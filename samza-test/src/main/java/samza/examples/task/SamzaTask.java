@@ -17,7 +17,7 @@ public class SamzaTask implements StreamTask {
 
 	@Override
 	public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) {
-		final String message = (String) envelope.getMessage();
+		final Object message = envelope.getMessage();
 		if (message == null) {
 			logger.info("Null message received, skipping...");
 			return;
@@ -26,7 +26,7 @@ public class SamzaTask implements StreamTask {
 		Partition partition = (systemStreamPartition = envelope.getSystemStreamPartition()) != null ? systemStreamPartition.getPartition() : null;
 		int partitionId = partition != null ? partition.getPartitionId() : -1;
 		logger.info(String.format("Instance [%s] Received message '%s' from partition %s", this.toString(), message, partitionId));
-		final String output = String.format("'%s' is %s characters long, processed by '%s' from partition %s", message, message.length(), this.toString(), partitionId);
+		final String output = String.format("'%s' is processed by '%s' from partition %s", message, this.toString(), partitionId);
 		collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, output));
 	}
 }
