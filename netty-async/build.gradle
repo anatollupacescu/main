@@ -1,5 +1,6 @@
 ext {
-    reactorVersion = '1.1.0.M3'
+    reactorVersion = '1.1.0.RELEASE'
+    springBootVersion = '1.2.5.RELEASE'
 }
 
 buildscript {
@@ -9,7 +10,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.2.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE")
     }
 }
 
@@ -24,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter:1.2.2.RELEASE'
+    compile "org.springframework.boot:spring-boot-starter:$springBootVersion"
 	compile 'com.google.guava:guava:18.0'
 	compile 'com.spotify:trickle:0.6.1'
     compile "org.projectreactor:reactor-net:$reactorVersion"
@@ -34,5 +35,5 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+    gradleVersion = '2.3'
 }
