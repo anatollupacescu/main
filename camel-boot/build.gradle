@@ -1,14 +1,17 @@
+ext {
+    springBootVersion = '1.2.5.RELEASE'
+    springReactorVersion = '2.0.4.RELEASE'
+    camelVersion='2.15.2'
+}
+
 buildscript {
-    ext {
-        springBootVersion = '1.1.6.RELEASE'
-        springReactorVersion = '1.1.5.RELEASE'
-    }
     repositories {
-        mavenLocal()
-        maven { url "http://repo.spring.io/libs-release" }
+    	mavenLocal()
+        mavenCentral()
+        maven { url "https://repo.spring.io/libs-release" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE")
     }
 }
 
@@ -19,21 +22,10 @@ apply plugin: 'spring-boot'
 targetCompatibility = 1.8
 sourceCompatibility = 1.8
 
-jar {
-    baseName = 'spring-boot-camel'
-    version =  '0.0.1-SNAPSHOT'
-}
-
 repositories {
-    
+    mavenLocal()
     maven { url "http://repo.spring.io/libs-release" }
-    
     mavenCentral()
-}
-
-ext {
-    springBootVersion = '1.1.6.RELEASE'
-    springReactorVersion = '1.1.5.RELEASE'
 }
 
 dependencies {
@@ -43,27 +35,20 @@ dependencies {
 	
 	compile('org.hsqldb:hsqldb:+')
 
-    compile('org.apache.camel:camel-servlet:2.13.2')
-    compile('org.apache.camel:camel-spring-javaconfig:2.13.2')
-	compile('org.apache.camel:camel-rx:2.13.2')
-	compile('org.apache.camel:camel-stream:2.13.2')
-	compile('org.apache.camel:camel-test-spring:2.13.2')
-	compile('org.apache.camel:camel-ftp:2.13.2')
-	compile('commons-net:commons-net:2.0')
-
-	compile('io.reactivex:rxjava:1.0.0-rc.3')
-
-	compile("org.projectreactor:reactor-core:${springReactorVersion}")
-	compile('org.projectreactor.spring:reactor-spring-context:1.1.3.RELEASE')
+    compile("org.apache.camel:camel-servlet:${camelVersion}")
+    compile("org.apache.camel:camel-spring-javaconfig:$camelVersion")
+	compile("org.apache.camel:camel-rx:$camelVersion")
+	compile("org.apache.camel:camel-stream:$camelVersion")
+	compile("org.apache.camel:camel-test-spring:$camelVersion")
+	compile("org.apache.camel:camel-ftp:$camelVersion")
 
 	compile('com.google.guava:guava:+')
-
-	compile('ch.qos.logback:logback-classic:0.9.26')
-	
+	compile('ch.qos.logback:logback-classic:1.+')
 	compile('com.fasterxml.jackson.dataformat:jackson-dataformat-csv:+')
+
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '2.3'
 }
