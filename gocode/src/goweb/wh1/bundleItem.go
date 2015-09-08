@@ -1,7 +1,7 @@
 package wh1
 
 import (
-	_ "github.com/bmizerany/pq"
+	_ "github.com/lib/pq"
 	"strconv"
 )
 

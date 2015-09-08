@@ -2,7 +2,7 @@ package wh1
 
 import (
 	"database/sql"
-	_ "github.com/bmizerany/pq"
+	_ "github.com/lib/pq"
 )
 
 func openConnection(connection_string string) (*sql.DB, error) {
