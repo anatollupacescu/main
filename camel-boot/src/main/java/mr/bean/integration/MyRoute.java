@@ -1,79 +1,53 @@
 package mr.bean.integration;
 
-import java.util.Map;
-
-import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.processor.loadbalancer.LoadBalancerSupport;
-import org.apache.camel.rx.ObservableBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
-
-import rx.Observable;
+import org.apache.camel.processor.loadbalancer.StickyLoadBalancer;
 
 public class MyRoute extends RouteBuilder {
 
-	private static final Logger log = LoggerFactory.getLogger(MyRoute.class);
-	
-	private final Map<String, Integer> state = Maps.newHashMap();
-	
 	@Override
-	public void configure() throws Exception {
-		ObservableBody<String> body = new ObservableBody<String>(String.class) {
-			protected void configure(Observable<String> observable) {
-				observable.reduce((str1, str2) -> {
-					Integer existing = state.get(str2);
-					Integer newValue = 1;
-					if(existing != null) {
-						newValue = existing + 1;
-					}
-					if(existing > 2) {
-						System.out.println(str2 + " has reached max");
-						newValue = 1;
-					}
-					state.put(str2, newValue);
-					return null;
-				});
-			}
-		};
-		from("seda:nowhere").process(new Processor() {
-			public void process(Exchange exchange) throws Exception {
-				log.debug("before");
-			}}).loadBalance().sticky(header("type")).to("seda:unu").to("seda:doi");
+	public void configure() {
+		from("direct:input").id("myroute")
+			.log("Received ${body}")
+			.loadBalance(new StickyLoadBalancer(header("group")))
+			.to("seda:input1", "seda:input2")
+		.end();
 		
-		from("seda:unu").process(new Processor() {
-			public void process(Exchange exchange) throws Exception {
-				log.debug("In unu {}", exchange.getIn().getHeader("type"));
+		from("seda:input1").process(new Processor() {
+
+			private String group;
+
+			public void process(Exchange exc) throws Exception {
+				Message m = exc.getIn();
+				String inGroup = m.getHeader("group", String.class);
+				if ( group == null) {
+					this.group = inGroup;
+				} else if (!inGroup.equals(group)) {
+					System.out.println("Inconsistent behaviour");
+				} else {
+					System.out.println(m.getBody() + " > " + inGroup);
+				}
 			}
-		});
-		from("seda:doi").process(new Processor() {
-			public void process(Exchange exchange) throws Exception {
-				log.debug("In doi {}", exchange.getIn().getHeader("type"));
+		}).onException(Exception.class).throwException(new IllegalStateException()).end();
+		
+		from("seda:input2").process(new Processor() {
+
+			private String group;
+
+			public void process(Exchange exc) throws Exception {
+				Message m = exc.getIn();
+				String inGroup = m.getHeader("group", String.class);
+				if ( group == null) {
+					this.group = inGroup;
+				} else if (!inGroup.equals(group)) {
+					System.out.println("Inconsistent behaviour");
+				} else {
+					System.out.println(m.getBody() + " > " + inGroup);
+				}
 			}
-		});
+		}).onException(Exception.class).throwException(new IllegalStateException()).end();
 	}
-
-    private static class MyLoadBalancer extends LoadBalancerSupport {
-
-        public boolean process(Exchange exchange, AsyncCallback callback) {
-            String body = exchange.getIn().getBody(String.class);
-            try {
-                if ("x".equals(body)) {
-                    getProcessors().get(0).process(exchange);
-                } else if ("y".equals(body)) {
-                    getProcessors().get(1).process(exchange);
-                } else {
-                    getProcessors().get(2).process(exchange);
-                }
-            } catch (Throwable e) {
-                exchange.setException(e);
-            }
-            callback.done(true);
-            return true;
-        }
-    }
 }
