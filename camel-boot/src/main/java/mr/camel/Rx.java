@@ -1,17 +1,19 @@
 package mr.camel;
 
-import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.rx.ReactiveCamel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.base.Joiner;
 
 import mr.Constants;
 
-/**
- * Created by anatolie.lupacescu on 18/11/2015.
- */
-public class KafkaRoute extends RouteBuilder implements Constants {
+public class Rx implements Constants {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Value("${kafka.host}")
 	private String kafkaHost;
 
@@ -33,18 +35,24 @@ public class KafkaRoute extends RouteBuilder implements Constants {
 	@Value("${zk.port}")
 	private String zkPort;
 
-	@Override
-	public void configure() throws Exception {
-		from(uri()).to("log:input");
-	}
+	@Autowired
+	private ReactiveCamel reactiveCamel;
 
-	private String uri() {
+	public void start() {
 		String options = Joiner.on("&").join(concat(KAFKA_TOPIC, kafkaTopic), 
 				concat(ZOOKEEPER_HOST, zkHost),
 				concat(ZOOKEEPER_PORT, zkPort), 
 				concat(KAFKA_GROUP_ID, kafkaGroup),
 				concat(KAFKA_CONSUMER_COUNT, kafkaConsumerCount));
-		return String.format("%s:%s:%s?%s", KAFKA_SCHEMA, kafkaHost, kafkaPort, options);
+
+		String uri = String.format("%s:%s:%s?%s", KAFKA_SCHEMA, kafkaHost, kafkaPort, options);
+
+		reactiveCamel.toObservable(uri)
+				// .filter(m -> m.getHeader("foo") != null)
+				// .map(m -> "Hello " + m.getBody())
+				.forEach(m -> {
+					logger.debug("Received '{}'", m.getBody(String.class));
+				});
 	}
 
 	private String concat(String head, String tail) {

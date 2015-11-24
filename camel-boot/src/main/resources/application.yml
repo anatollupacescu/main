@@ -1,0 +1,13 @@
+#kafka
+kafka:
+    host: localhost
+    port: 9092
+    topic: test
+    group: group2
+    consumer:
+        count: 2
+
+#zookeeper
+zk:
+    host: localhost
+    port: 2181

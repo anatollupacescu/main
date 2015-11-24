@@ -8,7 +8,7 @@
     </encoder>
   </appender>
 
-  <logger name="mr.f" level="debug"/>
+  <logger name="mr" level="debug"/>
 
   <root level="info">
     <appender-ref ref="stdout"/>
