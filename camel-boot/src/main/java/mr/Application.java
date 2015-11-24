@@ -1,5 +1,8 @@
 package mr;
 
+import mr.camel.MyRoute;
+import mr.camel.KafkaRoute;
+import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.apache.camel.spring.SpringCamelContext;
@@ -9,9 +12,6 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import mr.bean.integration.MyRoute;
-import mr.serioja.FtpUploadRoute;
 
 @SpringBootApplication
 public class Application {
@@ -36,16 +36,16 @@ public class Application {
 		@Bean
 		public SpringCamelContext camelContext(ApplicationContext applicationContext) throws Exception {
 			SpringCamelContext camelContext = new SpringCamelContext(applicationContext);
-			camelContext.addRoutes(ftpRoute());
 			camelContext.addRoutes(myRoute());
+			camelContext.addRoutes(kafkaRoute());
 			return camelContext;
 		}
 
 		@Bean
-		public RouteBuilder ftpRoute() {
-			return new FtpUploadRoute();
+		public RoutesBuilder kafkaRoute() {
+			return new KafkaRoute();
 		}
-		
+
 		@Bean
 		public RouteBuilder myRoute() {
 			return new MyRoute();

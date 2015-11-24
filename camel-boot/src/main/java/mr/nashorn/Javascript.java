@@ -34,7 +34,7 @@ public class Javascript {
 		bindings.put("map", map);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main1(String[] args) throws Exception {
 		Javascript demo = new Javascript();
 		String result = demo.execute("Joel");
 		System.out.println("full name is " + result);

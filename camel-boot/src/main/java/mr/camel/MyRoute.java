@@ -1,4 +1,4 @@
-package mr.bean.integration;
+package mr.camel;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
